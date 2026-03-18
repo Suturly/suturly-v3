@@ -1,8 +1,15 @@
 import type { Block } from 'payload'
 
 import {
+  BoldFeature,
   FixedToolbarFeature,
+  HeadingFeature,
   InlineToolbarFeature,
+  ItalicFeature,
+  LinkFeature,
+  OrderedListFeature,
+  ParagraphFeature,
+  UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
@@ -16,8 +23,6 @@ export const Banner: Block = {
       options: [
         { label: 'Info', value: 'info' },
         { label: 'Warning', value: 'warning' },
-        { label: 'Error', value: 'error' },
-        { label: 'Success', value: 'success' },
       ],
       required: true,
     },
@@ -25,9 +30,19 @@ export const Banner: Block = {
       name: 'content',
       type: 'richText',
       editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
-        },
+        features: [
+          ParagraphFeature(),
+          HeadingFeature({ enabledHeadingSizes: ['h5'] }),
+          OrderedListFeature(),
+          UnorderedListFeature(),
+          BoldFeature(),
+          ItalicFeature(),
+          LinkFeature({
+            enabledCollections: ['pages', 'posts'],
+          }),
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+        ],
       }),
       label: false,
       required: true,

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
-import { Posts } from './collections/Posts'
+import { Resources } from './collections/Resources/index'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -17,6 +17,14 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const DEFAULT_RESOURCE_CATEGORIES = [
+  { title: 'EDUCATION', slug: 'educatin' },
+  { title: 'PRE-OP', slug: 'pre-op' },
+  { title: 'OPERATION DAY', slug: 'operation-day' },
+  { title: 'POST-OP', slug: 'post-op' },
+  { title: 'NEXT STEPS', slug: 'next-steps' },
+]
 
 export default buildConfig({
   admin: {
@@ -62,10 +70,60 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Resources, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
+  onInit: async (payload) => {
+    const existingCategories = await payload.find({
+      collection: 'categories',
+      depth: 0,
+      limit: 100,
+      pagination: false,
+      where: {
+        slug: {
+          in: DEFAULT_RESOURCE_CATEGORIES.map((category) => category.slug),
+        },
+      },
+      overrideAccess: true,
+    })
+
+    const existingBySlug = new Map(
+      existingCategories.docs
+        .map((category) => {
+          const slug = typeof category?.slug === 'string' ? category.slug : null
+          return slug ? [slug, category] : null
+        })
+        .filter(Boolean) as Array<[string, (typeof existingCategories.docs)[number]]>,
+    )
+
+    for (const category of DEFAULT_RESOURCE_CATEGORIES) {
+      const existingCategory = existingBySlug.get(category.slug)
+
+      if (existingCategory) {
+        if (existingCategory.title !== category.title) {
+          await payload.update({
+            collection: 'categories',
+            id: existingCategory.id,
+            data: {
+              title: category.title,
+            },
+            overrideAccess: true,
+          })
+        }
+        continue
+      }
+
+      await payload.create({
+        collection: 'categories',
+        data: {
+          title: category.title,
+          slug: category.slug,
+        },
+        overrideAccess: true,
+      })
+    }
+  },
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {

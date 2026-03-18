@@ -1,18 +1,16 @@
 import type { Metadata } from 'next'
 
-import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'
 
-import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import PageClient from './page.client'
+import { buildHeadingAnchors, extractH2Headings } from '@/utilities/richTextHeadings'
+import PageClient, { ResourceTabsMain } from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
@@ -39,11 +37,26 @@ type Args = {
   params: Promise<{
     slug?: string
   }>
+  searchParams: Promise<{
+    tab?: string | string[]
+  }>
 }
 
-export default async function Post({ params: paramsPromise }: Args) {
+const toSlugFallback = (value: string, fallback: string) => {
+  const normalized = value
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+
+  return normalized || fallback
+}
+
+export default async function Post({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
+  const searchParams = await searchParamsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/posts/' + decodedSlug
@@ -51,8 +64,55 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  const sections =
+    post.categorySections?.map((section, index) => {
+      const categoryNameFallback = `Section ${index + 1}`
+      const categoryName =
+        typeof section?.category === 'object' && section.category && 'title' in section.category
+          ? (section.category.title as string)
+          : categoryNameFallback
+      const categorySlug =
+        typeof section?.category === 'object' &&
+        section.category &&
+        'slug' in section.category &&
+        typeof section.category.slug === 'string'
+          ? section.category.slug
+          : toSlugFallback(categoryName, `section-${index + 1}`)
+
+      const sectionId = `chapter-${index + 1}`
+      const headingAnchors = buildHeadingAnchors(extractH2Headings(section.content), sectionId)
+
+      return {
+        id: sectionId,
+        name: categoryName,
+        categorySlug,
+        content: section.content,
+        headingAnchors,
+        nextStepBannerDescription:
+          typeof section?.category === 'object' &&
+          section.category &&
+          'nextStepBannerDescription' in section.category &&
+          typeof section.category.nextStepBannerDescription === 'string'
+            ? section.category.nextStepBannerDescription
+            : '',
+        nextStepBannerTitle:
+          typeof section?.category === 'object' &&
+          section.category &&
+          'nextStepBannerTitle' in section.category &&
+          typeof section.category.nextStepBannerTitle === 'string'
+            ? section.category.nextStepBannerTitle
+            : '',
+      }
+    }) || []
+
+  const requestedTab = Array.isArray(searchParams?.tab) ? searchParams.tab[0] : searchParams?.tab
+  const activeTab = sections.find((section) => section.categorySlug === requestedTab)?.categorySlug
+    ? requestedTab
+    : sections[0]?.categorySlug
+  const resourcePath = `/resources/${encodeURIComponent(decodedSlug)}`
+
   return (
-    <article className="pt-16 pb-16">
+    <article className="resource-page">
       <PageClient />
 
       {/* Allows redirects for valid pages too */}
@@ -60,18 +120,15 @@ export default async function Post({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <PostHero post={post} />
-
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-            />
-          )}
-        </div>
+      <div className="container">
+        <ResourceTabsMain
+          benefits={post.benefits}
+          coverImage={post.coverImage}
+          initialActiveTab={activeTab}
+          postTitle={post.title}
+          resourcePath={resourcePath}
+          sections={sections}
+        />
       </div>
     </article>
   )

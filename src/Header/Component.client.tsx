@@ -6,8 +6,8 @@ import React, { useEffect, useState } from 'react'
 
 import type { Header } from '@/payload-types'
 
+import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/Logo/Logo'
-import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
   data: Header
@@ -18,6 +18,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
+  const isResourcesActive = pathname === '/resources' || pathname.startsWith('/posts')
 
   useEffect(() => {
     setHeaderTheme(null)
@@ -30,12 +31,34 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   }, [headerTheme])
 
   return (
-    <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
-      <div className="py-8 flex justify-between">
-        <Link href="/">
-          <Logo loading="eager" priority="high" className="invert dark:invert-0" />
-        </Link>
-        <HeaderNav data={data} />
+    <header className="site-header">
+      <div className="container site-header__container">
+        <div className="site-header__inner">
+          <div className="site-header__left">
+            <Link href="/">
+              <Logo loading="eager" priority="high" />
+            </Link>
+
+            <span className="site-header__tagline">
+              Evidence based medical resources
+            </span>
+
+            <Button
+              asChild
+              size="small"
+              variant="ghost"
+              className={isResourcesActive ? 'is-active' : undefined}
+            >
+              <Link aria-current={isResourcesActive ? 'page' : undefined} href="/resources">
+                Resources
+              </Link>
+            </Button>
+          </div>
+
+          {/* <Button asChild size="small" variant="ghost">
+            <Link href="/account">Account</Link>
+          </Button> */}
+        </div>
       </div>
     </header>
   )

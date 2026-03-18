@@ -1,51 +1,77 @@
 import { cn } from '@/utilities/ui'
-import { Slot } from '@radix-ui/react-slot'
-import { type VariantProps, cva } from 'class-variance-authority'
+import { Slot, Slottable } from '@radix-ui/react-slot'
 import * as React from 'react'
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 focus-visible:ring-4 focus-visible:outline-1 aria-invalid:focus-visible:ring-0",
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90',
-        outline:
-          'border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
-      },
-      size: {
-        clear: '',
-        default: 'h-10 px-4 py-2 has-[>svg]:px-3',
-        sm: 'h-9 rounded-md px-3 has-[>svg]:px-2.5',
-        lg: 'h-11 rounded-md px-8 has-[>svg]:px-4',
-        icon: 'size-10',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  },
-)
+type ButtonVariant = 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'secondary'
+type ButtonSize = 'big' | 'default' | 'icon' | 'small'
 
-export interface ButtonProps
-  extends React.ComponentProps<'button'>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+const variantClassMap: Record<ButtonVariant, string> = {
+  default: 'primary',
+  destructive: 'destructive',
+  ghost: 'ghost',
+  link: 'link',
+  outline: 'outline',
+  secondary: 'secondary',
 }
 
-const Button: React.FC<ButtonProps> = ({ asChild = false, className, size, variant, ...props }) => {
+const sizeClassMap: Record<ButtonSize, string> = {
+  big: 'size-big',
+  default: 'size-default',
+  icon: 'size-icon',
+  small: 'size-small',
+}
+
+type ButtonVariantsInput = {
+  className?: string
+  size?: ButtonSize | null
+  variant?: ButtonVariant | null
+}
+
+const buttonVariants = ({ className, size, variant }: ButtonVariantsInput = {}) => {
+  const resolvedVariant: ButtonVariant = variant ?? 'default'
+  const resolvedSize: ButtonSize = size ?? 'big'
+
+  return cn('ui-button', variantClassMap[resolvedVariant], sizeClassMap[resolvedSize], className)
+}
+
+export interface ButtonProps
+  extends React.ComponentProps<'button'> {
+  asChild?: boolean
+  iconLeft?: React.ReactNode
+  iconRight?: React.ReactNode
+  size?: ButtonSize
+  variant?: ButtonVariant
+}
+
+const Button: React.FC<ButtonProps> = ({
+  asChild = false,
+  className,
+  size,
+  variant,
+  iconLeft,
+  iconRight,
+  children,
+  ...props
+}) => {
   const Comp = asChild ? Slot : 'button'
+  const hasLeftIcon = Boolean(iconLeft)
+  const hasRightIcon = Boolean(iconRight)
+  const resolvedVariant: ButtonVariant = variant ?? 'default'
+  const resolvedSize: ButtonSize = size ?? 'big'
 
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant: resolvedVariant, size: resolvedSize, className }))}
+      data-size={resolvedSize}
+      data-left-icon={hasLeftIcon}
+      data-right-icon={hasRightIcon}
       {...props}
-    />
+    >
+      {iconLeft ? <span data-slot="button-icon">{iconLeft}</span> : null}
+      <Slottable>{children}</Slottable>
+      {iconRight ? <span data-slot="button-icon">{iconRight}</span> : null}
+    </Comp>
   )
 }
 
