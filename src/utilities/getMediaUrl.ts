@@ -1,5 +1,3 @@
-import { getClientSideURL } from '@/utilities/getURL'
-
 /**
  * Processes media resource URL to ensure proper formatting
  * @param url The original URL from the resource
@@ -15,10 +13,11 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
 
   // Check if URL already has http/https protocol
   if (url.startsWith('http://') || url.startsWith('https://')) {
-    return cacheTag ? `${url}?${cacheTag}` : url
+    const separator = url.includes('?') ? '&' : '?'
+    return cacheTag ? `${url}${separator}${cacheTag}` : url
   }
 
-  // Otherwise prepend client-side URL
-  const baseUrl = getClientSideURL()
-  return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
+  // Keep local media URLs relative so they work across localhost, preview, and production domains.
+  const separator = url.includes('?') ? '&' : '?'
+  return cacheTag ? `${url}${separator}${cacheTag}` : url
 }
