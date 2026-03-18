@@ -24,21 +24,31 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
+const hasR2StorageEnv =
+  Boolean(process.env.R2_BUCKET) &&
+  Boolean(process.env.R2_ACCESS_KEY_ID) &&
+  Boolean(process.env.R2_SECRET_ACCESS_KEY) &&
+  Boolean(process.env.R2_ACCOUNT_ID)
+
 export const plugins: Plugin[] = [
-  s3Storage({
-    collections: {
-      media: true,
-    },
-    bucket: process.env.R2_BUCKET!,
-    config: {
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-      },
-      region: 'auto',
-      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    },
-  }),
+  ...(hasR2StorageEnv
+    ? [
+        s3Storage({
+          collections: {
+            media: true,
+          },
+          bucket: process.env.R2_BUCKET!,
+          config: {
+            credentials: {
+              accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+              secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+            },
+            region: 'auto',
+            endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+          },
+        }),
+      ]
+    : []),
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
