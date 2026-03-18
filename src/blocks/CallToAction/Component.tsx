@@ -25,7 +25,7 @@ export const CallToActionBlock: React.FC<Props> = ({ links, richText, linkCitati
         </div>
         <div className="flex flex-col gap-8">
           {(links || []).map(({ link }, i) => {
-            return <CMSLink key={i} size="lg" {...link} />
+            return <CMSLink key={i} size="big" {...link} />
           })}
         </div>
       </div>
