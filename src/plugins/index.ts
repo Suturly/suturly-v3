@@ -1,3 +1,4 @@
+import { s3Storage } from '@payloadcms/storage-s3'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
@@ -24,6 +25,20 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 }
 
 export const plugins: Plugin[] = [
+  s3Storage({
+    collections: {
+      media: true,
+    },
+    bucket: process.env.R2_BUCKET!,
+    config: {
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      },
+      region: 'auto',
+      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    },
+  }),
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
