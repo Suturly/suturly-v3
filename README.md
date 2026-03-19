@@ -289,6 +289,35 @@ export default buildConfig({
 
 There is also a simplified [one click deploy](https://github.com/payloadcms/payload/tree/templates/with-vercel-postgres) to Vercel should you need it.
 
+### Media storage on Vercel (Cloudflare R2)
+
+If your deployed app returns `404` on `/api/media/file/...`, production is usually using local disk storage (ephemeral on Vercel) or missing migrated files.
+
+Required env vars:
+
+- `R2_ENABLED=true`
+- `R2_BUCKET`
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+
+After configuring env vars, migrate existing local media files to R2:
+
+```bash
+npm run media:migrate:r2
+```
+
+Optional migration flags:
+
+- `R2_MIGRATION_DRY_RUN=true` to preview uploads without writing
+- `R2_MIGRATION_OVERWRITE=true` to replace existing objects in R2
+
+Smoke test after deploy:
+
+1. Open `/api/media/file/<known-filename>` and confirm HTTP `200`
+2. Open `/admin` and confirm media library thumbnails load
+3. Upload a new media file and verify the generated URL loads on frontend
+
 ### Self-hosting
 
 Before deploying your app, you need to:

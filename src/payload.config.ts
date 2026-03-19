@@ -11,7 +11,7 @@ import { Resources } from './collections/Resources/index'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
-import { plugins } from './plugins'
+import { plugins, storageRuntimeInfo } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 
@@ -75,6 +75,14 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins,
   onInit: async (payload) => {
+    payload.logger.info(
+      `[storage] Active mode: ${storageRuntimeInfo.useR2Storage ? 'r2' : 'local'} (R2_ENABLED=${storageRuntimeInfo.isR2StorageEnabled}, R2_ENV_READY=${storageRuntimeInfo.hasR2StorageEnv})`,
+    )
+
+    for (const warning of storageRuntimeInfo.warnings) {
+      payload.logger.warn(`[storage] ${warning}`)
+    }
+
     const existingCategories = await payload.find({
       collection: 'categories',
       depth: 0,

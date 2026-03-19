@@ -14,6 +14,42 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
+const normalizeEnvFlag = (value?: string): string =>
+  (value || '')
+    .trim()
+    .replace(/^['"]|['"]$/g, '')
+    .toLowerCase()
+
+const isEnvFlagEnabled = (value?: string): boolean => normalizeEnvFlag(value) === 'true'
+
+const hasR2StorageEnv =
+  Boolean(process.env.R2_BUCKET) &&
+  Boolean(process.env.R2_ACCESS_KEY_ID) &&
+  Boolean(process.env.R2_SECRET_ACCESS_KEY) &&
+  Boolean(process.env.R2_ACCOUNT_ID)
+
+const isR2StorageEnabled = isEnvFlagEnabled(process.env.R2_ENABLED)
+const useR2Storage = isR2StorageEnabled && hasR2StorageEnv
+
+const r2StorageWarnings: string[] = []
+if (isR2StorageEnabled && !hasR2StorageEnv) {
+  r2StorageWarnings.push(
+    'R2_ENABLED is true, but one or more required env vars are missing (R2_BUCKET, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ACCOUNT_ID). Falling back to local file storage.',
+  )
+}
+if (!isR2StorageEnabled && hasR2StorageEnv) {
+  r2StorageWarnings.push(
+    'R2 credentials are present, but R2_ENABLED is not true. Local file storage is active.',
+  )
+}
+
+export const storageRuntimeInfo = {
+  isR2StorageEnabled,
+  hasR2StorageEnv,
+  useR2Storage,
+  warnings: r2StorageWarnings,
+}
+
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
@@ -24,14 +60,8 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
-const hasR2StorageEnv =
-  Boolean(process.env.R2_BUCKET) &&
-  Boolean(process.env.R2_ACCESS_KEY_ID) &&
-  Boolean(process.env.R2_SECRET_ACCESS_KEY) &&
-  Boolean(process.env.R2_ACCOUNT_ID)
-
 export const plugins: Plugin[] = [
-  ...(hasR2StorageEnv
+  ...(useR2Storage
     ? [
         s3Storage({
           collections: {
