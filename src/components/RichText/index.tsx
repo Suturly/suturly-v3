@@ -137,12 +137,17 @@ const createConverters = ({
           ? ((linkNode as unknown as { id: string }).id as string)
           : null
       const citation = nodeId ? linkCitations?.[nodeId] : undefined
+      const citationNode = citation ? (
+        <span className="payload-richtext__citation-anchor">
+          <sup className="payload-richtext__citation">{citation}</sup>
+        </span>
+      ) : null
 
       if (!href) {
         return (
           <React.Fragment>
             {children}
-            {citation ? <sup className="payload-richtext__citation">{citation}</sup> : null}
+            {citationNode}
           </React.Fragment>
         )
       }
@@ -150,7 +155,7 @@ const createConverters = ({
       return (
         <a href={href} rel={newTab ? 'noopener noreferrer' : undefined} target={newTab ? '_blank' : undefined}>
           {children}
-          {citation ? <sup className="payload-richtext__citation">{citation}</sup> : null}
+          {citationNode}
         </a>
       )
     },

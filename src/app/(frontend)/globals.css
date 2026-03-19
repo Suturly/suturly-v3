@@ -1256,8 +1256,16 @@
     left: -.25em;
   }
 
-  .payload-richtext__citation::before {
+  .payload-richtext__citation-anchor {
+    white-space: nowrap;
+  }
+
+  .payload-richtext__citation-anchor::before {
     content: '\00a0';
+  }
+
+  .payload-richtext__citation {
+    margin-left: 0;
   }
 
   .resource-chapter-references__citation {
