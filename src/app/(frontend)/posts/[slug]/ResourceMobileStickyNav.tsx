@@ -98,7 +98,7 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
         <div className="resource-mobile-sticky-nav__card">
           <div className={cn('resource-mobile-sticky-nav__panel-wrap', isOpen && 'is-open')}>
             <div className="resource-mobile-sticky-nav__panel">
-              <p className="resource-mobile-sticky-nav__panel-title">Procedure navigation</p>
+                <p className="resource-mobile-sticky-nav__panel-title">Procedure navigation:</p>
               <div className="resource-nav">
                 <ResourceNavList
                   activeTab={activeTab}
@@ -118,10 +118,14 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
             {isOpen ? (
               <span className="resource-mobile-sticky-nav__close-label">Close</span>
             ) : (
-              <span className="resource-mobile-sticky-nav__label-wrap">
-                <span className="resource-mobile-sticky-nav__label-caption">Procedure navigation</span>
+              <div className="resource-mobile-sticky-nav__label-wrap">
+                <div className="resource-mobile-sticky-nav__label-inner">
+                <span className="resource-mobile-sticky-nav__label-caption">Procedure navigation: </span>
+                <span className="resource-mobile-sticky-nav__label-caption">{activeSection?.name || 'Resource'}</span>
+              </div>
+                
                 <span className="resource-mobile-sticky-nav__label">{activeHeadingLabel}</span>
-              </span>
+              </div>
             )}
             <span className="resource-mobile-sticky-nav__icon" aria-hidden>
               <svg fill="none" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">

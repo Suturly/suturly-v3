@@ -42,6 +42,12 @@ type Args = {
   }>
 }
 
+type QuestionsToAskDoctorShape = Post['categorySections'] extends Array<infer T>
+  ? T extends { content: infer C }
+    ? C
+    : never
+  : never
+
 const toSlugFallback = (value: string, fallback: string) => {
   const normalized = value
     .toLowerCase()
@@ -104,6 +110,9 @@ export default async function Post({ params: paramsPromise, searchParams: search
             : '',
       }
     }) || []
+  const questionsToAskDoctor =
+    ((post as unknown as { questionsToAskDoctor?: QuestionsToAskDoctorShape | null })
+      .questionsToAskDoctor as QuestionsToAskDoctorShape | null | undefined) ?? undefined
 
   const requestedTab = Array.isArray(searchParams?.tab) ? searchParams.tab[0] : searchParams?.tab
   const activeTab = sections.find((section) => section.categorySlug === requestedTab)?.categorySlug
@@ -126,6 +135,7 @@ export default async function Post({ params: paramsPromise, searchParams: search
           coverImage={post.coverImage}
           initialActiveTab={activeTab}
           postTitle={post.title}
+          questionsToAskDoctor={questionsToAskDoctor}
           resourcePath={resourcePath}
           sections={sections}
         />

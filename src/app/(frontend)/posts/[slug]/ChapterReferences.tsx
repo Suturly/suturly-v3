@@ -49,29 +49,27 @@ export const ChapterReferences: React.FC<Props> = ({ references }) => {
     return () => controller.abort()
   }, [references])
 
+  if (references.length === 0) return null
+
   return (
     <section className="resource-chapter-references">
       <h2 className="resource-chapter-references__title">Chapter references</h2>
 
-      {references.length > 0 ? (
-        <ol className={cn('resource-chapter-references__list', !expanded && hiddenCount > 0 && 'is-truncated')}>
-          {visibleReferences.map((reference) => (
-            <li className="resource-chapter-references__item" key={reference.nodeKey}>
-              <span className="resource-chapter-references__citation">{reference.id}</span>
-              <a
-                className="resource-chapter-references__link"
-                href={reference.href}
-                rel={reference.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                target={reference.href.startsWith('http') ? '_blank' : undefined}
-              >
-                {resolvedTitles[reference.href] || reference.href}
-              </a>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p className="resource-chapter-references__empty">No references in this chapter yet.</p>
-      )}
+      <ol className={cn('resource-chapter-references__list', !expanded && hiddenCount > 0 && 'is-truncated')}>
+        {visibleReferences.map((reference) => (
+          <li className="resource-chapter-references__item" key={reference.nodeKey}>
+            <span className="resource-chapter-references__citation">{reference.id}</span>
+            <a
+              className="resource-chapter-references__link"
+              href={reference.href}
+              rel={reference.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              target={reference.href.startsWith('http') ? '_blank' : undefined}
+            >
+              {resolvedTitles[reference.href] || reference.href}
+            </a>
+          </li>
+        ))}
+      </ol>
 
       {!expanded && hiddenCount > 0 ? (
         <Button

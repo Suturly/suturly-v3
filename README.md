@@ -318,6 +318,23 @@ Smoke test after deploy:
 2. Open `/admin` and confirm media library thumbnails load
 3. Upload a new media file and verify the generated URL loads on frontend
 
+### Local CMS environment switching
+
+If you want to switch local CMS/database target between Vercel environments, use:
+
+```bash
+npm run env:use:production
+npm run env:use:development
+```
+
+Then restart local dev server:
+
+```bash
+npm run dev
+```
+
+Full guide: [`docs/cms-environment-guide.md`](docs/cms-environment-guide.md)
+
 ### Self-hosting
 
 Before deploying your app, you need to:

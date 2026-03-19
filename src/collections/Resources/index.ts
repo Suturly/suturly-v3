@@ -1,13 +1,17 @@
 import type { CollectionConfig } from 'payload'
 
 import {
+  BoldFeature,
   BlocksFeature,
   EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
+  ItalicFeature,
   InlineToolbarFeature,
+  LinkFeature,
   OrderedListFeature,
+  ParagraphFeature,
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
@@ -15,11 +19,9 @@ import {
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Banner } from '../../blocks/Banner/config'
-import { Code } from '../../blocks/Code/config'
 import { DoDontCardBlock } from '../../blocks/DoDontCard/config'
 import { DropdownBlock } from '../../blocks/Dropdown/config'
 import { FloatImageBlock } from '../../blocks/FloatImage/config'
-import { InfoBoxBlock } from '../../blocks/InfoBox/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { TimelineBlock } from '../../blocks/Timeline/config'
 import { ToDoListBlock } from '../../blocks/ToDoList/config'
@@ -247,12 +249,10 @@ export const Resources: CollectionConfig<'posts'> = {
                         BlocksFeature({
                           blocks: [
                             Banner,
-                            Code,
                             MediaBlock,
                             TwoColumnImagesBlock,
                             FloatImageBlock,
                             DoDontCardBlock,
-                            InfoBoxBlock,
                             DropdownBlock,
                             TimelineBlock,
                             ToDoListBlock,
@@ -269,6 +269,29 @@ export const Resources: CollectionConfig<'posts'> = {
                   }),
                 },
               ],
+            },
+            {
+              name: 'questionsToAskDoctor',
+              label: 'Questions to ask your doctor',
+              type: 'richText',
+              required: false,
+              editor: lexicalEditor({
+                features: [
+                  ParagraphFeature(),
+                  OrderedListFeature(),
+                  UnorderedListFeature(),
+                  BoldFeature(),
+                  ItalicFeature(),
+                  LinkFeature({
+                    enabledCollections: ['pages', 'posts'],
+                  }),
+                  BlocksFeature({
+                    blocks: [DropdownBlock],
+                  }),
+                  FixedToolbarFeature(),
+                  InlineToolbarFeature(),
+                ],
+              }),
             },
           ],
           label: 'Content',

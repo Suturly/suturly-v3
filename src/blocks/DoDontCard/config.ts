@@ -13,6 +13,10 @@ import {
 export const DoDontCardBlock: Block = {
   slug: 'doDontCard',
   interfaceName: 'DoDontCardBlock',
+  labels: {
+    singular: 'Good/Baad card',
+    plural: 'Good/Baad cards',
+  },
   fields: [
     {
       name: 'type',

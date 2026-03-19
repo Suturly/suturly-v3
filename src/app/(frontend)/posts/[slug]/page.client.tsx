@@ -43,6 +43,11 @@ type ResourceTabsMainProps = {
   benefits?: Post['benefits']
   initialActiveTab?: string
   postTitle: string
+  questionsToAskDoctor?: Post['categorySections'] extends Array<infer T>
+    ? T extends { content: infer C }
+      ? C | null
+      : never
+    : never
   resourcePath: string
   sections: SectionTab[]
   coverImage?: Post['coverImage']
@@ -52,6 +57,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   benefits,
   initialActiveTab,
   postTitle,
+  questionsToAskDoctor,
   resourcePath,
   sections,
   coverImage,
@@ -296,6 +302,19 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
 
 
                 </nav>
+
+                {questionsToAskDoctor ? (
+                  <section className="resource-doctor-questions">
+                    <h2 className="resource-doctor-questions__title">Questions to ask your doctor</h2>
+                    <RichText
+                      className="resource-doctor-questions__content"
+                      data={questionsToAskDoctor}
+                      enableGutter={false}
+                      enableProse={false}
+                      linkCitations={chapterCitationMap}
+                    />
+                  </section>
+                ) : null}
               </section>
             ) : null}
           </div>

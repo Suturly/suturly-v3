@@ -13,11 +13,9 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { Banner } from '../Banner/config'
-import { Code } from '../Code/config'
 import { DoDontCardBlock } from '../DoDontCard/config'
 import { DropdownBlock } from '../Dropdown/config'
 import { FloatImageBlock } from '../FloatImage/config'
-import { InfoBoxBlock } from '../InfoBox/config'
 import { MediaBlock } from '../MediaBlock/config'
 import { ToDoListBlock } from '../ToDoList/config'
 import { TwoColumnImagesBlock } from '../TwoColumnImages/config'
@@ -60,12 +58,10 @@ export const TimelineBlock: Block = {
               BlocksFeature({
                 blocks: [
                   Banner,
-                  Code,
                   MediaBlock,
                   TwoColumnImagesBlock,
                   FloatImageBlock,
                   DoDontCardBlock,
-                  InfoBoxBlock,
                   DropdownBlock,
                   ToDoListBlock,
                 ],

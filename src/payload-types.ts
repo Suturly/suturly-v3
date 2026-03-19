@@ -268,6 +268,21 @@ export interface Post {
         id?: string | null;
       }[]
     | null;
+  questionsToAskDoctor?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   meta?: {
     title?: string | null;
     /**
@@ -1231,6 +1246,7 @@ export interface PostsSelect<T extends boolean = true> {
         content?: T;
         id?: T;
       };
+  questionsToAskDoctor?: T;
   meta?:
     | T
     | {
@@ -1839,17 +1855,6 @@ export interface BannerBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CodeBlock".
- */
-export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
-  code: string;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'code';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TwoColumnImagesBlock".
  */
 export interface TwoColumnImagesBlock {
@@ -1896,17 +1901,6 @@ export interface DoDontCardBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'doDontCard';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "InfoBoxBlock".
- */
-export interface InfoBoxBlock {
-  title?: string | null;
-  description?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'infoBox';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
