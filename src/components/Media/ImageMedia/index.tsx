@@ -62,6 +62,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let height: number | undefined
   let alt = altFromProps
   let src: StaticImageData | string = srcFromProps || ''
+  let mimeType: string | undefined
 
   if (!src && resource && typeof resource === 'object') {
     const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
@@ -69,6 +70,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     width = fullWidth!
     height = fullHeight!
     alt = altFromResource || ''
+    mimeType = resource.mimeType || undefined
 
     const cacheTag = resource.updatedAt
 
@@ -76,13 +78,20 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
+  const srcString = typeof src === 'string' ? src : src.src
+  const isSVG = mimeType === 'image/svg+xml' || srcString.toLowerCase().endsWith('.svg')
+  const isSmallAsset = Boolean(width && height && width <= 64 && height <= 64)
+  const usePlaceholder = !isSVG && !isSmallAsset
+  const useOptimizer = !isSVG
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizeFromProps
     ? sizeFromProps
-    : Object.entries(breakpoints)
-        .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
-        .join(', ')
+    : fill
+      ? `(max-width: ${breakpoints.md}px) 100vw, (max-width: ${breakpoints.xl}px) 80vw, 60vw`
+      : width
+        ? `${Math.min(width, 1440)}px`
+        : `(max-width: ${breakpoints.md}px) 100vw, (max-width: ${breakpoints.xl}px) 80vw, 60vw`
 
   return (
     <picture className={cn(pictureClassName)}>
@@ -91,13 +100,14 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         className={cn(imgClassName)}
         fill={fill}
         height={!fill ? height : undefined}
-        placeholder="blur"
-        blurDataURL={placeholderBlur}
+        placeholder={usePlaceholder ? 'blur' : 'empty'}
+        blurDataURL={usePlaceholder ? placeholderBlur : undefined}
         priority={priority}
-        quality={100}
+        quality={82}
         loading={loading}
         sizes={sizes}
         src={src}
+        unoptimized={!useOptimizer}
         width={!fill ? width : undefined}
       />
     </picture>
