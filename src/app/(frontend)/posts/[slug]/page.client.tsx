@@ -179,9 +179,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
               </div>
             ) : null}
           </div>
-        </div>
-
-        <div className="resource-layout__mobile-nav">
+          <div className="resource-layout__mobile-nav">
           <div className="resource-nav">
             <ResourceNavList
               activeTab={activeSection?.categorySlug}
@@ -190,6 +188,9 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
             />
           </div>
         </div>
+        </div>
+
+        
 
 
         <div className="resource-main-content">
