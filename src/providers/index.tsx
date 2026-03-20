@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { ModalProvider, ModalRoot } from '@/components/Modals'
+
 import { HeaderThemeProvider } from './HeaderTheme'
 import { ThemeProvider } from './Theme'
 
@@ -8,7 +10,12 @@ export const Providers: React.FC<{
 }> = ({ children }) => {
   return (
     <ThemeProvider>
-      <HeaderThemeProvider>{children}</HeaderThemeProvider>
+      <HeaderThemeProvider>
+        <ModalProvider>
+          {children}
+          <ModalRoot />
+        </ModalProvider>
+      </HeaderThemeProvider>
     </ThemeProvider>
   )
 }

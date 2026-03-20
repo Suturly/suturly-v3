@@ -23,6 +23,7 @@ import { DoDontCardBlock } from '../../blocks/DoDontCard/config'
 import { DropdownBlock } from '../../blocks/Dropdown/config'
 import { FloatImageBlock } from '../../blocks/FloatImage/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { ProcedureTypeCardBlock } from '../../blocks/ProcedureTypeCard/config'
 import { TimelineBlock } from '../../blocks/Timeline/config'
 import { ToDoListBlock } from '../../blocks/ToDoList/config'
 import { TwoColumnImagesBlock } from '../../blocks/TwoColumnImages/config'
@@ -256,6 +257,7 @@ export const Resources: CollectionConfig<'posts'> = {
                             DropdownBlock,
                             TimelineBlock,
                             ToDoListBlock,
+                            ProcedureTypeCardBlock,
                           ],
                         }),
                         OrderedListFeature(),

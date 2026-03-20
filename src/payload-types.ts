@@ -1945,6 +1945,41 @@ export interface DropdownBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProcedureTypeCardBlock".
+ */
+export interface ProcedureTypeCardBlock {
+  title: string;
+  chips?:
+    | {
+        icon: number | Media;
+        label: string;
+        hint: string;
+        id?: string | null;
+      }[]
+    | null;
+  shortDescription?: string | null;
+  image?: (number | null) | Media;
+  additionalContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'procedureTypeCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TimelineBlock".
  */
 export interface TimelineBlock {

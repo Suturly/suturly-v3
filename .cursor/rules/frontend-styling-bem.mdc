@@ -1,0 +1,30 @@
+---
+description: Frontend styling — BEM + globals.css; no Tailwind dump in TSX
+alwaysApply: true
+---
+
+# Frontend styling (Suturly v3)
+
+## Do not style UI in TSX with Tailwind utility strings
+
+- **Do not** add long `className` strings of Tailwind utilities (`flex`, `max-h-[…]`, `w-[min(…)]`, `px-[var(--space-…)]`, etc.) on app UI components.
+- **Do** define layout and look in [`src/app/(frontend)/globals.css`](src/app/(frontend)/globals.css) using:
+  - **BEM-style block names** aligned with the rest of the app (e.g. `resource-nav__footer-link`, `resource-block-dropdown__summary`).
+  - **Design tokens** already in the file: `var(--space-*)`, `var(--primary-*)`, `var(--text-*)`, `var(--radius-*)`, `var(--shadow-sm)`, etc.
+- **TSX** should mostly attach **one block/element class per node** (e.g. `global-modal__dialog`), plus allowed **global primitives** where the project already uses them (e.g. [`Button`](src/components/ui/button.tsx) / `.ui-button`).
+
+## Naming pattern
+
+- **Block:** `component-name` or `feature-block-name` (kebab-case).
+- **Element:** `block-name__element`.
+- **Modifier (if needed):** `block-name--modifier` or `block-name__element--modifier`.
+
+## Exceptions (narrow)
+
+- **`cn()`** only when merging a **small** set of existing classes or **conditional modifiers** that are already BEM modifiers — not as an excuse to stack Tailwind utilities in components.
+- **Third-party / Payload UI** untouched unless the repo already patterns them differently.
+
+## When adding new UI
+
+1. Add BEM classes and rules in `globals.css`.
+2. Reference those class names from React — keep TSX free of layout/color utility noise.

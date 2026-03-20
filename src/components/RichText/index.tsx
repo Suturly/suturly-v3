@@ -3,6 +3,7 @@ import { DoDontCard } from '@/blocks/DoDontCard/Component'
 import { Dropdown } from '@/blocks/Dropdown/Component'
 import { InfoBox } from '@/blocks/InfoBox/Component'
 import { Timeline } from '@/blocks/Timeline/Component'
+import { ProcedureTypeCard } from '@/blocks/ProcedureTypeCard/Component'
 import { ToDoList } from '@/blocks/ToDoList/Component'
 import { FloatImage } from '@/blocks/FloatImage/Component'
 import { TwoColumnImages } from '@/blocks/TwoColumnImages/Component'
@@ -24,6 +25,7 @@ import type {
   CallToActionBlock as CTABlockProps,
   FloatImageBlock as FloatImageBlockProps,
   MediaBlock as MediaBlockProps,
+  ProcedureTypeCardBlock as ProcedureTypeCardBlockProps,
   TwoColumnImagesBlock as TwoColumnImagesBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
@@ -46,6 +48,7 @@ type NodeTypes =
       | DropdownBlockProps
       | TimelineBlockProps
       | ToDoListBlockProps
+      | ProcedureTypeCardBlockProps
     >
 
 type DoDontCardBlockProps = {
@@ -220,6 +223,13 @@ const createConverters = ({
       ),
       todoList: ({ node }: { node: { fields: ToDoListBlockProps } }) => (
         <ToDoList className="col-start-2 my-4" {...node.fields} />
+      ),
+      procedureTypeCard: ({ node }: { node: { fields: ProcedureTypeCardBlockProps } }) => (
+        <ProcedureTypeCard
+          className="col-start-2 my-4"
+          linkCitations={linkCitations}
+          {...node.fields}
+        />
       ),
     },
   })

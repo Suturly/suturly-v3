@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/utilities/ui'
+import { HelpCircle } from 'lucide-react'
 import React from 'react'
 
 import { ResourceNavList } from './ResourceNavList'
@@ -10,12 +11,15 @@ type ResourceMobileStickyNavProps = {
   sections: SectionTab[]
   activeTab?: string
   onAnchorNavigate?: (tabSlug: string, anchorId: string) => void
+  /** Opens “Questions to ask your doctor” modal when content exists */
+  onOpenDoctorQuestions?: () => void
 }
 
 export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = ({
   sections,
   activeTab,
   onAnchorNavigate,
+  onOpenDoctorQuestions,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [activeHeadingId, setActiveHeadingId] = React.useState('')
@@ -94,11 +98,12 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
     <div className={cn('resource-mobile-sticky-nav', isOpen && 'is-open')}>
       <div aria-hidden className="resource-mobile-sticky-nav__gradient" />
 
-      <div className="resource-mobile-sticky-nav__inner">
-        <div className="resource-mobile-sticky-nav__card">
+      <div className="resource-mobile-sticky-nav__row">
+        <div className="resource-mobile-sticky-nav__inner">
+          <div className="resource-mobile-sticky-nav__card">
           <div className={cn('resource-mobile-sticky-nav__panel-wrap', isOpen && 'is-open')}>
             <div className="resource-mobile-sticky-nav__panel">
-                <p className="resource-mobile-sticky-nav__panel-title">Procedure navigation:</p>
+                <p className="resource-mobile-sticky-nav__panel-title">Navigation:</p>
               <div className="resource-nav">
                 <ResourceNavList
                   activeTab={activeTab}
@@ -120,7 +125,7 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
             ) : (
               <div className="resource-mobile-sticky-nav__label-wrap">
                 <div className="resource-mobile-sticky-nav__label-inner">
-                <span className="resource-mobile-sticky-nav__label-caption">Procedure navigation: </span>
+                <span className="resource-mobile-sticky-nav__label-caption">Navigation: </span>
                 <span className="resource-mobile-sticky-nav__label-caption">{activeSection?.name || 'Resource'}</span>
               </div>
                 
@@ -139,6 +144,20 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
             </span>
           </button>
         </div>
+      </div>
+
+        {onOpenDoctorQuestions ? (
+          <div className="resource-mobile-sticky-nav__help-wrap">
+            <button
+              aria-label="Questions to ask your doctor"
+              className="resource-mobile-sticky-nav__help"
+              onClick={onOpenDoctorQuestions}
+              type="button"
+            >
+              <HelpCircle aria-hidden className="resource-mobile-sticky-nav__help-icon" />
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   )

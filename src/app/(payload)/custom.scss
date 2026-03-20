@@ -1,0 +1,6 @@
+/* Dashboard: collection/global/plugin cards repeat the sidebar. Keep only the first
+   group (Collections: Pages, Resources, …); hide Globals, Plugins, etc. */
+
+.dashboard .collections__wrap > .collections__group:not(:first-child) {
+  display: none !important;
+}

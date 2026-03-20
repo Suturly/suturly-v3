@@ -17,6 +17,7 @@ import { DoDontCardBlock } from '../DoDontCard/config'
 import { DropdownBlock } from '../Dropdown/config'
 import { FloatImageBlock } from '../FloatImage/config'
 import { MediaBlock } from '../MediaBlock/config'
+import { ProcedureTypeCardBlock } from '../ProcedureTypeCard/config'
 import { ToDoListBlock } from '../ToDoList/config'
 import { TwoColumnImagesBlock } from '../TwoColumnImages/config'
 
@@ -64,6 +65,7 @@ export const TimelineBlock: Block = {
                   DoDontCardBlock,
                   DropdownBlock,
                   ToDoListBlock,
+                  ProcedureTypeCardBlock,
                 ],
               }),
               FixedToolbarFeature(),

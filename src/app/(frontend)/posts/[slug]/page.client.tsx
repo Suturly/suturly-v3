@@ -7,14 +7,16 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useModal } from '@/components/Modals'
 import { ResourceMobileStickyNav } from './ResourceMobileStickyNav'
-import { ResourceNavFooter } from './ResourceNavFooter'
+import { ResourceNavFooter, type FooterLink } from './ResourceNavFooter'
 import { ResourceNavList } from './ResourceNavList'
 import type { SectionTab } from './ResourceNav.types'
 
 type LeftTabsNavProps = {
   sections: SectionTab[]
   activeTab?: string
+  footerLinks?: FooterLink[]
   onAnchorNavigate?: (tabSlug: string, anchorId: string) => void
 }
 
@@ -28,11 +30,11 @@ const PageClient: React.FC = () => {
   return <React.Fragment />
 }
 
-export const LeftTabsNav = ({ sections, activeTab, onAnchorNavigate }: LeftTabsNavProps) => {
+export const LeftTabsNav = ({ sections, activeTab, footerLinks, onAnchorNavigate }: LeftTabsNavProps) => {
   return (
     <div className="resource-nav">
       <ResourceNavList activeTab={activeTab} onAnchorNavigate={onAnchorNavigate} sections={sections} />
-      <ResourceNavFooter />
+      <ResourceNavFooter links={footerLinks} />
     </div>
   )
 }
@@ -62,6 +64,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   sections,
   coverImage,
 }) => {
+  const { openModal } = useModal()
   const resolvedInitialTab = initialActiveTab || sections[0]?.categorySlug
   const [activeTab, setActiveTab] = useState<string | undefined>(resolvedInitialTab)
   const cancelAnchorScrollRef = useRef<(() => void) | null>(null)
@@ -84,6 +87,37 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
     () => buildChapterCitationMap(chapterReferences),
     [chapterReferences],
   )
+
+  const openDoctorQuestionsModal = useCallback(() => {
+    if (!questionsToAskDoctor) return
+    openModal({
+      id: 'resource-doctor-questions',
+      initialScreenKey: 'main',
+      screens: {
+        main: {
+          title: 'Questions to ask your doctor',
+          content: (
+            <RichText
+              className="resource-doctor-questions__content resource-category-richtext"
+              data={questionsToAskDoctor}
+              enableGutter={false}
+              enableProse={false}
+              linkCitations={chapterCitationMap}
+            />
+          ),
+          actions: [{ label: 'Close', variant: 'ghost', closeOnClick: true }],
+        },
+      },
+    })
+  }, [chapterCitationMap, openModal, questionsToAskDoctor])
+
+  const footerLinks = useMemo<FooterLink[]>(() => {
+    const links: FooterLink[] = [{ href: '#', label: 'Doctor contacts' }]
+    if (questionsToAskDoctor) {
+      links.push({ label: 'Questions to doctor', onClick: openDoctorQuestionsModal })
+    }
+    return links
+  }, [openDoctorQuestionsModal, questionsToAskDoctor])
 
   const updateUrl = useCallback(
     (tabSlug: string, anchorId?: string) => {
@@ -163,7 +197,12 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   return (
     <div className="resource-layout">
       <aside className="resource-layout__aside">
-        <LeftTabsNav activeTab={activeSection?.categorySlug} onAnchorNavigate={navigateToTab} sections={sections} />
+        <LeftTabsNav
+          activeTab={activeSection?.categorySlug}
+          footerLinks={footerLinks}
+          onAnchorNavigate={navigateToTab}
+          sections={sections}
+        />
       </aside>
 
       <main className="resource-layout__main">
@@ -230,7 +269,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
                 {nextSection ? (
                   <section className="resource-next-step-banner">
                     <div className="resource-next-step-banner__icon" aria-hidden>
-                      <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M4.16602 15L9.16602 10L4.16602 5M10.8327 15L15.8327 10L10.8327 5"
                           stroke="currentColor"
@@ -303,19 +342,6 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
 
 
                 </nav>
-
-                {questionsToAskDoctor ? (
-                  <section className="resource-doctor-questions">
-                    <h2 className="resource-doctor-questions__title">Questions to ask your doctor</h2>
-                    <RichText
-                      className="resource-doctor-questions__content"
-                      data={questionsToAskDoctor}
-                      enableGutter={false}
-                      enableProse={false}
-                      linkCitations={chapterCitationMap}
-                    />
-                  </section>
-                ) : null}
               </section>
             ) : null}
           </div>
@@ -325,6 +351,9 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
       <ResourceMobileStickyNav
         activeTab={activeSection?.categorySlug}
         onAnchorNavigate={navigateToTab}
+        onOpenDoctorQuestions={
+          questionsToAskDoctor ? openDoctorQuestionsModal : undefined
+        }
         sections={sections}
       />
     </div>
