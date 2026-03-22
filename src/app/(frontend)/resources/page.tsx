@@ -47,7 +47,7 @@ export default async function ResourcesPage() {
       <section className="container">
         <div className="resources-page__header max-w-3xl space-y-6">
           <h1 className="resource-page__title text-h1 font-semibold">
-            Explore all available resources
+            Explore available resources
           </h1>
         </div>
 
