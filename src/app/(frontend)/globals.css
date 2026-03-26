@@ -1253,6 +1253,38 @@
     scroll-margin-top: 80px;
   }
 
+  /* Lexical sections: one wrapper per h2 block (see RichText sectionizeByH2) */
+  .resource-category-richtext .resource-category-h2-section {
+    position: relative;
+    min-width: 0;
+  }
+
+  .resource-category-richtext .resource-category-h2-section + .resource-category-h2-section {
+    margin-top: 1.75em;
+  }
+
+  .resource-category-richtext
+    .resource-category-h2-section:not(.resource-category-h2-section--preface)
+    > h2:first-child {
+    position: sticky;
+    top: var(--site-header-height);
+    z-index: 1;
+    background: var(--background);
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--primary-100) 85%, transparent);
+    padding-block: var(--space-0-25) var(--space-0-5);
+    /* margin-top: 0; */
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-1);
+    margin-bottom: 0;
+  }
+
+  .resource-category-richtext
+    .resource-category-h2-section:not(.resource-category-h2-section--preface)
+    > h2:first-child + * {
+      margin-top: var(--space-1-5);
+      
+    }
+
   .payload-richtext__citation,
   .resource-chapter-references__citation {
     margin-left: 0.2em;
@@ -1666,7 +1698,160 @@ button.resource-chapter-pager__link svg {
     transform: translateY(0);
   }
 
-  
+  /* ---------- Resources password gate (/resources-gate) — BEM: resource-gate-page__* ---------- */
+  .resource-gate-page {
+    width: 100%;
+  }
+
+  .resource-gate-page__split {
+    display: grid;
+    min-height: 100dvh;
+    grid-template-columns: 1fr;
+  }
+
+  @media (width >= 64rem) {
+    .resource-gate-page__split {
+      grid-template-columns: 1fr 1fr;
+      min-height: 100dvh;
+    }
+  }
+
+  .resource-gate-page__brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-2);
+    background: var(--primary-50);
+  }
+
+  .resource-gate-page__brand-inner {
+    display: flex;
+    max-width: 22rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    text-align: center;
+  }
+
+  .resource-gate-page__logo {
+    max-width: calc(var(--space-1) * 12.5) !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 2.5rem;
+    object-fit: contain;
+  }
+
+  .resource-gate-page__tagline {
+    margin: 0;
+    max-width: 20rem;
+    color: var(--gray-900);
+  }
+
+  .resource-gate-page__form-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-2);
+    background: var(--background);
+  }
+
+  .resource-gate-page__form-inner {
+    width: 100%;
+    max-width: 20.375rem;
+  }
+
+  .resource-gate-page__title {
+    margin: 0 0 var(--space-1-5);
+    color: var(--gray-500);
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    font-weight: var(--text-h2--font-weight);
+  }
+
+  .resource-gate-page__error {
+    margin: 0 0 var(--space-1);
+    color: var(--destructive);
+    font-size: var(--text-p-sm);
+    line-height: var(--text-p-sm--line-height);
+  }
+
+  .resource-gate-page__field-error {
+    order: 2;
+    margin: calc(var(--space-0-25) * -1) 0 0;
+    color: var(--destructive);
+    font-size: var(--text-p-sm);
+    line-height: var(--text-p-sm--line-height);
+  }
+
+  .resource-gate-page__input[aria-invalid='true'] {
+    border-color: var(--destructive);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--destructive) 25%, transparent);
+  }
+
+  .resource-gate-page__form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .resource-gate-page__label {
+    order: 0;
+    margin: 0;
+    color: var(--primary-600);
+    font-size: var(--text-p-sm);
+    line-height: var(--text-p-sm--line-height);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .resource-gate-page__input {
+    order: 1;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-30);
+    background: var(--sidebar);
+    padding: 0.75rem var(--space-1);
+    color: var(--gray-900);
+    font-size: var(--text-p-sm);
+    line-height: var(--text-p-sm--line-height);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .resource-gate-page__input::placeholder {
+    color: var(--gray-100);
+  }
+
+  .resource-gate-page__input:focus-visible {
+    border-color: var(--accent-700);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent-700) 35%, transparent);
+  }
+
+  .resource-gate-page__submit {
+    order: 3;
+    margin-top: var(--space-0-25);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--accent-700);
+    padding: 0.75rem var(--space-1);
+    color: var(--background);
+    font-size: var(--text-p-sm);
+    line-height: 1;
+    font-weight: var(--font-weight-semibold);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .resource-gate-page__submit:hover {
+    background: var(--accent-800);
+  }
+
+  .resource-gate-page__submit:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--accent-700);
+  }
 
   /* ---------- Global modal (app shell) — BEM: global-modal, global-modal__* ---------- */
   .global-modal {
@@ -2500,6 +2685,12 @@ button.resource-chapter-pager__link svg {
     --text-caption-h: 0.75rem;
     --text-caption-p: 0.75rem;
   }
+  .resource-category-richtext
+    .resource-category-h2-section:not(.resource-category-h2-section--preface)
+    > h2:first-child{
+      position: relative;
+      top: 0;
+    }
   .resource-block-procedure-type__chips{
     padding-bottom: var(--space-0-5);
   }

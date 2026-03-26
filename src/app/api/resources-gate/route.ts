@@ -13,9 +13,13 @@ function safeNextPath(next: string | null): string {
   return next
 }
 
+/**
+ * JSON-only responses (no redirects): POST-redirect-GET via Location would default to 307 in Next.js,
+ * which preserves POST on follow-up and causes 405 on page routes. Client navigates with GET after success.
+ */
 export async function POST(request: Request) {
   if (!isResourcesGateEnabled()) {
-    return NextResponse.json({ error: 'Gate is not configured' }, { status: 400 })
+    return NextResponse.json({ ok: false as const, error: 'not_configured' }, { status: 400 })
   }
 
   let password = ''
@@ -28,7 +32,7 @@ export async function POST(request: Request) {
       password = typeof body.password === 'string' ? body.password : ''
       nextPath = safeNextPath(typeof body.next === 'string' ? body.next : null)
     } catch {
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+      return NextResponse.json({ ok: false as const, error: 'invalid_json' }, { status: 400 })
     }
   } else {
     const form = await request.formData()
@@ -38,15 +42,11 @@ export async function POST(request: Request) {
 
   const expected = process.env.RESOURCES_GATE_PASSWORD || ''
   if (!password || password !== expected) {
-    const url = new URL('/resources-gate', request.url)
-    url.searchParams.set('next', nextPath)
-    url.searchParams.set('error', '1')
-    return NextResponse.redirect(url)
+    return NextResponse.json({ ok: false as const, error: 'invalid_password' }, { status: 401 })
   }
 
   const token = await createResourcesGateToken()
-  const redirectUrl = new URL(nextPath, request.url)
-  const res = NextResponse.redirect(redirectUrl)
+  const res = NextResponse.json({ ok: true as const, next: nextPath }, { status: 200 })
   const isProd = process.env.NODE_ENV === 'production'
   res.cookies.set(RESOURCES_GATE_COOKIE_NAME, token, {
     httpOnly: true,

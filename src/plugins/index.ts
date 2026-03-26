@@ -5,6 +5,7 @@ import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { Plugin } from 'payload'
+import { adminOnlyAccess } from '@/access/roles'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -82,6 +83,12 @@ export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
+      access: {
+        create: adminOnlyAccess,
+        delete: adminOnlyAccess,
+        read: adminOnlyAccess,
+        update: adminOnlyAccess,
+      },
       admin: {
         group: 'Plugins',
       },
@@ -117,6 +124,12 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      access: {
+        create: adminOnlyAccess,
+        delete: adminOnlyAccess,
+        read: adminOnlyAccess,
+        update: adminOnlyAccess,
+      },
       admin: {
         group: 'Plugins',
       },
@@ -141,6 +154,12 @@ export const plugins: Plugin[] = [
       },
     },
     formSubmissionOverrides: {
+      access: {
+        create: adminOnlyAccess,
+        delete: adminOnlyAccess,
+        read: adminOnlyAccess,
+        update: adminOnlyAccess,
+      },
       admin: {
         group: 'Plugins',
       },
@@ -150,6 +169,12 @@ export const plugins: Plugin[] = [
     collections: ['posts'],
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
+      access: {
+        create: adminOnlyAccess,
+        delete: adminOnlyAccess,
+        read: adminOnlyAccess,
+        update: adminOnlyAccess,
+      },
       admin: {
         group: 'Plugins',
       },

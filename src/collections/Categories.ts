@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../access/authenticated'
+import { adminOnlyAccess } from '../access/roles'
 import { slugField } from 'payload'
 
 const FIXED_CATEGORY_SLUGS = ['educatin', 'pre-op', 'operation-day', 'post-op', 'next-steps']
@@ -38,7 +38,7 @@ export const Categories: CollectionConfig = {
         in: FIXED_CATEGORY_SLUGS,
       },
     }),
-    update: authenticated,
+    update: adminOnlyAccess,
   },
   admin: {
     hidden: false,

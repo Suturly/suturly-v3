@@ -263,6 +263,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
                   data={activeSection.content}
                   enableGutter={false}
                   linkCitations={chapterCitationMap}
+                  sectionizeByH2
                 />
                 <ChapterReferences references={chapterReferences} />
 

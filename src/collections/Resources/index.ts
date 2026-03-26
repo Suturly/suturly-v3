@@ -18,6 +18,7 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { adminOnlyDeleteAccess } from '../../access/roles'
 import { Banner } from '../../blocks/Banner/config'
 import { DoDontCardBlock } from '../../blocks/DoDontCard/config'
 import { DropdownBlock } from '../../blocks/Dropdown/config'
@@ -60,7 +61,7 @@ export const Resources: CollectionConfig<'posts'> = {
   },
   access: {
     create: authenticated,
-    delete: authenticated,
+    delete: adminOnlyDeleteAccess,
     read: authenticatedOrPublished,
     update: authenticated,
   },

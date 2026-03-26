@@ -1,12 +1,18 @@
 import type { GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
+import { adminOnlyAccess, isAdminRole } from '@/access/roles'
+import type { User } from '@/payload-types'
 import { revalidateHeader } from './hooks/revalidateHeader'
 
 export const Header: GlobalConfig = {
   slug: 'header',
+  admin: {
+    hidden: ({ user }) => !isAdminRole(user as User | undefined),
+  },
   access: {
     read: () => true,
+    update: adminOnlyAccess,
   },
   fields: [
     {

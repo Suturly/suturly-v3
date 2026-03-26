@@ -14,6 +14,8 @@ import {
   type DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
 import {
+  convertLexicalNodesToJSX,
+  defaultJSXConverters,
   JSXConvertersFunction,
   RichText as ConvertRichText,
 } from '@payloadcms/richtext-lexical/react'
@@ -31,6 +33,7 @@ import type {
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
+import { groupLexicalRootChildrenByH2, isLexicalH2HeadingNode } from '@/utilities/groupLexicalNodesByH2'
 import { buildHeadingAnchors } from '@/utilities/richTextHeadings'
 import React from 'react'
 
@@ -242,18 +245,73 @@ type Props = {
   anchorHeadings?: boolean
   anchorPrefix?: string
   linkCitations?: Record<string, number>
+  /**
+   * Wrap each top-level segment (from one `h2` to the next) in `<section class="resource-category-h2-section">`
+   * for sticky chapter subheadings. Use with chapter resource body content only.
+   */
+  sectionizeByH2?: boolean
+  disableIndent?: boolean | string[]
+  disableTextAlign?: boolean | string[]
 } & React.HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
   const {
+    data,
     className,
     enableProse = true,
     enableGutter = true,
     anchorHeadings = false,
     anchorPrefix = 'section',
     linkCitations,
+    sectionizeByH2 = false,
+    disableIndent,
+    disableTextAlign,
     ...rest
   } = props
+
+  if (sectionizeByH2 && data?.root?.children?.length) {
+    const converters = createConverters({ anchorHeadings, anchorPrefix, linkCitations })({
+      defaultConverters: defaultJSXConverters,
+    })
+    const groups = groupLexicalRootChildrenByH2(data.root.children)
+    return (
+      <div
+        className={cn(
+          'payload-richtext',
+          {
+            'payload-richtext--gutter': enableGutter,
+            'payload-richtext--no-gutter': !enableGutter,
+            'payload-richtext--prose': enableProse,
+          },
+          className,
+        )}
+        {...rest}
+      >
+        {groups.map((nodes, index) => {
+          const isPreface = index === 0 && nodes.length > 0 && !isLexicalH2HeadingNode(nodes[0])
+          return (
+            <section
+              key={index}
+              className={cn(
+                'resource-category-h2-section',
+                isPreface && 'resource-category-h2-section--preface',
+              )}
+            >
+              {convertLexicalNodesToJSX({
+                // Aligns with ConvertRichText; package JSXConverters generic differs slightly from our NodeTypes union.
+                converters: converters as Parameters<typeof convertLexicalNodesToJSX>[0]['converters'],
+                disableIndent,
+                disableTextAlign,
+                nodes,
+                parent: data.root as Parameters<typeof convertLexicalNodesToJSX>[0]['parent'],
+              })}
+            </section>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <ConvertRichText
       converters={createConverters({ anchorHeadings, anchorPrefix, linkCitations })}
@@ -266,6 +324,9 @@ export default function RichText(props: Props) {
         },
         className,
       )}
+      data={data}
+      disableIndent={disableIndent}
+      disableTextAlign={disableTextAlign}
       {...rest}
     />
   )
