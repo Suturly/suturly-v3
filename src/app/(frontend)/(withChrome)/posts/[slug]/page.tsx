@@ -134,7 +134,9 @@ export default async function Post({ params: paramsPromise, searchParams: search
           benefits={post.benefits}
           coverImage={post.coverImage}
           initialActiveTab={activeTab}
+          lastUpdatedOn={post.lastUpdatedOn}
           postTitle={post.title}
+          publishedAt={post.publishedAt}
           questionsToAskDoctor={questionsToAskDoctor}
           resourcePath={resourcePath}
           sections={sections}

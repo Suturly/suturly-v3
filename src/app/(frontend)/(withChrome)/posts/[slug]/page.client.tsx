@@ -1,8 +1,9 @@
 'use client'
 import type { Post } from '@/payload-types'
-import { buildChapterCitationMap, extractChapterReferences } from '@/utilities/chapterReferences'
+import { extractChapterReferences } from '@/utilities/chapterReferences'
 import { Button } from '@/components/ui/button'
 import { ChapterReferences } from './ChapterReferences'
+import { ResourceHeroMeta } from './ResourceHeroMeta'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
@@ -44,7 +45,9 @@ export default PageClient
 type ResourceTabsMainProps = {
   benefits?: Post['benefits']
   initialActiveTab?: string
+  lastUpdatedOn?: Post['lastUpdatedOn']
   postTitle: string
+  publishedAt?: Post['publishedAt']
   questionsToAskDoctor?: Post['categorySections'] extends Array<infer T>
     ? T extends { content: infer C }
       ? C | null
@@ -58,7 +61,9 @@ type ResourceTabsMainProps = {
 export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   benefits,
   initialActiveTab,
+  lastUpdatedOn,
   postTitle,
+  publishedAt,
   questionsToAskDoctor,
   resourcePath,
   sections,
@@ -79,13 +84,20 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   const previousSection = activeSectionIndex > 0 ? sections[activeSectionIndex - 1] : undefined
   const nextSection = activeSectionIndex >= 0 ? sections[activeSectionIndex + 1] : undefined
 
-  const chapterReferences = useMemo(
-    () => (activeSection ? extractChapterReferences(activeSection.content) : []),
+  const {
+    references: chapterReferences,
+    citationMap: chapterCitationMap,
+    citationLinkLabels: chapterCitationLinkLabels,
+  } = useMemo(
+    () =>
+      activeSection
+        ? extractChapterReferences(activeSection.content)
+        : {
+            references: [],
+            citationMap: {} as Record<string, number>,
+            citationLinkLabels: {} as Record<string, string>,
+          },
     [activeSection],
-  )
-  const chapterCitationMap = useMemo(
-    () => buildChapterCitationMap(chapterReferences),
-    [chapterReferences],
   )
 
   const openDoctorQuestionsModal = useCallback(() => {
@@ -209,7 +221,11 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
         <div className="resource-main-hero">
           <div className="resource-main-hero__inner">
             <div className="resource-main-hero__content">
-              <p className="resource-main-hero__chapter">{activeSection?.name || 'Resource'}</p>
+              <ResourceHeroMeta
+                categoryLabel={activeSection?.name || 'Resource'}
+                lastUpdatedOn={lastUpdatedOn}
+                publishedAt={publishedAt}
+              />
               <h1 className="resource-main-hero__title">{postTitle}</h1>
             </div>
             {coverImage && typeof coverImage !== 'string' ? (
@@ -259,6 +275,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
                 <RichText
                   anchorHeadings
                   anchorPrefix={activeSection.id}
+                  citationLinkLabels={chapterCitationLinkLabels}
                   className="resource-category-richtext"
                   data={activeSection.content}
                   enableGutter={false}

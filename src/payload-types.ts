@@ -291,6 +291,13 @@ export interface Post {
     image?: (number | null) | Media;
     description?: string | null;
   };
+  /**
+   * Optional. When set, this date is shown instead of the published date, with an icon and hover details.
+   */
+  lastUpdatedOn?: string | null;
+  /**
+   * Publication date and time. The resource hero shows the calendar day from this value. When you publish and this is empty, it is set automatically.
+   */
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
   populatedAuthors?:
@@ -1255,6 +1262,7 @@ export interface PostsSelect<T extends boolean = true> {
         image?: T;
         description?: T;
       };
+  lastUpdatedOn?: T;
   publishedAt?: T;
   authors?: T;
   populatedAuthors?:

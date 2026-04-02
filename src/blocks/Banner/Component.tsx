@@ -6,10 +6,17 @@ import RichText from '@/components/RichText'
 
 type Props = {
   className?: string
+  citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 } & BannerBlockProps
 
-export const BannerBlock: React.FC<Props> = ({ className, content, style, linkCitations }) => {
+export const BannerBlock: React.FC<Props> = ({
+  className,
+  content,
+  style,
+  citationLinkLabels,
+  linkCitations,
+}) => {
   return (
     <div className={cn('not-prose resource-block-banner', className)}>
       <div
@@ -18,6 +25,7 @@ export const BannerBlock: React.FC<Props> = ({ className, content, style, linkCi
         })}
       >
         <RichText
+          citationLinkLabels={citationLinkLabels}
           data={content}
           enableGutter={false}
           enableProse={false}

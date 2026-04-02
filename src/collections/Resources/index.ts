@@ -329,13 +329,29 @@ export const Resources: CollectionConfig<'posts'> = {
       ],
     },
     {
+      name: 'lastUpdatedOn',
+      type: 'date',
+      label: 'Last updated date',
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+        },
+        position: 'sidebar',
+        description:
+          'Optional. When set, this date is shown instead of the published date, with an icon and hover details.',
+      },
+    },
+    {
       name: 'publishedAt',
       type: 'date',
+      label: 'Published at',
       admin: {
         date: {
           pickerAppearance: 'dayAndTime',
         },
         position: 'sidebar',
+        description:
+          'Publication date and time. The resource hero shows the calendar day from this value. When you publish and this is empty, it is set automatically.',
       },
       hooks: {
         beforeChange: [

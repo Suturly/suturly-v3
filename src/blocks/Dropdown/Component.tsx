@@ -10,10 +10,17 @@ type Props = {
   className?: string
   title?: string | null
   description?: DefaultTypedEditorState | null
+  citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
 
-export const Dropdown: React.FC<Props> = ({ className, title, description, linkCitations }) => {
+export const Dropdown: React.FC<Props> = ({
+  className,
+  title,
+  description,
+  citationLinkLabels,
+  linkCitations,
+}) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
   if (!title && !description) return null
@@ -43,6 +50,7 @@ export const Dropdown: React.FC<Props> = ({ className, title, description, linkC
         <div className="resource-block-dropdown__panel">
           <div className="resource-block-dropdown__panel-inner">
             <RichText
+              citationLinkLabels={citationLinkLabels}
               className="resource-block-dropdown__content"
               data={description}
               enableGutter={false}

@@ -40,6 +40,16 @@ export const defaultLexical = lexicalEditor({
               return value ? true : 'URL is required'
             }) as TextFieldSingleValidation,
           },
+          {
+            name: 'bibliographyLine',
+            type: 'textarea',
+            label: 'Bibliography entry',
+            admin: {
+              description:
+                'Full reference line for the chapter list (e.g. AMA). Link URL is still used to open the source.',
+            },
+            required: false,
+          },
         ]
       },
     }),

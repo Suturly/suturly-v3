@@ -11,6 +11,7 @@ type Props = {
   title?: string | null
   content?: DefaultTypedEditorState | null
   image?: object | string | number | null
+  citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
 
@@ -48,6 +49,7 @@ export const DoDontCard: React.FC<Props> = ({
   title,
   content,
   image,
+  citationLinkLabels,
   linkCitations,
 }) => {
   const normalizedType = type === 'dont' ? 'dont' : 'do'
@@ -69,6 +71,7 @@ export const DoDontCard: React.FC<Props> = ({
           {title ? <p className="resource-block-do-dont__title">{title}</p> : null}
           {content ? (
             <RichText
+              citationLinkLabels={citationLinkLabels}
               className="max-w-none"
               data={content}
               enableGutter={false}

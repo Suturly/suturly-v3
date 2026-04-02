@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useId, useState } from 'react'
 
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
@@ -7,6 +9,7 @@ import type { ProcedureTypeCardBlock as ProcedureTypeCardData } from '@/payload-
 
 type Props = {
   className?: string
+  citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 } & Partial<
   Pick<
@@ -14,6 +17,18 @@ type Props = {
     'title' | 'chips' | 'shortDescription' | 'image' | 'additionalContent'
   >
 >
+
+const ShowMoreChevron = () => (
+  <svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M6 8L10 12L14 8"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.8"
+    />
+  </svg>
+)
 
 const InfoHintIcon = () => (
   <svg aria-hidden className="resource-block-procedure-type__chip-info-svg" viewBox="0 0 16 16" fill="none">
@@ -34,9 +49,13 @@ export const ProcedureTypeCard: React.FC<Props> = ({
   shortDescription,
   image,
   additionalContent,
+  citationLinkLabels,
   linkCitations,
 }) => {
   const chipList = Array.isArray(chips) ? chips : []
+  const [additionalOpen, setAdditionalOpen] = useState(false)
+  const additionalLabelId = useId()
+  const additionalPanelId = useId()
 
   return (
     <section className={cn('not-prose resource-block-procedure-type', className)}>
@@ -95,13 +114,39 @@ export const ProcedureTypeCard: React.FC<Props> = ({
       </div>
       {additionalContent ? (
         <div className="resource-block-procedure-type__bottom">
-          <RichText
-            className="resource-block-procedure-type__additional max-w-none"
-            data={additionalContent}
-            enableGutter={false}
-            enableProse={false}
-            linkCitations={linkCitations}
-          />
+          <h5 className="resource-block-procedure-type__more-heading" id={additionalLabelId}>
+            <button
+              aria-controls={additionalPanelId}
+              aria-expanded={additionalOpen}
+              className={cn('resource-block-procedure-type__more-toggle', additionalOpen && 'is-open')}
+              onClick={() => setAdditionalOpen((v) => !v)}
+              type="button"
+            >
+              <span className="resource-block-dropdown__icon" aria-hidden>
+                <ShowMoreChevron />
+              </span>
+              <span className="resource-block-procedure-type__more-toggle-label">
+                {additionalOpen ? 'Show less' : 'Show more'}
+              </span>
+            </button>
+          </h5>
+          <div
+            className={cn('resource-block-procedure-type__more-panel', additionalOpen && 'is-open')}
+            id={additionalPanelId}
+            role="region"
+            aria-labelledby={additionalLabelId}
+          >
+            <div className="resource-block-procedure-type__more-panel-inner">
+              <RichText
+                citationLinkLabels={citationLinkLabels}
+                className="resource-block-procedure-type__additional max-w-none"
+                data={additionalContent}
+                enableGutter={false}
+                enableProse={false}
+                linkCitations={linkCitations}
+              />
+            </div>
+          </div>
         </div>
       ) : null}
     </section>

@@ -12,10 +12,11 @@ type TimelineItem = {
 type Props = {
   className?: string
   items?: TimelineItem[] | null
+  citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
 
-export const Timeline: React.FC<Props> = ({ className, items, linkCitations }) => {
+export const Timeline: React.FC<Props> = ({ className, items, citationLinkLabels, linkCitations }) => {
   const rows = Array.isArray(items) ? items : []
 
   return (
@@ -34,6 +35,7 @@ export const Timeline: React.FC<Props> = ({ className, items, linkCitations }) =
 
                 {row.content ? (
                   <RichText
+                    citationLinkLabels={citationLinkLabels}
                     className="max-w-none timeline-content__wrapper"
                     data={row.content}
                     enableGutter={false}

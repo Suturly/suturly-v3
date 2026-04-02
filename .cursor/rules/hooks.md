@@ -149,7 +149,7 @@ export const revalidatePage: CollectionAfterChangeHook = ({
 
 ```typescript
 {
-  name: 'publishedOn',
+  name: 'publishedAt',
   type: 'date',
   hooks: {
     beforeChange: [

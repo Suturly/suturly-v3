@@ -9,6 +9,7 @@ import { FloatImage } from '@/blocks/FloatImage/Component'
 import { TwoColumnImages } from '@/blocks/TwoColumnImages/Component'
 import {
   DefaultNodeTypes,
+  SerializedAutoLinkNode,
   SerializedBlockNode,
   SerializedLinkNode,
   type DefaultTypedEditorState,
@@ -35,6 +36,7 @@ import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
 import { groupLexicalRootChildrenByH2, isLexicalH2HeadingNode } from '@/utilities/groupLexicalNodesByH2'
 import { buildHeadingAnchors } from '@/utilities/richTextHeadings'
+import { ChapterCitationAnchor } from '@/components/RichText/ChapterCitationAnchor'
 import React from 'react'
 
 type NodeTypes =
@@ -101,10 +103,12 @@ const createConverters = ({
   anchorHeadings = false,
   anchorPrefix = 'section',
   linkCitations,
+  citationLinkLabels,
 }: {
   anchorHeadings?: boolean
   anchorPrefix?: string
   linkCitations?: Record<string, number>
+  citationLinkLabels?: Record<string, string>
 }): JSXConvertersFunction<NodeTypes> => {
   const headingCounters: Record<string, number> = {}
   const headingIdByNode = new WeakMap<object, string>()
@@ -143,25 +147,45 @@ const createConverters = ({
           ? ((linkNode as unknown as { id: string }).id as string)
           : null
       const citation = nodeId ? linkCitations?.[nodeId] : undefined
-      const citationNode = citation ? (
-        <span className="payload-richtext__citation-anchor">
-          <sup className="payload-richtext__citation">{citation}</sup>
-        </span>
-      ) : null
+
+      if (citation != null) {
+        const linkText = nodeId ? citationLinkLabels?.[nodeId] : undefined
+        return <ChapterCitationAnchor linkText={linkText} refId={citation} sourceHref={href ?? ''} />
+      }
 
       if (!href) {
-        return (
-          <React.Fragment>
-            {children}
-            {citationNode}
-          </React.Fragment>
-        )
+        return <React.Fragment>{children}</React.Fragment>
       }
 
       return (
         <a href={href} rel={newTab ? 'noopener noreferrer' : undefined} target={newTab ? '_blank' : undefined}>
           {children}
-          {citationNode}
+        </a>
+      )
+    },
+    autolink: ({ node, nodesToJSX }) => {
+      const linkNode = node as SerializedAutoLinkNode
+      const href = typeof linkNode.fields?.url === 'string' ? linkNode.fields.url : null
+      const children = nodesToJSX({ nodes: linkNode.children })
+      const newTab = Boolean(linkNode.fields?.newTab)
+      const nodeId =
+        typeof (linkNode as unknown as { id?: unknown }).id === 'string'
+          ? ((linkNode as unknown as { id: string }).id as string)
+          : null
+      const citation = nodeId ? linkCitations?.[nodeId] : undefined
+
+      if (citation != null) {
+        const linkText = nodeId ? citationLinkLabels?.[nodeId] : undefined
+        return <ChapterCitationAnchor linkText={linkText} refId={citation} sourceHref={href ?? ''} />
+      }
+
+      if (!href) {
+        return <React.Fragment>{children}</React.Fragment>
+      }
+
+      return (
+        <a href={href} rel={newTab ? 'noopener noreferrer' : undefined} target={newTab ? '_blank' : undefined}>
+          {children}
         </a>
       )
     },
@@ -193,12 +217,13 @@ const createConverters = ({
     },
     blocks: {
       banner: ({ node }) => (
-        <BannerBlock className="col-start-2 mb-4" linkCitations={linkCitations} {...node.fields} />
+        <BannerBlock citationLinkLabels={citationLinkLabels} className="col-start-2 mb-4" linkCitations={linkCitations} {...node.fields} />
       ),
       mediaBlock: ({ node }) => (
         <MediaBlock
           className="col-start-1 col-span-3"
           imgClassName="m-0"
+          citationLinkLabels={citationLinkLabels}
           linkCitations={linkCitations}
           {...node.fields}
           captionClassName="mx-auto max-w-[48rem]"
@@ -207,28 +232,29 @@ const createConverters = ({
         />
       ),
       code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
-      cta: ({ node }) => <CallToActionBlock linkCitations={linkCitations} {...node.fields} />,
+      cta: ({ node }) => <CallToActionBlock citationLinkLabels={citationLinkLabels} linkCitations={linkCitations} {...node.fields} />,
       twoColumnImages: ({ node }) => (
         <TwoColumnImages className="col-start-2 my-4" {...node.fields} />
       ),
       floatImage: ({ node }) => <FloatImage className="col-start-2" {...node.fields} />,
       doDontCard: ({ node }: { node: { fields: DoDontCardBlockProps } }) => (
-        <DoDontCard className="col-start-2 my-4" linkCitations={linkCitations} {...node.fields} />
+        <DoDontCard citationLinkLabels={citationLinkLabels} className="col-start-2 my-4" linkCitations={linkCitations} {...node.fields} />
       ),
       infoBox: ({ node }: { node: { fields: InfoBoxBlockProps } }) => (
         <InfoBox className="col-start-2 my-4" {...node.fields} />
       ),
       dropdown: ({ node }: { node: { fields: DropdownBlockProps } }) => (
-        <Dropdown className="col-start-2" linkCitations={linkCitations} {...node.fields} />
+        <Dropdown citationLinkLabels={citationLinkLabels} className="col-start-2" linkCitations={linkCitations} {...node.fields} />
       ),
       timeline: ({ node }: { node: { fields: TimelineBlockProps } }) => (
-        <Timeline className="col-start-2 my-4" linkCitations={linkCitations} {...node.fields} />
+        <Timeline citationLinkLabels={citationLinkLabels} className="col-start-2 my-4" linkCitations={linkCitations} {...node.fields} />
       ),
       todoList: ({ node }: { node: { fields: ToDoListBlockProps } }) => (
         <ToDoList className="col-start-2 my-4" {...node.fields} />
       ),
       procedureTypeCard: ({ node }: { node: { fields: ProcedureTypeCardBlockProps } }) => (
         <ProcedureTypeCard
+          citationLinkLabels={citationLinkLabels}
           className="col-start-2 my-4"
           linkCitations={linkCitations}
           {...node.fields}
@@ -245,6 +271,7 @@ type Props = {
   anchorHeadings?: boolean
   anchorPrefix?: string
   linkCitations?: Record<string, number>
+  citationLinkLabels?: Record<string, string>
   /**
    * Wrap each top-level segment (from one `h2` to the next) in `<section class="resource-category-h2-section">`
    * for sticky chapter subheadings. Use with chapter resource body content only.
@@ -263,6 +290,7 @@ export default function RichText(props: Props) {
     anchorHeadings = false,
     anchorPrefix = 'section',
     linkCitations,
+    citationLinkLabels,
     sectionizeByH2 = false,
     disableIndent,
     disableTextAlign,
@@ -270,7 +298,12 @@ export default function RichText(props: Props) {
   } = props
 
   if (sectionizeByH2 && data?.root?.children?.length) {
-    const converters = createConverters({ anchorHeadings, anchorPrefix, linkCitations })({
+    const converters = createConverters({
+      anchorHeadings,
+      anchorPrefix,
+      citationLinkLabels,
+      linkCitations,
+    })({
       defaultConverters: defaultJSXConverters,
     })
     const groups = groupLexicalRootChildrenByH2(data.root.children)
@@ -314,7 +347,7 @@ export default function RichText(props: Props) {
 
   return (
     <ConvertRichText
-      converters={createConverters({ anchorHeadings, anchorPrefix, linkCitations })}
+      converters={createConverters({ anchorHeadings, anchorPrefix, citationLinkLabels, linkCitations })}
       className={cn(
         'payload-richtext',
         {
