@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
 import {
   CHAPTER_REF_OPEN_EVENT,
+  getChapterReferenceDisplay,
   type ChapterRefOpenDetail,
   type ChapterReference,
 } from '@/utilities/chapterReferences'
@@ -110,8 +111,7 @@ export const ChapterReferences: React.FC<Props> = ({ references }) => {
 
       <ol className={cn('resource-chapter-references__list', !expanded && hiddenCount > 0 && 'is-truncated')}>
         {visibleReferences.map((reference) => {
-          const display =
-            reference.bibliographyLine?.trim() || reference.label?.trim() || reference.href
+          const display = getChapterReferenceDisplay(reference)
           const href = reference.href.trim()
           const isExternal = href.startsWith('http')
           return (

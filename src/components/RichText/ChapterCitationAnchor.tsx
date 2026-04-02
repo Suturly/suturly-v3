@@ -6,7 +6,7 @@ import React, { useCallback } from 'react'
 type Props = {
   refId: number
   sourceHref: string
-  /** Link anchor text (and optional bibliography override); falls back to URL. */
+  /** Bibliography line when set, else link text, else URL — same string as the references list. */
   linkText?: string
 }
 

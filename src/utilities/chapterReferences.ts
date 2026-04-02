@@ -15,6 +15,11 @@ export type ChapterReference = {
   bibliographyLine?: string | null
 }
 
+/** Citation hover hint and chapter references list use the same string. */
+export function getChapterReferenceDisplay(ref: ChapterReference): string {
+  return ref.bibliographyLine?.trim() || ref.label?.trim() || ref.href
+}
+
 export type ChapterReferencesExtraction = {
   references: ChapterReference[]
   citationMap: Record<string, number>
@@ -123,11 +128,6 @@ const getLexicalNodeId = (node: SerializedLinkNode | SerializedAutoLinkNode): st
   return typeof id === 'string' ? id : null
 }
 
-/** Tooltip: prefer visible link text from the body, then bibliography field, then URL. */
-function citationTooltipLabel(ref: ChapterReference): string {
-  return ref.label?.trim() || ref.bibliographyLine?.trim() || ref.href
-}
-
 export const extractChapterReferences = (
   state: DefaultTypedEditorState | null | undefined,
 ): ChapterReferencesExtraction => {
@@ -184,7 +184,7 @@ export const extractChapterReferences = (
   })
 
   for (const ref of references) {
-    const text = citationTooltipLabel(ref)
+    const text = getChapterReferenceDisplay(ref)
     for (const [key, id] of Object.entries(citationMap)) {
       if (id === ref.id) {
         citationLinkLabels[key] = text
