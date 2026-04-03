@@ -1446,7 +1446,7 @@
   }
 
   .payload-richtext__citation-wrap + .payload-richtext__citation-wrap::before {
-    content: "; ";
+    content: ", ";
     vertical-align: super;
     font-size: small;
   }
