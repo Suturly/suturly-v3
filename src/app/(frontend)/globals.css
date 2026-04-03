@@ -1441,6 +1441,8 @@
     font-size: 10px; 
     line-height: var(--space-0-75);
     font-weight: var(--font-weight-medium);
+    position: relative;
+    z-index: 1;
   }
 
   .payload-richtext__citation-wrap + .payload-richtext__citation-wrap::before {
