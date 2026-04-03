@@ -1,6 +1,6 @@
 'use client'
 import type { Post } from '@/payload-types'
-import { extractChapterReferences } from '@/utilities/chapterReferences'
+import { extractChapterReferences, type CitationRegistryEntry } from '@/utilities/chapterReferences'
 import { Button } from '@/components/ui/button'
 import { ChapterReferences } from './ChapterReferences'
 import { ResourceHeroMeta } from './ResourceHeroMeta'
@@ -44,6 +44,7 @@ export default PageClient
 
 type ResourceTabsMainProps = {
   benefits?: Post['benefits']
+  citations?: Post['citations'] | null
   initialActiveTab?: string
   lastUpdatedOn?: Post['lastUpdatedOn']
   postTitle: string
@@ -60,6 +61,7 @@ type ResourceTabsMainProps = {
 
 export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   benefits,
+  citations: citationsProp,
   initialActiveTab,
   lastUpdatedOn,
   postTitle,
@@ -84,20 +86,45 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   const previousSection = activeSectionIndex > 0 ? sections[activeSectionIndex - 1] : undefined
   const nextSection = activeSectionIndex >= 0 ? sections[activeSectionIndex + 1] : undefined
 
+  const citationRegistry = useMemo((): CitationRegistryEntry[] => {
+    const rows = Array.isArray(citationsProp) ? citationsProp : []
+    return rows
+      .map((row) => ({
+        key: typeof row.key === 'string' ? row.key : '',
+        bibliography: typeof row.bibliography === 'string' ? row.bibliography : '',
+        url: row.url,
+      }))
+      .filter((row) => row.key.trim().length > 0 && row.bibliography.trim().length > 0)
+  }, [citationsProp])
+
   const {
     references: chapterReferences,
     citationMap: chapterCitationMap,
     citationLinkLabels: chapterCitationLinkLabels,
+    citationHrefs: chapterCitationHrefs,
   } = useMemo(
     () =>
       activeSection
-        ? extractChapterReferences(activeSection.content)
+        ? extractChapterReferences(activeSection.content, { registry: citationRegistry })
         : {
             references: [],
             citationMap: {} as Record<string, number>,
             citationLinkLabels: {} as Record<string, string>,
+            citationHrefs: {} as Record<string, string>,
           },
-    [activeSection],
+    [activeSection, citationRegistry],
+  )
+
+  const doctorQuestionsCitations = useMemo(
+    () =>
+      questionsToAskDoctor
+        ? extractChapterReferences(questionsToAskDoctor, { registry: citationRegistry })
+        : {
+            citationMap: {} as Record<string, number>,
+            citationLinkLabels: {} as Record<string, string>,
+            citationHrefs: {} as Record<string, string>,
+          },
+    [questionsToAskDoctor, citationRegistry],
   )
 
   const openDoctorQuestionsModal = useCallback(() => {
@@ -110,18 +137,20 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
           title: 'Questions to ask your doctor',
           content: (
             <RichText
+              citationHrefs={doctorQuestionsCitations.citationHrefs}
+              citationLinkLabels={doctorQuestionsCitations.citationLinkLabels}
               className="resource-doctor-questions__content resource-category-richtext"
               data={questionsToAskDoctor}
               enableGutter={false}
               enableProse={false}
-              linkCitations={chapterCitationMap}
+              linkCitations={doctorQuestionsCitations.citationMap}
             />
           ),
           actions: [{ label: 'Close', variant: 'ghost', closeOnClick: true }],
         },
       },
     })
-  }, [chapterCitationMap, openModal, questionsToAskDoctor])
+  }, [doctorQuestionsCitations, openModal, questionsToAskDoctor])
 
   const footerLinks = useMemo<FooterLink[]>(() => {
     const links: FooterLink[] = [{ href: '#', label: 'Doctor contacts' }]
@@ -275,6 +304,7 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
                 <RichText
                   anchorHeadings
                   anchorPrefix={activeSection.id}
+                  citationHrefs={chapterCitationHrefs}
                   citationLinkLabels={chapterCitationLinkLabels}
                   className="resource-category-richtext"
                   data={activeSection.content}

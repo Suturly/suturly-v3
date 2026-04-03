@@ -19,6 +19,7 @@ import { FloatImageBlock } from '../FloatImage/config'
 import { MediaBlock } from '../MediaBlock/config'
 import { ProcedureTypeCardBlock } from '../ProcedureTypeCard/config'
 import { ToDoListBlock } from '../ToDoList/config'
+import { ChapterCitationBlock } from '../ChapterCitation/config'
 import { TwoColumnImagesBlock } from '../TwoColumnImages/config'
 
 export const TimelineBlock: Block = {
@@ -67,6 +68,7 @@ export const TimelineBlock: Block = {
                   ToDoListBlock,
                   ProcedureTypeCardBlock,
                 ],
+                inlineBlocks: [ChapterCitationBlock],
               }),
               FixedToolbarFeature(),
               InlineToolbarFeature(),

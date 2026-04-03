@@ -1,8 +1,4 @@
-import type {
-  DefaultTypedEditorState,
-  SerializedAutoLinkNode,
-  SerializedLinkNode,
-} from '@payloadcms/richtext-lexical'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 export const CHAPTER_REF_OPEN_EVENT = 'suturly:chapter-ref-open'
 
@@ -15,68 +11,15 @@ export type ChapterReference = {
   bibliographyLine?: string | null
 }
 
+export type CitationRegistryEntry = {
+  key: string
+  bibliography: string
+  url?: string | null
+}
+
 /** Citation hover hint and chapter references list use the same string. */
 export function getChapterReferenceDisplay(ref: ChapterReference): string {
   return ref.bibliographyLine?.trim() || ref.label?.trim() || ref.href
-}
-
-export type ChapterReferencesExtraction = {
-  references: ChapterReference[]
-  citationMap: Record<string, number>
-  citationLinkLabels: Record<string, string>
-}
-
-const getBibliographyLine = (linkNode: SerializedLinkNode | SerializedAutoLinkNode): string | null => {
-  const raw = (linkNode.fields as { bibliographyLine?: unknown }).bibliographyLine
-  if (typeof raw !== 'string') return null
-  const t = raw.trim()
-  return t.length > 0 ? t : null
-}
-
-const getNodeText = (value: unknown): string => {
-  if (!value) return ''
-
-  if (Array.isArray(value)) {
-    return value.map((item) => getNodeText(item)).join('')
-  }
-
-  if (typeof value === 'object') {
-    const node = value as { children?: unknown; text?: unknown }
-
-    if (typeof node.text === 'string') {
-      return node.text
-    }
-
-    return getNodeText(node.children)
-  }
-
-  return ''
-}
-
-const getInternalHref = (linkNode: SerializedLinkNode): string | null => {
-  const relation = linkNode.fields?.doc?.relationTo
-  const value = linkNode.fields?.doc?.value
-
-  if (!relation || typeof value !== 'object' || !value || !('slug' in value)) return null
-
-  const slug = (value as { slug?: unknown }).slug
-  if (typeof slug !== 'string' || !slug) return null
-
-  return relation === 'posts' ? `/resources/${slug}` : `/${slug}`
-}
-
-const getHrefFromLink = (linkNode: SerializedLinkNode): string | null => {
-  const linkType = linkNode.fields?.linkType
-
-  if (linkType === 'internal') return getInternalHref(linkNode)
-
-  const url = linkNode.fields?.url
-  return typeof url === 'string' && url.trim().length > 0 ? url : null
-}
-
-const getHrefFromAutolink = (node: SerializedAutoLinkNode): string | null => {
-  const url = node.fields?.url
-  return typeof url === 'string' && url.trim().length > 0 ? url : null
 }
 
 export const normalizeChapterRefHref = (href: string): string => {
@@ -97,16 +40,34 @@ export const normalizeChapterRefHref = (href: string): string => {
   return t.length > 1 ? t.replace(/\/$/, '') : t
 }
 
-type LinkKind = 'link' | 'autolink'
+export type ChapterReferencesExtraction = {
+  references: ChapterReference[]
+  citationMap: Record<string, number>
+  citationLinkLabels: Record<string, string>
+  citationHrefs: Record<string, string>
+}
 
-const walk = (
-  value: unknown,
-  onLink: (linkNode: SerializedLinkNode | SerializedAutoLinkNode, kind: LinkKind) => void,
-): void => {
+type InlineBlockFields = {
+  blockType?: unknown
+  id?: unknown
+  refKey?: unknown
+}
+
+function buildRegistryLookup(registry: CitationRegistryEntry[] | null | undefined): Map<string, CitationRegistryEntry> {
+  const map = new Map<string, CitationRegistryEntry>()
+  if (!Array.isArray(registry)) return map
+  for (const row of registry) {
+    const key = typeof row.key === 'string' ? row.key.trim() : ''
+    if (key) map.set(key, row)
+  }
+  return map
+}
+
+const walk = (value: unknown, onInline: (blockId: string, refKey: string) => void): void => {
   if (!value) return
 
   if (Array.isArray(value)) {
-    value.forEach((item) => walk(item, onLink))
+    value.forEach((item) => walk(item, onInline))
     return
   }
 
@@ -114,83 +75,68 @@ const walk = (
 
   const node = value as Record<string, unknown>
 
-  if (node.type === 'link') {
-    onLink(node as unknown as SerializedLinkNode, 'link')
-  } else if (node.type === 'autolink') {
-    onLink(node as unknown as SerializedAutoLinkNode, 'autolink')
+  if (node.type === 'inlineBlock' && node.fields && typeof node.fields === 'object') {
+    const f = node.fields as InlineBlockFields
+    if (f.blockType === 'chapterCitation' && typeof f.refKey === 'string') {
+      const refKey = f.refKey.trim()
+      const blockId = typeof f.id === 'string' ? f.id : null
+      if (refKey && blockId) {
+        onInline(blockId, refKey)
+      }
+    }
+  /* do not recurse into inlineBlock fields as flat object walk would duplicate; children are not inside fields typically */
   }
 
-  Object.values(node).forEach((childValue) => walk(childValue, onLink))
-}
-
-const getLexicalNodeId = (node: SerializedLinkNode | SerializedAutoLinkNode): string | null => {
-  const id = (node as unknown as { id?: unknown }).id
-  return typeof id === 'string' ? id : null
+  Object.entries(node).forEach(([k, childValue]) => {
+    if (k === 'fields' && node.type === 'inlineBlock') return
+    walk(childValue, onInline)
+  })
 }
 
 export const extractChapterReferences = (
   state: DefaultTypedEditorState | null | undefined,
+  options?: { registry?: CitationRegistryEntry[] | null },
 ): ChapterReferencesExtraction => {
   const citationMap: Record<string, number> = {}
   const citationLinkLabels: Record<string, string> = {}
+  const citationHrefs: Record<string, string> = {}
   const references: ChapterReference[] = []
-  const hrefToId = new Map<string, number>()
-  let fallbackCount = 0
+  const keyToRefNumber = new Map<string, number>()
+  const lookup = buildRegistryLookup(options?.registry)
 
-  walk(state, (linkNode, kind) => {
-    const href =
-      kind === 'link'
-        ? getHrefFromLink(linkNode as SerializedLinkNode)
-        : getHrefFromAutolink(linkNode as SerializedAutoLinkNode)
+  const instances: Array<{ blockId: string; refKey: string }> = []
 
-    if (!href) return
-
-    const normalized = normalizeChapterRefHref(href)
-    const rawLabel = getNodeText(linkNode.children).replace(/\s+/g, ' ').trim()
-    const label = rawLabel || href
-    const bib = getBibliographyLine(linkNode)
-
-    const nodeId = getLexicalNodeId(linkNode)
-    const nodeKey = nodeId || `fallback-${fallbackCount++}`
-
-    let refId = hrefToId.get(normalized)
-    if (refId === undefined) {
-      refId = references.length + 1
-      hrefToId.set(normalized, refId)
-      references.push({
-        id: refId,
-        href,
-        label,
-        bibliographyLine: bib,
-      })
-    } else {
-      const existing = references.find((r) => r.id === refId)
-      if (existing) {
-        if (bib && !existing.bibliographyLine) {
-          existing.bibliographyLine = bib
-        }
-        const incomingLabel = rawLabel.trim()
-        if (
-          incomingLabel &&
-          incomingLabel !== href &&
-          (!existing.label?.trim() || existing.label === existing.href)
-        ) {
-          existing.label = incomingLabel
-        }
-      }
-    }
-
-    citationMap[nodeKey] = refId
+  walk(state ?? null, (blockId, refKey) => {
+    instances.push({ blockId, refKey })
   })
 
-  for (const ref of references) {
-    const text = getChapterReferenceDisplay(ref)
-    for (const [key, id] of Object.entries(citationMap)) {
-      if (id === ref.id) {
-        citationLinkLabels[key] = text
-      }
+  for (const { blockId, refKey } of instances) {
+    const entry = lookup.get(refKey)
+    if (!entry) continue
+
+    let refNumber = keyToRefNumber.get(refKey)
+    if (refNumber === undefined) {
+      refNumber = references.length + 1
+      keyToRefNumber.set(refKey, refNumber)
+      const href = (entry.url ?? '').trim()
+      const bib = (entry.bibliography ?? '').trim()
+      references.push({
+        id: refNumber,
+        href,
+        label: bib || href,
+        bibliographyLine: bib || null,
+      })
+    }
+
+    citationMap[blockId] = refNumber
+
+    const ref = references.find((r) => r.id === refNumber)
+    if (ref) {
+      const text = getChapterReferenceDisplay(ref)
+      citationLinkLabels[blockId] = text
+      citationHrefs[blockId] = (ref.href ?? '').trim()
     }
   }
 
-  return { references, citationMap, citationLinkLabels }
+  return { references, citationMap, citationLinkLabels, citationHrefs }
 }

@@ -132,6 +132,7 @@ export default async function Post({ params: paramsPromise, searchParams: search
       <div className="container">
         <ResourceTabsMain
           benefits={post.benefits}
+          citations={post.citations}
           coverImage={post.coverImage}
           initialActiveTab={activeTab}
           lastUpdatedOn={post.lastUpdatedOn}

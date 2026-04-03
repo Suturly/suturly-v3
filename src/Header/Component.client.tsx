@@ -126,7 +126,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data: _data }) => {
         >
           <div
             className="site-header__reading-progress-fill"
-            style={{ width: `${readingProgress}%` }}
+            style={{ transform: `scaleX(${readingProgress / 100})` }}
           />
         </div>
       ) : null}

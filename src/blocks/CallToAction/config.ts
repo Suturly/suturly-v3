@@ -1,12 +1,14 @@
 import type { Block } from 'payload'
 
 import {
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { ChapterCitationBlock } from '../ChapterCitation/config'
 import { linkGroup } from '../../fields/linkGroup'
 
 export const CallToAction: Block = {
@@ -21,6 +23,9 @@ export const CallToAction: Block = {
           return [
             ...rootFeatures,
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            BlocksFeature({
+              inlineBlocks: [ChapterCitationBlock],
+            }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
           ]

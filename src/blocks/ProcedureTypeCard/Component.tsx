@@ -9,6 +9,7 @@ import type { ProcedureTypeCardBlock as ProcedureTypeCardData } from '@/payload-
 
 type Props = {
   className?: string
+  citationHrefs?: Record<string, string>
   citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 } & Partial<
@@ -49,6 +50,7 @@ export const ProcedureTypeCard: React.FC<Props> = ({
   shortDescription,
   image,
   additionalContent,
+  citationHrefs,
   citationLinkLabels,
   linkCitations,
 }) => {
@@ -138,6 +140,7 @@ export const ProcedureTypeCard: React.FC<Props> = ({
           >
             <div className="resource-block-procedure-type__more-panel-inner">
               <RichText
+                citationHrefs={citationHrefs}
                 citationLinkLabels={citationLinkLabels}
                 className="resource-block-procedure-type__additional max-w-none"
                 data={additionalContent}

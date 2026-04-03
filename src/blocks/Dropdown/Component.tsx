@@ -10,6 +10,7 @@ type Props = {
   className?: string
   title?: string | null
   description?: DefaultTypedEditorState | null
+  citationHrefs?: Record<string, string>
   citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
@@ -18,6 +19,7 @@ export const Dropdown: React.FC<Props> = ({
   className,
   title,
   description,
+  citationHrefs,
   citationLinkLabels,
   linkCitations,
 }) => {
@@ -50,6 +52,7 @@ export const Dropdown: React.FC<Props> = ({
         <div className="resource-block-dropdown__panel">
           <div className="resource-block-dropdown__panel-inner">
             <RichText
+              citationHrefs={citationHrefs}
               citationLinkLabels={citationLinkLabels}
               className="resource-block-dropdown__content"
               data={description}

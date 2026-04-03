@@ -6,6 +6,7 @@ import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 
 type Props = CTABlockProps & {
+  citationHrefs?: Record<string, string>
   citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
@@ -13,6 +14,7 @@ type Props = CTABlockProps & {
 export const CallToActionBlock: React.FC<Props> = ({
   links,
   richText,
+  citationHrefs,
   citationLinkLabels,
   linkCitations,
 }) => {
@@ -22,6 +24,7 @@ export const CallToActionBlock: React.FC<Props> = ({
         <div className="max-w-[48rem] flex items-center">
           {richText && (
             <RichText
+              citationHrefs={citationHrefs}
               citationLinkLabels={citationLinkLabels}
               className="mb-0"
               data={richText}

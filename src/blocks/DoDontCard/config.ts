@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 import {
   BoldFeature,
+  BlocksFeature,
   FixedToolbarFeature,
   InlineToolbarFeature,
   ItalicFeature,
@@ -9,6 +10,8 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+import { ChapterCitationBlock } from '../ChapterCitation/config'
 
 export const DoDontCardBlock: Block = {
   slug: 'doDontCard',
@@ -45,6 +48,9 @@ export const DoDontCardBlock: Block = {
           ItalicFeature(),
           LinkFeature({
             enabledCollections: ['pages', 'posts'],
+          }),
+          BlocksFeature({
+            inlineBlocks: [ChapterCitationBlock],
           }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),

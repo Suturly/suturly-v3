@@ -16,6 +16,7 @@ type Props = MediaBlockProps & {
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  citationHrefs?: Record<string, string>
   citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
@@ -29,6 +30,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     media,
     staticImage,
     disableInnerContainer,
+    citationHrefs,
     citationLinkLabels,
     linkCitations,
   } = props
@@ -64,6 +66,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           )}
         >
           <RichText
+            citationHrefs={citationHrefs}
             citationLinkLabels={citationLinkLabels}
             data={caption}
             enableGutter={false}

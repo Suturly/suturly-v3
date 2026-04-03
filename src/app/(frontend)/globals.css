@@ -1196,8 +1196,11 @@
 
   .site-header__reading-progress-fill {
     height: 100%;
+    width: 100%;
+    transform-origin: left center;
     background: var(--accent-700);
-    transition: width 0.1s ease-out;
+    /* No width/transition: Safari defers layout during scroll; scaleX composits smoothly. */
+    will-change: transform;
   }
 
   .page-wrapper {
@@ -1427,6 +1430,17 @@
     line-height: inherit;
     vertical-align: super;
     font-size: small;
+    width: var(--space-1);
+    height: var(--space-1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 33px !important;
+    background-color: var(--primary-50);
+    color: var(--accent-700);
+    font-size: 10px; 
+    line-height: var(--space-0-75);
+    font-weight: var(--font-weight-medium);
   }
 
   .payload-richtext__citation-wrap + .payload-richtext__citation-wrap::before {
@@ -1434,7 +1448,28 @@
     vertical-align: super;
     font-size: small;
   }
-  
+
+  /*
+   * Hover wedge between superscript trigger and tooltip: without it, the pointer crosses “empty”
+   * space that is not a descendant hit target → :hover drops and the tooltip (with link) vanishes
+   * before the cursor reaches it (worse after tab/window switches).
+   */
+  .payload-richtext__citation-wrap::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% - 10px);
+    width: max(3.5rem, 160%);
+    height: 1.125rem;
+    z-index: 28;
+    pointer-events: none;
+  }
+
+  .payload-richtext__citation-wrap:hover::after,
+  .payload-richtext__citation-wrap:focus-within::after {
+    pointer-events: auto;
+  }
 
   .payload-richtext__citation-trigger:focus-visible {
     outline: 2px solid var(--accent-700);
@@ -1515,6 +1550,12 @@
 
   .payload-richtext__citation-tooltip-link:hover {
     text-decoration: underline;
+  }
+
+  .payload-richtext__citation-tooltip-text {
+    display: block;
+    font-weight: var(--text-p-sm--font-weight);
+    color: var(--gray-500);
   }
 
   .resource-chapter-references__citation {
@@ -1607,6 +1648,8 @@
     font-weight: var(--font-weight-semibold);
     text-decoration: none;
     display: inline;
+    top: -2px;
+    position: relative;
   }
 
   .resource-chapter-references__text-link:hover {
@@ -1619,7 +1662,7 @@
     outline-offset: 2px;
   }
 
-  .resource-chapter-references__text-link--no-href {
+  .resource-chapter-references__text-link--no-href, .resource-chapter-references__text-link--no-href:hover {
     color: var(--gray-500);
     font-weight: var(--text-p-main--font-weight);
     cursor: default;

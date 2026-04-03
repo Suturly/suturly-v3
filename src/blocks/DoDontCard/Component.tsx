@@ -11,6 +11,7 @@ type Props = {
   title?: string | null
   content?: DefaultTypedEditorState | null
   image?: object | string | number | null
+  citationHrefs?: Record<string, string>
   citationLinkLabels?: Record<string, string>
   linkCitations?: Record<string, number>
 }
@@ -49,6 +50,7 @@ export const DoDontCard: React.FC<Props> = ({
   title,
   content,
   image,
+  citationHrefs,
   citationLinkLabels,
   linkCitations,
 }) => {
@@ -71,6 +73,7 @@ export const DoDontCard: React.FC<Props> = ({
           {title ? <p className="resource-block-do-dont__title">{title}</p> : null}
           {content ? (
             <RichText
+              citationHrefs={citationHrefs}
               citationLinkLabels={citationLinkLabels}
               className="max-w-none"
               data={content}

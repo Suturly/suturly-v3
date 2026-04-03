@@ -2,6 +2,7 @@ import type { Block } from 'payload'
 
 import {
   BoldFeature,
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
@@ -12,6 +13,8 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+import { ChapterCitationBlock } from '../ChapterCitation/config'
 
 export const Banner: Block = {
   slug: 'banner',
@@ -39,6 +42,9 @@ export const Banner: Block = {
           ItalicFeature(),
           LinkFeature({
             enabledCollections: ['pages', 'posts'],
+          }),
+          BlocksFeature({
+            inlineBlocks: [ChapterCitationBlock],
           }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),

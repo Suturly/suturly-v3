@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { randomUUID } from 'node:crypto'
 
 import {
   BoldFeature,
@@ -20,6 +21,7 @@ import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { adminOnlyDeleteAccess } from '../../access/roles'
 import { Banner } from '../../blocks/Banner/config'
+import { ChapterCitationBlock } from '../../blocks/ChapterCitation/config'
 import { DoDontCardBlock } from '../../blocks/DoDontCard/config'
 import { DropdownBlock } from '../../blocks/Dropdown/config'
 import { FloatImageBlock } from '../../blocks/FloatImage/config'
@@ -31,6 +33,8 @@ import { TwoColumnImagesBlock } from '../../blocks/TwoColumnImages/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { migrateLegacyCitationsAfterRead } from './hooks/migrateLegacyCitationsAfterRead'
+import { validateResourceCitations } from './hooks/validateCitations'
 
 import {
   MetaDescriptionField,
@@ -72,6 +76,7 @@ export const Resources: CollectionConfig<'posts'> = {
     title: true,
     slug: true,
     categorySections: true,
+    citations: true,
     meta: {
       image: true,
       description: true,
@@ -260,6 +265,7 @@ export const Resources: CollectionConfig<'posts'> = {
                             ToDoListBlock,
                             ProcedureTypeCardBlock,
                           ],
+                          inlineBlocks: [ChapterCitationBlock],
                         }),
                         OrderedListFeature(),
                         UnorderedListFeature(),
@@ -290,6 +296,7 @@ export const Resources: CollectionConfig<'posts'> = {
                   }),
                   BlocksFeature({
                     blocks: [DropdownBlock],
+                    inlineBlocks: [ChapterCitationBlock],
                   }),
                   FixedToolbarFeature(),
                   InlineToolbarFeature(),
@@ -298,6 +305,58 @@ export const Resources: CollectionConfig<'posts'> = {
             },
           ],
           label: 'Content',
+        },
+        {
+          label: 'Citations',
+          fields: [
+            {
+              name: 'citations',
+              type: 'array',
+              labels: { singular: 'Citation', plural: 'Citations' },
+              admin: {
+                description:
+                  'Bibliography sources for this resource. Insert inline citation markers in the body and pick the matching source here (internal ids are generated automatically). Legacy link-based citations convert when you save.',
+                components: {
+                  RowLabel: '@/collections/Resources/CitationsRowLabel#CitationsRowLabel',
+                },
+              },
+              fields: [
+                {
+                  name: 'key',
+                  type: 'text',
+                  required: true,
+                  label: 'Key',
+                  admin: {
+                    hidden: true,
+                  },
+                  hooks: {
+                    beforeValidate: [
+                      async ({ value }) => {
+                        const v = typeof value === 'string' ? value.trim() : ''
+                        if (v) return v
+                        return randomUUID()
+                      },
+                    ],
+                  },
+                },
+                {
+                  name: 'bibliography',
+                  type: 'textarea',
+                  required: true,
+                  label: 'Bibliography line',
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: false,
+                  label: 'URL',
+                  admin: {
+                    description: 'Optional. Omit when there is no web source.',
+                  },
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'meta',
@@ -400,8 +459,9 @@ export const Resources: CollectionConfig<'posts'> = {
     slugField(),
   ],
   hooks: {
+    beforeValidate: [validateResourceCitations],
     afterChange: [revalidatePost],
-    afterRead: [populateAuthors],
+    afterRead: [migrateLegacyCitationsAfterRead, populateAuthors],
     afterDelete: [revalidateDelete],
   },
   versions: {

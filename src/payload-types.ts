@@ -283,6 +283,20 @@ export interface Post {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Bibliography sources for this resource. Insert inline citation markers in the body and pick the matching source here (internal ids are generated automatically). Legacy link-based citations convert when you save.
+   */
+  citations?:
+    | {
+        key: string;
+        bibliography: string;
+        /**
+         * Optional. Omit when there is no web source.
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   meta?: {
     title?: string | null;
     /**
@@ -1255,6 +1269,14 @@ export interface PostsSelect<T extends boolean = true> {
         id?: T;
       };
   questionsToAskDoctor?: T;
+  citations?:
+    | T
+    | {
+        key?: T;
+        bibliography?: T;
+        url?: T;
+        id?: T;
+      };
   meta?:
     | T
     | {
@@ -1827,6 +1849,19 @@ export interface TaskSchedulePublish {
     user?: (number | null) | User;
   };
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChapterCitationBlock".
+ */
+export interface ChapterCitationBlock {
+  /**
+   * Pick an existing source from this resource’s Citations tab, or create one here. Reuse the same entry when citing one source multiple times.
+   */
+  refKey: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'chapterCitation';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -11,6 +11,7 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { ChapterCitationBlock } from '../ChapterCitation/config'
 import { ToDoListBlock } from '../ToDoList/config'
 
 export const DropdownBlock: Block = {
@@ -38,6 +39,7 @@ export const DropdownBlock: Block = {
           }),
           BlocksFeature({
             blocks: [ToDoListBlock],
+            inlineBlocks: [ChapterCitationBlock],
           }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
