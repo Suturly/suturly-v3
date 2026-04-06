@@ -3,12 +3,14 @@ import { ValidationError } from 'payload'
 import { randomUUID } from 'node:crypto'
 
 import { migrateLegacyLinkCitationsToInline, type MigrateDoc } from '@/utilities/legacyCitationMigration'
+import { migrateLegacyProcedureShortDescriptionStrings } from '@/utilities/migrateLegacyProcedureShortDescription'
 import { walkLexicalForCitationRefKeys } from '@/utilities/walkLexicalForCitationRefKeys'
 
 export const validateResourceCitations: CollectionBeforeValidateHook = ({ collection, data, req }) => {
   const doc = data as MigrateDoc | undefined
   if (!doc || typeof doc !== 'object') return
 
+  migrateLegacyProcedureShortDescriptionStrings(doc)
   migrateLegacyLinkCitationsToInline(doc)
 
   const rows = Array.isArray(doc.citations) ? doc.citations : []

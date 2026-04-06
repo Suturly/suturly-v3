@@ -8,11 +8,28 @@ import {
   LinkFeature,
   OrderedListFeature,
   ParagraphFeature,
+  UnderlineFeature,
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
 import { ChapterCitationBlock } from '../ChapterCitation/config'
+
+const procedureShortDescriptionLexical = lexicalEditor({
+  features: [
+    ParagraphFeature(),
+    OrderedListFeature(),
+    UnorderedListFeature(),
+    BoldFeature(),
+    ItalicFeature(),
+    UnderlineFeature(),
+    BlocksFeature({
+      inlineBlocks: [ChapterCitationBlock],
+    }),
+    FixedToolbarFeature(),
+    InlineToolbarFeature(),
+  ],
+})
 
 export const ProcedureTypeCardBlock: Block = {
   slug: 'procedureTypeCard',
@@ -59,9 +76,14 @@ export const ProcedureTypeCardBlock: Block = {
     },
     {
       name: 'shortDescription',
-      type: 'textarea',
+      type: 'richText',
       required: false,
       label: 'Short description',
+      admin: {
+        description:
+          'Optional. Bold, italic, underline, bullet/numbered lists, and inline citations. No links or headings.',
+      },
+      editor: procedureShortDescriptionLexical,
     },
     {
       name: 'image',

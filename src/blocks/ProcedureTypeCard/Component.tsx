@@ -100,8 +100,18 @@ export const ProcedureTypeCard: React.FC<Props> = ({
               })}
             </ul>
           ) : null}
-          {shortDescription ? (
-            <p className="resource-block-procedure-type__description">{shortDescription}</p>
+          {shortDescription && hasText(shortDescription) ? (
+            <div className="resource-block-procedure-type__description resource-block-procedure-type__description--richtext">
+              <RichText
+                citationHrefs={citationHrefs}
+                citationLinkLabels={citationLinkLabels}
+                className="resource-block-procedure-type__short-description-richtext max-w-none"
+                data={shortDescription}
+                enableGutter={false}
+                enableProse={false}
+                linkCitations={linkCitations}
+              />
+            </div>
           ) : null}
         </div>
         {image ? (

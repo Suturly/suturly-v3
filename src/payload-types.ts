@@ -2075,7 +2075,24 @@ export interface ProcedureTypeCardBlock {
         id?: string | null;
       }[]
     | null;
-  shortDescription?: string | null;
+  /**
+   * Optional. Bold, italic, underline, bullet/numbered lists, and inline citations. No links or headings.
+   */
+  shortDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (number | null) | Media;
   /**
    * Optional. Leave empty if this card does not need a “Show more” section.
