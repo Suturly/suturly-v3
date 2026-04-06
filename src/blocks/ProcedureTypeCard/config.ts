@@ -74,6 +74,9 @@ export const ProcedureTypeCardBlock: Block = {
       type: 'richText',
       required: false,
       label: 'Additional content (e.g. pros & cons)',
+      admin: {
+        description: 'Optional. Leave empty if this card does not need a “Show more” section.',
+      },
       editor: lexicalEditor({
         features: [
           ParagraphFeature(),

@@ -303,7 +303,13 @@ const createConverters = ({
         />
       ),
       twoColumnImages: ({ node }) => (
-        <TwoColumnImages className="col-start-2 my-4" {...node.fields} />
+        <TwoColumnImages
+          citationHrefs={citationHrefs}
+          citationLinkLabels={citationLinkLabels}
+          className="col-start-2 my-4"
+          linkCitations={linkCitations}
+          {...node.fields}
+        />
       ),
       floatImage: ({ node }) => <FloatImage className="col-start-2" {...node.fields} />,
       doDontCard: ({ node }: { node: { fields: DoDontCardBlockProps } }) => (

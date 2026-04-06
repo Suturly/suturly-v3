@@ -1,5 +1,6 @@
 'use client'
 
+import { hasText } from '@payloadcms/richtext-lexical/shared'
 import React, { useId, useState } from 'react'
 
 import { Media } from '@/components/Media'
@@ -114,7 +115,7 @@ export const ProcedureTypeCard: React.FC<Props> = ({
           </div>
         ) : null}
       </div>
-      {additionalContent ? (
+      {additionalContent && hasText(additionalContent) ? (
         <div className="resource-block-procedure-type__bottom">
           <h5 className="resource-block-procedure-type__more-heading" id={additionalLabelId}>
             <button

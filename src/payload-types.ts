@@ -206,6 +206,24 @@ export interface Page {
     | ContentBlock
     | {
         media: number | Media;
+        /**
+         * Optional. When set, replaces the caption from the Media library. Leave empty to use the library caption, or hide if the library has no caption.
+         */
+        customCaption?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'mediaBlock';
@@ -1218,6 +1236,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
  */
 export interface MediaBlockSelect<T extends boolean = true> {
   media?: T;
+  customCaption?: T;
   id?: T;
   blockName?: T;
 }
@@ -1869,6 +1888,24 @@ export interface ChapterCitationBlock {
  */
 export interface MediaBlock {
   media: number | Media;
+  /**
+   * Optional. When set, replaces the caption from the Media library. Leave empty to use the library caption, or hide if the library has no caption.
+   */
+  customCaption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -1904,7 +1941,43 @@ export interface BannerBlock {
  */
 export interface TwoColumnImagesBlock {
   leftImage: number | Media;
+  /**
+   * Optional. When set, replaces the left image’s Media library caption. Leave empty to use the library caption, or hide if the library has no caption.
+   */
+  leftCustomCaption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   rightImage: number | Media;
+  /**
+   * Optional. When set, replaces the right image’s Media library caption. Leave empty to use the library caption, or hide if the library has no caption.
+   */
+  rightCustomCaption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'twoColumnImages';
@@ -2004,6 +2077,9 @@ export interface ProcedureTypeCardBlock {
     | null;
   shortDescription?: string | null;
   image?: (number | null) | Media;
+  /**
+   * Optional. Leave empty if this card does not need a “Show more” section.
+   */
   additionalContent?: {
     root: {
       type: string;

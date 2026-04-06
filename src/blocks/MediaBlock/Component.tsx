@@ -5,6 +5,7 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
+import { resolveCaptionPriority } from '@/utilities/resolveBlockCaption'
 
 import { Media } from '../../components/Media'
 
@@ -25,6 +26,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
   const {
     captionClassName,
     className,
+    customCaption,
     enableGutter = true,
     imgClassName,
     media,
@@ -35,13 +37,13 @@ export const MediaBlock: React.FC<Props> = (props) => {
     linkCitations,
   } = props
 
-  let caption
-  if (media && typeof media === 'object') caption = media.caption
+  const mediaCaption = media && typeof media === 'object' ? media.caption : undefined
+  const caption = resolveCaptionPriority(customCaption, mediaCaption)
 
   return (
     <div
       className={cn(
-        '',
+        'big-image-wrapper',
         {
           container: enableGutter,
         },
@@ -58,7 +60,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
       {caption && (
         <div
           className={cn(
-            'mt-6',
+            'resource-block-two-column-images__caption',
             {
               container: !disableInnerContainer,
             },

@@ -1965,6 +1965,11 @@ button.resource-chapter-pager__link svg {
     grid-template-rows: 1fr;
   }
 
+  /* Let procedure chip ::after hints extend above the panel (default inner uses overflow:hidden for the grid animation). */
+  .resource-block-dropdown.is-open .resource-block-dropdown__panel-inner {
+    overflow: visible;
+  }
+
   .resource-block-dropdown__content {
     margin-top: var(--space-0-5);
     max-width: none;
@@ -2477,11 +2482,17 @@ button.resource-chapter-pager__link svg {
 
   .resource-block-procedure-type__more-panel.is-open {
     grid-template-rows: 1fr;
+    overflow: visible;
   }
 
   .resource-block-procedure-type__more-panel-inner {
     overflow: hidden;
     min-height: 0;
+  }
+
+  /* Citation tooltips are position:absolute and extend past line width; overflow:hidden clips them on the X axis. */
+  .resource-block-procedure-type__more-panel.is-open .resource-block-procedure-type__more-panel-inner {
+    overflow: visible;
   }
 
   .resource-block-procedure-type__more-panel .resource-block-procedure-type__additional {
@@ -2742,16 +2753,56 @@ button.resource-chapter-pager__link svg {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-
+  .big-image-wrapper{
+    margin-bottom: 2em;
+    margin-top:2em;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    align-items: flex-start;
+    gap: var(--space-0-5);
+  }
+.big-image-wrapper picture{
+margin-bottom: 0;
+margin-top:0;
+}
+.big-image-wrapper p{
+  margin-bottom: 1.5em;
+  margin-top: var(--space-0-5);
+  }
   .resource-block-two-column-images {
     display: grid;
     gap: var(--space-1);
   }
 
+  .resource-block-two-column-images__figure {
+    margin: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-0-5);
+  }
 
+  .resource-block-two-column-images__caption, .resource-block-two-column-images__caption .payload-richtext.payload-richtext--no-gutter.payload-richtext--prose p{
+    margin: 0;
+    font-size: var(--text-caption-p);
+    line-height: var(--text-caption-p--line-height);
+    font-weight: var(--text-caption-p--font-weight);
+    color: var(--gray-100);
+    font-style: italic;
+  }
+  .resource-block-two-column-images__figure > div:first-child{
+    height: 100%;
+  }
+  .resource-block-two-column-images__figure picture {
+    height: 100%;
+    display: block;
+}
   .resource-block-media-image {
     border: 1px solid var(--border);
     border-radius: 0.8rem;
+    height: 100%;
+    object-fit: cover;
   }
 
   .lexical-table tbody :is(th, td) {
