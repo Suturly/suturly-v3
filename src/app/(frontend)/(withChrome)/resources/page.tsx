@@ -53,7 +53,7 @@ export default async function ResourcesPage() {
 
         {cards.length > 0 && (
           <div className="resources-grid">
-            {cards.map((card) => {
+            {cards.map((card, cardIndex) => {
               const coverImage = typeof card.coverImage === 'object' ? card.coverImage : null
               const benefitTags = (card.benefits ?? [])
                 .map((benefit) => ({
@@ -63,7 +63,11 @@ export default async function ResourcesPage() {
                 .filter((benefit) => Boolean(benefit.text))
 
               return (
-                <Link className="resource-card" href={`/resources/${card.slug}`} key={card.id}>
+                <Link
+                  className="resource-card"
+                  href={`/resources/${card.slug}`}
+                  key={`resource-card-${card.id}-${cardIndex}`}
+                >
                   <div className="resource-card__media-wrap">
                     {coverImage ? (
                       <Media

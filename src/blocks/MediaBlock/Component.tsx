@@ -10,7 +10,6 @@ import { resolveCaptionPriority } from '@/utilities/resolveBlockCaption'
 import { Media } from '../../components/Media'
 
 type Props = MediaBlockProps & {
-  breakout?: boolean
   captionClassName?: string
   className?: string
   enableGutter?: boolean

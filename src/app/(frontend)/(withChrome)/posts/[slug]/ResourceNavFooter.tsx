@@ -14,18 +14,22 @@ export const ResourceNavFooter: React.FC<ResourceNavFooterProps> = ({ links = de
   return (
     <div className="resource-nav__footer">
       <div className="resource-nav__footer-links">
-        {links.map((link) =>
+        {links.map((link, index) =>
           'onClick' in link ? (
             <button
               className="resource-nav__footer-link"
-              key={link.label}
+              key={`resource-nav-footer-${index}`}
               onClick={link.onClick}
               type="button"
             >
               {link.label}
             </button>
           ) : (
-            <a className="resource-nav__footer-link" href={link.href} key={link.label}>
+            <a
+              className="resource-nav__footer-link"
+              href={link.href}
+              key={`resource-nav-footer-${index}`}
+            >
               {link.label}
             </a>
           ),

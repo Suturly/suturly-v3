@@ -84,7 +84,7 @@ export const BenefitTagsInline: React.FC<Props> = ({ tags }) => {
     <>
       <div className="resource-card__tags" ref={containerRef}>
         {visibleTags.map((tag, index) => (
-          <span className="resource-card__tag" key={`${tag.text}-${index}`}>
+          <span className="resource-card__tag" key={`benefit-tag-${index}`}>
             {tag.icon ? (
               <span className="resource-card__tag-icon-wrap">
                 <MediaComponent
@@ -104,7 +104,7 @@ export const BenefitTagsInline: React.FC<Props> = ({ tags }) => {
         {tags.map((tag, index) => (
           <span
             className="resource-card__tag"
-            key={`measure-${tag.text}-${index}`}
+            key={`benefit-tag-measure-${index}`}
             ref={(el) => {
               measureTagRefs.current[index] = el
             }}

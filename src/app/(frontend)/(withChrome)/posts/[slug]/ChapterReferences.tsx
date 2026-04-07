@@ -110,12 +110,16 @@ export const ChapterReferences: React.FC<Props> = ({ references }) => {
       <h2 className="resource-chapter-references__title">Chapter references</h2>
 
       <ol className={cn('resource-chapter-references__list', !expanded && hiddenCount > 0 && 'is-truncated')}>
-        {visibleReferences.map((reference) => {
+        {visibleReferences.map((reference, referenceIndex) => {
           const display = getChapterReferenceDisplay(reference)
           const href = reference.href.trim()
           const isExternal = href.startsWith('http')
           return (
-            <li className="resource-chapter-references__item" id={`chapter-ref-${reference.id}`} key={reference.id}>
+            <li
+              className="resource-chapter-references__item"
+              id={`chapter-ref-${reference.id}`}
+              key={`chapter-ref-${reference.id}-${referenceIndex}`}
+            >
               <span className="resource-chapter-references__citation">{reference.id}</span>
               <div className="resource-chapter-references__body">
                 {href ? (

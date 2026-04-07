@@ -12,6 +12,7 @@ import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { CitationRefKeyField as CitationRefKeyField_5ae56d2f7b1d345a5c2b5940c6a57947 } from '@/fields/CitationRefKey/Field'
 import { ChapterCitationInlineLabel as ChapterCitationInlineLabel_af91b59c8be0348fcd29a839174a1070 } from '@/blocks/ChapterCitation/InlineLabel'
+import { StripHeadingFormatsFeatureClient as StripHeadingFormatsFeatureClient_3ed7624d858f73fa93838a45dc92e998 } from '@/features/stripHeadingFormats/client'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -50,6 +51,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/fields/CitationRefKey/Field#CitationRefKeyField": CitationRefKeyField_5ae56d2f7b1d345a5c2b5940c6a57947,
   "@/blocks/ChapterCitation/InlineLabel#ChapterCitationInlineLabel": ChapterCitationInlineLabel_af91b59c8be0348fcd29a839174a1070,
+  "@/features/stripHeadingFormats/client#StripHeadingFormatsFeatureClient": StripHeadingFormatsFeatureClient_3ed7624d858f73fa93838a45dc92e998,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,

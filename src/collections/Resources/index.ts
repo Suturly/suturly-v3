@@ -35,6 +35,7 @@ import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 import { migrateLegacyCitationsAfterRead } from './hooks/migrateLegacyCitationsAfterRead'
 import { validateResourceCitations } from './hooks/validateCitations'
+import { deduplicateArrayRowIds } from './hooks/deduplicateArrayRowIds'
 
 import {
   MetaDescriptionField,
@@ -459,6 +460,7 @@ export const Resources: CollectionConfig<'posts'> = {
     slugField(),
   ],
   hooks: {
+    beforeChange: [deduplicateArrayRowIds],
     beforeValidate: [validateResourceCitations],
     afterChange: [revalidatePost],
     afterRead: [migrateLegacyCitationsAfterRead, populateAuthors],

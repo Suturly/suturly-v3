@@ -283,8 +283,15 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
               <section className="resource-main-content__section" id={activeSection.id}>
                 {activeSectionIndex === 0 && Array.isArray(benefits) && benefits.length > 0 ? (
                   <div className="resource-benefits">
-                    {benefits.map((benefit) => (
-                      <article className="resource-benefits__item" key={benefit.id}>
+                    {benefits.map((benefit, benefitIndex) => (
+                      <article
+                        className="resource-benefits__item"
+                        key={
+                          benefit.id != null && benefit.id !== ''
+                            ? `${benefit.id}-${benefitIndex}`
+                            : `benefit-${benefitIndex}`
+                        }
+                      >
                         {benefit.icon && typeof benefit.icon === 'object' ? (
                           <Media
                             className="resource-benefits__icon-wrap"

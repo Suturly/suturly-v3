@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 
 export const metadata: Metadata = {
   title: 'Styles',

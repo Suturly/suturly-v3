@@ -126,11 +126,11 @@ export const ResourceNavList: React.FC<ResourceNavListProps> = ({
 
   return (
     <nav className="resource-nav__list">
-      {sections.map((section) => {
+      {sections.map((section, sectionIndex) => {
         const isOpen = section.categorySlug === expandedTab
 
         return (
-          <div key={section.id} className="resource-nav__section">
+          <div key={`${section.id}-${sectionIndex}`} className="resource-nav__section">
             <button
               className={cn('resource-nav__trigger', isOpen && 'is-open')}
               onClick={() => toggleTab(section.categorySlug)}
@@ -171,13 +171,13 @@ export const ResourceNavList: React.FC<ResourceNavListProps> = ({
                   }
                 }}
               >
-                {section.headingAnchors.map((heading) => {
+                {section.headingAnchors.map((heading, headingIndex) => {
                   const isActiveHeading = activeHash === heading.id
 
                   return (
                     <button
                       className={cn('resource-nav__link', isActiveHeading && 'is-active')}
-                      key={heading.id}
+                      key={`${section.categorySlug}-${heading.id}-${headingIndex}`}
                       onClick={() => openAnchor(section.categorySlug, heading.id)}
                       type="button"
                     >

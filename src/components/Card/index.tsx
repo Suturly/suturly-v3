@@ -17,7 +17,6 @@ export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title'> & {
 }
 
 export const Card: React.FC<{
-  alignItems?: 'center'
   className?: string
   doc?: CardPostData
   relationTo?: 'posts'
@@ -50,8 +49,7 @@ export const Card: React.FC<{
       <div className="p-4">
         {showCategories && hasCategories && (
           <div className="uppercase text-sm mb-4">
-            {showCategories && hasCategories && (
-              <div>
+            <div>
                 {categories?.map((category, index) => {
                   if (typeof category === 'object') {
                     const { title: titleFromCategory } = category
@@ -71,7 +69,6 @@ export const Card: React.FC<{
                   return null
                 })}
               </div>
-            )}
           </div>
         )}
         {titleToUse && (

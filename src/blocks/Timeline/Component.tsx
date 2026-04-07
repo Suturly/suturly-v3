@@ -31,7 +31,7 @@ export const Timeline: React.FC<Props> = ({
       <div className="resource-block-timeline__list">
         {rows.map((row, index) => {
           return (
-            <div className="resource-block-timeline__item" key={`${row.timeLabel}-${index}`}>
+            <div className="resource-block-timeline__item" key={`timeline-${index}-${row.timeLabel ?? ''}`}>
               <div className="resource-block-timeline__track">
                 <span className="resource-block-timeline__dot" />
                 {index < rows.length - 1 ? <span className="resource-block-timeline__line" /> : null}

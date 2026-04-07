@@ -9,6 +9,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { ChapterCitationBlock } from '@/blocks/ChapterCitation/config'
+import { StripHeadingFormatsFeature } from '@/features/stripHeadingFormats'
 
 export const defaultLexical = lexicalEditor({
   features: [
@@ -22,5 +23,6 @@ export const defaultLexical = lexicalEditor({
     BlocksFeature({
       inlineBlocks: [ChapterCitationBlock],
     }),
+    StripHeadingFormatsFeature(),
   ],
 })

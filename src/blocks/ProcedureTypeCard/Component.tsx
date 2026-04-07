@@ -71,7 +71,11 @@ export const ProcedureTypeCard: React.FC<Props> = ({
                 const hint = chip.hint?.trim() ?? ''
                 return (
                   <li
-                    key={index}
+                    key={
+                      chip.id != null && chip.id !== ''
+                        ? `${chip.id}-${index}`
+                        : `procedure-chip-${index}`
+                    }
                     className="resource-block-procedure-type__chip"
                     {...(hint ? { 'data-hint': hint } : {})}
                   >

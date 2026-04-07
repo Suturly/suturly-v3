@@ -52,7 +52,11 @@ export const ToDoList: React.FC<Props> = ({
         {rows.map((item, index) => (
           <li
             className={cn('resource-block-todo__item', item.checked && 'is-checked')}
-            key={item.id || `${item.label}-${index}`}
+            key={
+              item.id != null && item.id !== ''
+                ? `${item.id}-${index}`
+                : `todo-${index}-${item.label ?? ''}`
+            }
           >
             <span aria-hidden className="resource-block-todo__marker">
               {item.checked ? <span className="resource-block-todo__marker-dot" /> : null}
