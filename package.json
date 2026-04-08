@@ -16,6 +16,8 @@
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
+    "db:migrate:neon-vercel": "bash scripts/vercel-neon-pg-dump-restore.sh",
+    "db:migrate:neon-vercel:sql": "bash scripts/vercel-neon-pg-dump-restore-sql.sh",
     "media:migrate:r2": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/migrateMediaToR2.ts",
     "migrate:procedure-short-description": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/migrateProcedureShortDescriptionToLexical.ts",
     "users:grant-admin": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/grantAllUsersAdmin.ts",

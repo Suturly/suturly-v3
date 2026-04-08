@@ -289,6 +289,17 @@ export default buildConfig({
 
 There is also a simplified [one click deploy](https://github.com/payloadcms/payload/tree/templates/with-vercel-postgres) to Vercel should you need it.
 
+### Vercel-Managed Neon: migrating an existing Postgres (Path B)
+
+If you use **Neon via Vercel Storage** (Vercel-Managed / “native” integration) and need to **copy an existing database** into the new Neon project with no data loss, follow the runbook and script:
+
+- [docs/vercelManagedNeonMigration.md](docs/vercelManagedNeonMigration.md)
+- `pnpm run db:migrate:neon-vercel` (custom format; artifacts in `.neon-migrate/`)
+- `pnpm run db:migrate:neon-vercel:sql` (plain SQL + `psql`; same folder)
+- Both require `NEON_MIGRATE_SOURCE_URL` and `NEON_MIGRATE_TARGET_URL` (run from repo root)
+
+`payload.config.ts` already uses `DATABASE_URL` with `postgresAdapter`; after cutover, the integration-supplied `DATABASE_URL` is sufficient.
+
 ### Media storage on Vercel (Cloudflare R2)
 
 If your deployed app returns `404` on `/api/media/file/...`, production is usually using local disk storage (ephemeral on Vercel) or missing migrated files.

@@ -1,0 +1,848 @@
+/*
+ * Marketing layout utilities — spacing, type, grid (Mast-style naming).
+ * https://antonoratom-website-48221dfbe996c17c23a.webflow.io/styles
+ *
+ * Imported *after* product.css in globals.css so, **within the same @layer**, later
+ * rules win at equal specificity. Overrides for shared classes like `.container` may
+ * need **unlayered** rules (end of file): product uses `@layer utilities` and
+ * unlayered @media `.container`, both of which outrank `@layer components` alone.
+ *
+ * Token overrides: wrap overrides in `.marketing-site` (see home/layout.tsx) so
+ * they inherit to all marketing UI but do not change Payload/product routes. You
+ * can reassign any variable from tokens.css / :root, e.g. --text-h1, --space-1,
+ * --primary-600. Custom properties inherit to descendants, so .h1 { font-size:
+ * var(--text-h1) } picks up the marketing-scoped value automatically.
+ *
+ * Cascade: mobile-first min-width blocks are grouped at the bottom of each layer
+ * in order sm → md → lg → xl (40rem → 48rem → 64rem → 80rem).
+ */
+
+.marketing-site {
+  --layout-grid-gutter: var(--space-1);
+  --layout-text-18: 1.125rem;
+  --layout-text-18--line-height: 1.5;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components — base (no media queries)                                       */
+/* -------------------------------------------------------------------------- */
+@layer components {
+
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6 {
+    margin: 0;
+    color: inherit;
+  }
+
+  .h1 {
+    font-size: var(--text-h1);
+    line-height: var(--text-h1--line-height);
+    font-weight: var(--text-h1--font-weight);
+  }
+
+  .h2 {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    font-weight: var(--text-h2--font-weight);
+  }
+
+  .h3 {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    font-weight: var(--text-h3--font-weight);
+  }
+
+  .h4 {
+    font-size: var(--text-h4);
+    line-height: var(--text-h4--line-height);
+    font-weight: var(--text-h4--font-weight);
+  }
+
+  .h5 {
+    font-size: var(--text-h5);
+    line-height: var(--text-h5--line-height);
+    font-weight: var(--text-h5--font-weight);
+  }
+
+  .h6 {
+    font-size: var(--text-p-main);
+    line-height: var(--text-p-main--line-height);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .paragraph {
+    margin: 0;
+    font-size: var(--text-p-main);
+    line-height: var(--text-p-main--line-height);
+    font-weight: var(--text-p-main--font-weight);
+  }
+
+  .p-18 {
+    margin: 0;
+    font-size: var(--layout-text-18);
+    line-height: var(--layout-text-18--line-height);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .p-sm {
+    margin: 0;
+    font-size: var(--text-p-sm);
+    line-height: var(--text-p-sm--line-height);
+    font-weight: var(--text-p-sm--font-weight);
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: var(--text-caption-h);
+    line-height: var(--text-caption-h--line-height);
+    font-weight: var(--text-caption-h--font-weight);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .fg-primary {
+    color: var(--primary-600);
+  }
+
+  .fg-body {
+    color: var(--foreground);
+  }
+
+  .measure-readable {
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+
+  .section {
+    width: 100%;
+  }
+
+  .section--pad-lg {
+    padding-block: var(--space-3-5);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(100% + var(--layout-grid-gutter));
+    margin-inline: calc(var(--layout-grid-gutter) * -0.5);
+    row-gap: var(--layout-grid-gutter);
+  }
+
+  .col {
+    position: relative;
+    min-width: 0;
+    padding-inline: calc(var(--layout-grid-gutter) * 0.5);
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .col.u-col-pad-0 {
+    padding-inline: 0;
+  }
+
+  /* Default (xs) column spans */
+  .col-xs-1 {
+    flex: 0 0 8.333333%;
+    max-width: 8.333333%;
+  }
+
+  .col-xs-2 {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+  }
+
+  .col-xs-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+
+  .col-xs-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+
+  .col-xs-5 {
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+  }
+
+  .col-xs-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .col-xs-7 {
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+  }
+
+  .col-xs-8 {
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+  }
+
+  .col-xs-9 {
+    flex: 0 0 75%;
+    max-width: 75%;
+  }
+
+  .col-xs-10 {
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+  }
+
+  .col-xs-11 {
+    flex: 0 0 91.666667%;
+    max-width: 91.666667%;
+  }
+
+  .col-xs-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components — responsive (min-width ascending: 40 → 48 → 64 → 80 rem)      */
+/* -------------------------------------------------------------------------- */
+@layer components {
+
+  /* --breakpoint-sm */
+  @media (width >=40rem) {
+    .col-sm-1 {
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+
+    .col-sm-2 {
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+
+    .col-sm-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+
+    .col-sm-4 {
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+
+    .col-sm-5 {
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+
+    .col-sm-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+
+    .col-sm-7 {
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+
+    .col-sm-8 {
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+
+    .col-sm-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+
+    .col-sm-10 {
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+
+    .col-sm-11 {
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+
+    .col-sm-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+
+  /* --breakpoint-md */
+  @media (width >=48rem) {
+    .h1 {
+      font-size: 2.75rem;
+    }
+
+    .section--pad-lg {
+      padding-block: var(--space-5);
+    }
+
+    .col-md-1 {
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+
+    .col-md-2 {
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+
+    .col-md-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+
+    .col-md-4 {
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+
+    .col-md-5 {
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+
+    .col-md-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+
+    .col-md-7 {
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+
+    .col-md-8 {
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+
+    .col-md-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+
+    .col-md-10 {
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+
+    .col-md-11 {
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+
+    .col-md-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+
+  /* --breakpoint-lg */
+  @media (width >=64rem) {
+    .h1 {
+      font-size: 3.25rem;
+    }
+
+    .measure-readable {
+      margin-inline: 0;
+    }
+
+    .section--pad-lg {
+      padding-block: var(--space-6);
+    }
+
+    .col-lg-1 {
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+
+    .col-lg-2 {
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+
+    .col-lg-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+
+    .col-lg-4 {
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+
+    .col-lg-5 {
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+
+    .col-lg-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+
+    .col-lg-7 {
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+
+    .col-lg-8 {
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+
+    .col-lg-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+
+    .col-lg-10 {
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+
+    .col-lg-11 {
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+
+    .col-lg-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+
+  /* --breakpoint-xl */
+  @media (width >=80rem) {
+    .col-xl-1 {
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+
+    .col-xl-2 {
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+
+    .col-xl-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+
+    .col-xl-4 {
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+
+    .col-xl-5 {
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+
+    .col-xl-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+
+    .col-xl-7 {
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+
+    .col-xl-8 {
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+
+    .col-xl-9 {
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+
+    .col-xl-10 {
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+
+    .col-xl-11 {
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+
+    .col-xl-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Utilities — base                                                           */
+/* -------------------------------------------------------------------------- */
+@layer utilities {
+  .u-mt-0 {
+    margin-top: 0;
+  }
+
+  .u-mt-1 {
+    margin-top: var(--space-1);
+  }
+
+  .u-mt-1-25 {
+    margin-top: var(--space-1-25);
+  }
+
+  .u-mt-1-5 {
+    margin-top: var(--space-1-5);
+  }
+
+  .u-mt-2 {
+    margin-top: var(--space-2);
+  }
+
+  .u-mt-2-5 {
+    margin-top: var(--space-2-5);
+  }
+
+  .u-mt-3 {
+    margin-top: var(--space-3);
+  }
+
+  .u-mt-auto {
+    margin-top: auto;
+  }
+
+  .u-mb-0 {
+    margin-bottom: 0;
+  }
+
+  .u-mb-1 {
+    margin-bottom: var(--space-1);
+  }
+
+  .u-mb-1-25 {
+    margin-bottom: var(--space-1-25);
+  }
+
+  .u-mb-1-5 {
+    margin-bottom: var(--space-1-5);
+  }
+
+  .u-mb-2 {
+    margin-bottom: var(--space-2);
+  }
+
+  .u-mb-2-5 {
+    margin-bottom: var(--space-2-5);
+  }
+
+  .u-mb-3 {
+    margin-bottom: var(--space-3);
+  }
+
+  .u-m-0 {
+    margin: 0;
+  }
+
+  .u-mlr-auto {
+    margin-inline: auto;
+  }
+
+  .u-mr-1 {
+    margin-right: var(--space-1);
+  }
+
+  .u-ml-1 {
+    margin-left: var(--space-1);
+  }
+
+  .u-pt-0 {
+    padding-top: 0;
+  }
+
+  .u-pt-1 {
+    padding-top: var(--space-1);
+  }
+
+  .u-pt-2 {
+    padding-top: var(--space-2);
+  }
+
+  .u-pt-3 {
+    padding-top: var(--space-3);
+  }
+
+  .u-pb-0 {
+    padding-bottom: 0;
+  }
+
+  .u-pb-1 {
+    padding-bottom: var(--space-1);
+  }
+
+  .u-pb-2 {
+    padding-bottom: var(--space-2);
+  }
+
+  .u-pb-3 {
+    padding-bottom: var(--space-3);
+  }
+
+  .u-p-0 {
+    padding: 0;
+  }
+
+  .u-p-1 {
+    padding: var(--space-1);
+  }
+
+  .u-ta-left {
+    text-align: left;
+  }
+
+  .u-ta-center {
+    text-align: center;
+  }
+
+  .u-ta-right {
+    text-align: right;
+  }
+
+  .u-overflow-clip {
+    overflow: clip;
+  }
+
+  .u-overflow-visible {
+    overflow: visible;
+  }
+
+  .u-d-block {
+    display: block;
+  }
+
+  .u-d-flex {
+    display: flex;
+  }
+
+  .u-d-inline-flex {
+    display: inline-flex;
+  }
+
+  .u-d-inline {
+    display: inline;
+  }
+
+  .u-p-relative {
+    position: relative;
+  }
+
+  .u-p-absolute {
+    position: absolute;
+  }
+
+  .u-p-sticky {
+    position: sticky;
+  }
+
+  .cc-full {
+    position: absolute;
+    inset: 0;
+  }
+
+  .cc-sticky-top {
+    position: sticky;
+    top: 0;
+  }
+
+  .cc-sticky-bottom {
+    position: sticky;
+    bottom: 0;
+  }
+
+  .u-w-100 {
+    width: 100%;
+  }
+
+  .u-h-100 {
+    height: 100%;
+  }
+
+  .u-minh-100svh {
+    min-height: 100svh;
+  }
+
+  .u-weight-regular {
+    font-weight: var(--font-weight-regular);
+  }
+
+  .u-weight-medium {
+    font-weight: 500;
+  }
+
+  .u-weight-semibold {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .u-weight-bold {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .u-wrap-balance {
+    text-wrap: balance;
+  }
+
+  .u-wrap-none {
+    text-wrap: nowrap;
+  }
+
+  .u-icon {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .u-icon.cc-8 {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .u-icon.cc-16 {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .u-icon.cc-24 {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .u-icon.cc-32 {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .u-icon.cc-40 {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .u-icon.cc-48 {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  /* `*-only` helpers: hidden by default, shown only in range */
+  .u-sm-only {
+    display: none !important;
+  }
+
+  .u-md-only {
+    display: none !important;
+  }
+
+  .u-lg-only {
+    display: none !important;
+  }
+
+  .u-xs-only {
+    display: block;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Utilities — responsive (same breakpoint order; ranges after plain min-w)   */
+/* -------------------------------------------------------------------------- */
+@layer utilities {
+  @media (width >=40rem) {
+    .u-sm-hide {
+      display: none !important;
+    }
+
+    .u-xs-only {
+      display: none !important;
+    }
+  }
+
+  @media (width >=40rem) and (width < 48rem) {
+    .u-sm-only {
+      display: block !important;
+    }
+
+    .u-sm-only.u-d-flex {
+      display: flex !important;
+    }
+
+    .u-sm-only.u-d-inline-flex {
+      display: inline-flex !important;
+    }
+  }
+
+  @media (width >=48rem) {
+    .u-md-hide {
+      display: none !important;
+    }
+  }
+
+  @media (width >=48rem) and (width < 64rem) {
+    .u-md-only {
+      display: block !important;
+    }
+
+    .u-md-only.u-d-flex {
+      display: flex !important;
+    }
+
+    .u-md-only.u-d-inline-flex {
+      display: inline-flex !important;
+    }
+  }
+
+  @media (width >=64rem) {
+    .u-lg-hide {
+      display: none !important;
+    }
+
+    .u-lg-only {
+      display: block !important;
+    }
+
+    .u-lg-only.u-d-flex {
+      display: flex !important;
+    }
+
+    .u-lg-only.u-d-inline-flex {
+      display: inline-flex !important;
+    }
+  }
+
+  @media (width >=80rem) {
+    .u-xl-hide {
+      display: none !important;
+    }
+  }
+}
+
+/*
+ * Marketing layout: full-width container — must stay **outside** `@layer`.
+ * product.css puts `.container` in `@layer utilities` (beats our @layer components)
+ * and also uses **unlayered** `.container` inside @media (unlayered beats any layer).
+ * Scoped `.marketing-site .container` wins over product’s `.container` via higher
+ * specificity and loses nothing on CMS routes (no .marketing-site wrapper).
+ */
+.marketing-site .container {
+  max-width: 100%;
+    width: min(100%, var(--container-max-width));
+  
+}
+
+.marketing-site .container-fluid {
+  max-width: none;
+}
