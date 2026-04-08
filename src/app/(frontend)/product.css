@@ -2988,9 +2988,13 @@ button.resource-chapter-pager__link svg {
     align-items: flex-start;
     gap: var(--space-0-5);
   }
+  .big-image-wrapper > div, .big-image-wrapper img{
+    width: 100%;
+    }
 .big-image-wrapper picture{
 margin-bottom: 0;
 margin-top:0;
+width: 100%;
 }
 .big-image-wrapper p{
   margin-bottom: 1.5em;
