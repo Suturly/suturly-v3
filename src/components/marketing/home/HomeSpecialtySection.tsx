@@ -81,6 +81,7 @@ export function HomeSpecialtySection() {
         <div className="row">
           <div className="col col-lg-12">
             <div className="marketing-home-specialty__grid u-lg-only">
+            <div className="marketing-home-specialty__grid-bl">
               <div className="marketing-home-specialty__col marketing-home-specialty__col--left">
                 {SPECIALTY_CARDS.slice(0, 3).map((card) => (
                   <SpecialtyCardArticle key={card.id} card={card} />
@@ -107,7 +108,7 @@ export function HomeSpecialtySection() {
                 ))}
               </div>
             </div>
-
+            </div>
             <div className="marketing-home-specialty__mobile-carousel u-lg-hide">
               <Swiper
                 className="marketing-home-specialty__swiper marketing-swiper--pad-bottom"
