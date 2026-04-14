@@ -1,4 +1,14 @@
-import { HomeHeroSection } from '@/components/marketing/home/HomeHeroSection'
+import {
+  /** 1 */ HomeHeroSection,
+  /** 2 */ HomeProblemSection,
+  /** 3 */ HomePlatformSection,
+  /** 4 */ HomeContentTrustSection,
+  /** 5 */ HomeSpecialtySection,
+  /** 6 */ HomeThreeStepsSection,
+  /** 7 */ HomeThreeLayersSection,
+  /** 8 */ HomePrivacySection,
+  /** 9 */ HomeEvidenceSection,
+} from '@/components/marketing/home/home'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
@@ -18,5 +28,17 @@ export const metadata: Metadata = {
 }
 
 export default function HomeMarketingPage() {
-  return <HomeHeroSection />
+  return (
+    <>
+      <HomeHeroSection />
+      <HomeProblemSection />
+      <HomePlatformSection />
+      <HomeContentTrustSection />
+      <HomeSpecialtySection />
+      <HomeThreeStepsSection />
+      <HomeThreeLayersSection />
+      <HomePrivacySection />
+      <HomeEvidenceSection />
+    </>
+  )
 }

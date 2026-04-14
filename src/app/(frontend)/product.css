@@ -942,12 +942,18 @@
 
   .ui-button [data-slot='button-icon'] {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    line-height: 0;
   }
 
   .ui-button [data-slot='button-icon']>svg {
     pointer-events: none;
     flex-shrink: 0;
+    /* Match button font-size so row height matches text-only buttons (fixed rem was taller than 14px copy). */
+    width: 1em;
+    height: 1em;
   }
 
   .ui-button[data-size='big'],
@@ -977,20 +983,11 @@
     line-height: 1;
   }
 
-  .ui-button[data-size='big'] [data-slot='button-icon']>svg,
-  .ui-button[data-size='default'] [data-slot='button-icon']>svg,
-  .ui-button.size-big [data-slot='button-icon']>svg,
-  .ui-button.size-default [data-slot='button-icon']>svg,
+  /* Icon-only buttons: keep visual weight; size is set by button box, not 1em. */
   .ui-button[data-size='icon'] [data-slot='button-icon']>svg,
   .ui-button.size-icon [data-slot='button-icon']>svg {
     width: var(--space-1);
     height: var(--space-1);
-  }
-
-  .ui-button[data-size='small'] [data-slot='button-icon']>svg,
-  .ui-button.size-small [data-slot='button-icon']>svg {
-    width: var(--space-0-75);
-    height: var(--space-0-75);
   }
 
   .ui-button[data-size='big'][data-left-icon='true'],
@@ -1173,278 +1170,7 @@
     flex: 0 0 auto;
   }
 
-  /* Marketing site (/home) — BEM + design tokens only */
-  .marketing-site {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    background: var(--background);
-    color: var(--foreground);
-  }
-
-  .marketing-site__main {
-    flex: 1;
-  }
-
-  .marketing-site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    border-bottom: 1px solid var(--primary-100);
-    background: color-mix(in oklab, var(--background) 95%, transparent);
-    backdrop-filter: blur(4px);
-  }
-
-  .marketing-site-header__inner {
-    display: flex;
-    min-height: 3.5rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-1);
-  }
-
-  @variant md {
-    .marketing-site-header__inner {
-      min-height: 4.5rem;
-    }
-  }
-
-  .marketing-site-header__left {
-    display: flex;
-    min-width: 0;
-    flex: 1;
-    align-items: center;
-    gap: var(--space-1-5);
-  }
-
-  .marketing-site-header__logo {
-    flex-shrink: 0;
-  }
-
-  .marketing-site-header__nav {
-    display: none;
-    align-items: center;
-    gap: var(--space-1-5);
-  }
-
-  @variant md {
-    .marketing-site-header__nav {
-      display: flex;
-    }
-  }
-
-  .marketing-site-header__link {
-    font-size: var(--text-p-nav);
-    line-height: var(--text-p-nav--line-height);
-    font-weight: var(--text-p-nav--font-weight);
-    color: var(--foreground);
-    transition: color 0.2s ease;
-  }
-
-  .marketing-site-header__link:hover {
-    color: var(--primary-600);
-  }
-
-  .marketing-site-header__actions {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: var(--space-0-75);
-  }
-
-  .marketing-site-header__cta-secondary-wrap {
-    display: none;
-  }
-
-  @variant sm {
-    .marketing-site-header__cta-secondary-wrap {
-      display: inline-flex;
-    }
-  }
-
-  .marketing-site-footer {
-    border-top: 1px solid var(--primary-100);
-    background: var(--primary-50);
-  }
-
-  .marketing-site-footer__inner {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1-5);
-    padding-block: var(--space-2-5);
-  }
-
-  @variant md {
-    .marketing-site-footer__inner {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
-  .marketing-site-footer__note {
-    font-size: var(--text-p-sm);
-    line-height: var(--text-p-sm--line-height);
-    font-weight: var(--text-p-sm--font-weight);
-    color: var(--foreground);
-  }
-
-  .marketing-site-footer__nav {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: var(--space-1-5);
-    row-gap: var(--space-0-5);
-    font-size: var(--text-p-sm);
-    line-height: var(--text-p-sm--line-height);
-    font-weight: var(--text-p-sm--font-weight);
-  }
-
-  .marketing-site-footer__link {
-    color: var(--primary-600);
-  }
-
-  .marketing-site-footer__link:hover {
-    text-decoration: underline;
-  }
-
-  .marketing-home-hero {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .marketing-home-hero__bg {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-
-  .marketing-home-hero__blob {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(64px);
-  }
-
-  .marketing-home-hero__blob--tr {
-    top: 0;
-    right: -6rem;
-    width: 28rem;
-    height: 28rem;
-    background: var(--primary-50);
-  }
-
-  @variant md {
-    .marketing-home-hero__blob--tr {
-      right: 0;
-    }
-  }
-
-  .marketing-home-hero__blob--bl {
-    bottom: 0;
-    left: -8rem;
-    width: 20rem;
-    height: 20rem;
-    background: color-mix(in oklab, var(--primary-100) 60%, transparent);
-  }
-
-  .marketing-home-hero__intro {
-    margin-inline: auto;
-    max-width: 48rem;
-    text-align: center;
-  }
-
-  @variant lg {
-    .marketing-home-hero__intro {
-      margin-inline: 0;
-      max-width: none;
-      text-align: start;
-    }
-  }
-
-  .marketing-home-hero__img-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 36rem;
-    margin-inline: auto;
-    aspect-ratio: 4 / 3;
-  }
-
-  @variant lg {
-    .marketing-home-hero__img-wrap {
-      margin-inline: 0;
-      max-width: none;
-    }
-  }
-
-  .marketing-home-hero__img {
-    object-fit: contain;
-    border-radius: var(--space-1);
-  }
-
-  .marketing-home-hero__actions {
-    margin-top: var(--space-2);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: var(--space-0-75);
-  }
-
-  @variant sm {
-    .marketing-home-hero__actions {
-      flex-direction: row;
-      justify-content: flex-start;
-    }
-  }
-
-  .marketing-home-hero__placeholder {
-    margin-top: var(--space-4);
-    scroll-margin-top: var(--space-6);
-    border-radius: var(--space-1);
-    border: 1px solid var(--primary-100);
-    background: var(--background);
-    padding: var(--space-2);
-    box-shadow: var(--shadow-sm);
-  }
-
-  @variant md {
-    .marketing-home-hero__placeholder {
-      margin-top: var(--space-5);
-      padding: var(--space-2-5);
-    }
-  }
-
-  .marketing-about-intro {
-    border-bottom: 1px solid var(--primary-100);
-  }
-
-  .marketing-about-team {
-    background: color-mix(in oklab, var(--primary-50) 35%, var(--background));
-  }
-
-  .marketing-about-team__lede {
-    max-width: 40rem;
-  }
-
-  .marketing-about-team__card {
-    height: 100%;
-    border-radius: var(--space-1);
-    border: 1px solid var(--primary-100);
-    background: var(--background);
-    padding: var(--space-2);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .marketing-about-team__avatar {
-    aspect-ratio: 1;
-    max-width: 8rem;
-    border-radius: var(--space-1);
-    background: var(--primary-100);
-  }
-
-  .marketing-about-team__role {
-    margin-top: var(--space-0-5);
-  }
+  
 
   .payload-richtext :is(h2, h3, h4, h5) {
     color: var(--primary-600);
@@ -2179,7 +1905,7 @@ button.resource-chapter-pager__link svg {
     grid-template-columns: 1fr;
   }
 
-  @media (width >= 64rem) {
+  @variant lg {
     .resource-gate-page__split {
       grid-template-columns: 1fr 1fr;
       min-height: 100dvh;
@@ -2464,7 +2190,7 @@ button.resource-chapter-pager__link svg {
     padding: var(--space-1-5);
   }
 
-  @media (width >= 48rem) {
+  @variant md {
     .resource-block-procedure-type__top {
       grid-template-columns: minmax(0, 1fr) minmax(0, 14rem);
       align-items: start;
@@ -3083,7 +2809,7 @@ width: 100%;
   }
 }
 /* Mobile-specific styles */
-@media (width < 64rem) {
+@variant max-lg {
   @theme{
     --text-h1: 2.25rem;
     --text-h1--line-height: 1.05;
@@ -3308,7 +3034,7 @@ table.lexical-table{
     padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
   }
 }
-@media (width < 48rem) {
+@variant max-md {
 
   .resource-main-hero__media-wrap{
     width: 100%;
@@ -3316,7 +3042,7 @@ table.lexical-table{
   }
 
 }
-@media (64rem <= width < 80rem) {
+@variant lg-xl-only {
     .container {
         max-width: calc(100% - var(--space-2-5));
     }
@@ -3327,7 +3053,7 @@ table.lexical-table{
       padding-left: var(--space-3);
     }
 }
-@media (width >= 80rem) {
+@variant xl {
   .container {
       max-width: var(--breakpoint-xl);
   }

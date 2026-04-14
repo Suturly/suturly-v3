@@ -1,0 +1,26 @@
+@import 'swiper/css';
+@import 'swiper/css/pagination';
+
+.marketing-swiper--pad-bottom {
+  padding-bottom: var(--space-3);
+}
+
+.marketing-home-evidence__viewport {
+  --swiper-pagination-color: var(--primary-600);
+  --swiper-pagination-bullet-inactive-color: var(--primary-200);
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}
+
+.platform-tab__swiper,
+.platform-additional-swiper,
+.marketing-home-specialty__swiper {
+  --swiper-pagination-color: var(--primary-600);
+  --swiper-pagination-bullet-inactive-color: var(--primary-200);
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}
+
+@media (width >= 64rem) {
+  .marketing-swiper--hide-pagination-desktop .swiper-pagination {
+    display: none;
+  }
+}

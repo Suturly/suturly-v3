@@ -1,40 +1,167 @@
+'use client'
+
+import { PartnerContactOpenButton } from '@/components/marketing/partnerContactModal'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/Logo/Logo'
+import { cn } from '@/utilities/ui'
+import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+const NAV_LINKS = [
+  { href: '/home#platform', label: 'Platform' },
+  { href: '/home#how-it-works', label: 'How It Works' },
+  { href: '/home#security', label: 'Security' },
+  { href: '/home#evidence', label: 'Evidence based' },
+] as const
+
+const PANEL_ID = 'marketing-site-nav-panel'
+
+const SCROLL_TOP_THRESHOLD_PX = 100
 
 export function MarketingSiteHeader() {
+  const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+    setScrollY(typeof window !== 'undefined' ? window.scrollY : 0)
+  }, [pathname])
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const isTop = scrollY <= SCROLL_TOP_THRESHOLD_PX
+  const isActive = scrollY > SCROLL_TOP_THRESHOLD_PX
+
+  useEffect(() => {
+    if (!isMenuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isMenuOpen])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (isMenuOpen) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+    return undefined
+  }, [isMenuOpen])
+
+  const closeMenu = () => setIsMenuOpen(false)
+
   return (
-    <header className="marketing-site-header">
-      <div className="section">
+    <header
+      className={cn('marketing-site-header', isActive && 'is-active')}
+      data-menu-open={isMenuOpen ? 'true' : undefined}
+    >
+      {isMenuOpen ? (
+        <button
+          type="button"
+          className="marketing-site-header__backdrop"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        />
+      ) : null}
+      <div className={cn('section', 'for-header', isTop && 'is-top')}>
         <div className="container">
           <div className="row">
             <div className="col col-xs-12 col-lg-12">
-              <div className="marketing-site-header__inner">
-                <div className="marketing-site-header__left">
+              <div className="marketing-site-header__shell">
+                <div className="marketing-site-header__inner">
                   <Link href="/home" className="marketing-site-header__logo">
                     <Logo loading="eager" priority="high" />
                   </Link>
-                  <nav className="marketing-site-header__nav" aria-label="Marketing">
-                    <Link className="marketing-site-header__link" href="/resources">
-                      Resources
-                    </Link>
-                    <Link className="marketing-site-header__link" href="/home#how-it-works">
-                      How it works
-                    </Link>
-                    <Link className="marketing-site-header__link" href="/about">
-                      About
-                    </Link>
+
+                  <nav
+                    className="marketing-site-header__nav u-lg-only u-d-flex"
+                    aria-label="Primary"
+                  >
+                    {NAV_LINKS.map((item) => (
+                      <Link key={item.href} className="marketing-site-header__link" href={item.href}>
+                        {item.label}
+                      </Link>
+                    ))}
                   </nav>
-                </div>
-                <div className="marketing-site-header__actions">
-                  <span className="marketing-site-header__cta-secondary-wrap">
-                    <Button asChild variant="outline" size="small">
-                      <Link href="/resources">Browse library</Link>
+
+                  <div className="marketing-site-header__actions u-lg-only u-d-inline-flex">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="default"
+                      className="marketing-site-header__btn-researchers"
+                    >
+                      For researchers
                     </Button>
-                  </span>
-                  <Button asChild size="small">
-                    <Link href="/resources">Get started</Link>
-                  </Button>
+                    <PartnerContactOpenButton size="default">Get in touch</PartnerContactOpenButton>
+                  </div>
+
+                  <div className="marketing-site-header__mobile-bar u-lg-hide u-d-inline-flex">
+                    {isMenuOpen ? null : (
+                      <PartnerContactOpenButton
+                        size="default"
+                        className="marketing-site-header__top-cta"
+                      >
+                        Get in touch
+                      </PartnerContactOpenButton>
+                    )}
+                    <button
+                      type="button"
+                      className="marketing-site-header__burger"
+                      aria-expanded={isMenuOpen}
+                      aria-controls={PANEL_ID}
+                      aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                      onClick={() => setIsMenuOpen((o) => !o)}
+                    >
+                      {isMenuOpen ? <X aria-hidden className="marketing-site-header__burger-icon" /> : <Menu aria-hidden className="marketing-site-header__burger-icon" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  id={PANEL_ID}
+                  className="marketing-site-header__drawer-outer u-lg-hide"
+                  data-state={isMenuOpen ? 'open' : 'closed'}
+                  aria-hidden={!isMenuOpen}
+                >
+                  <div className="marketing-site-header__drawer-inner">
+                    <nav className="marketing-site-header__nav-drawer" aria-label="Primary">
+                      {NAV_LINKS.map((item) => (
+                        <Link
+                          key={item.href}
+                          className="marketing-site-header__link marketing-site-header__link--stacked"
+                          href={item.href}
+                          onClick={closeMenu}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </nav>
+                    <div className="marketing-site-header__drawer-actions">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="default"
+                        className="marketing-site-header__btn-researchers"
+                      >
+                        For researchers
+                      </Button>
+                      <PartnerContactOpenButton size="default">Get in touch</PartnerContactOpenButton>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

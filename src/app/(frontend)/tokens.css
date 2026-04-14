@@ -60,7 +60,9 @@
   --space-0-25: 0.25rem;
   --space-0-5: 0.5rem;
   --space-0-75: 0.75rem;
+  --space-0-875: 0.875rem;
   --space-1: 1rem;
+  --space-1-125: 1.125rem;
   --space-1-25: 1.25rem;
   --space-1-5: 1.5rem;
   --space-1-75: 1.75rem;
@@ -72,6 +74,7 @@
   --space-5: 5rem;
   --space-6: 6rem;
   --space-7: 7rem;
+  --space-7-5: 7.5rem;
   --space-8: 8rem;
   --space-9: 9rem;
   --space-10: 10rem;
@@ -85,7 +88,10 @@
   --primary-50: #F0F4F5;
   --primary-100: #DAECEE;
   --primary-200: #B0CED3;
+  --primary-400: #55949E;
   --primary-600: #014D58;
+  --primary-800: #00444E;
+  --primary-1000: #01282E;
 
   --accent-700: #1BAD9F;
   --accent-800: #16877C;
@@ -135,7 +141,378 @@
   --success: #22C55E;
   --warning: #FDE047;
   --error: #FB923C;
-  --radius: 0.625rem;
+  --radius: 0.75rem;
+}
+
+/* Web “tablet-wide” band: scale spacing + container fluidly (991px–1439px). Maps Figma utility clamps → --space-* */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  :root {
+    --space-0-125: clamp(0.1rem, 0.0448rem + 0.0891vw, 0.125rem);
+    --space-0-25: clamp(0.175rem, 0.0095rem + 0.2673vw, 0.25rem);
+    --space-0-5: clamp(0.4rem, 0.1793rem + 0.3563vw, 0.5rem);
+    --space-0-75: clamp(0.6rem, 0.2689rem + 0.5345vw, 0.75rem);
+    --space-0-875: clamp(0.7rem, 0.3138rem + 0.6236vw, 0.875rem);
+    --space-1: clamp(0.85rem, 0.5189rem + 0.5345vw, 1rem);
+    --space-1-125: clamp(0.9rem, 0.4034rem + 0.8018vw, 1.125rem);
+    --space-1-25: clamp(1rem, 0.4482rem + 0.8909vw, 1.25rem);
+    --space-1-5: clamp(1.2rem, 0.5379rem + 1.069vw, 1.5rem);
+    --space-1-75: clamp(1.4rem, 0.6275rem + 1.2472vw, 1.75rem);
+    --space-2: clamp(1.65rem, 0.8775rem + 1.2472vw, 2rem);
+    --space-2-5: clamp(1.9rem, 0.5757rem + 2.1381vw, 2.5rem);
+    --space-3: clamp(2.4rem, 1.0757rem + 2.1381vw, 3rem);
+    --space-3-5: clamp(2.8rem, 1.255rem + 2.4944vw, 3.5rem);
+    --space-4: clamp(3rem, 0.7929rem + 3.5635vw, 4rem);
+    --space-5: clamp(3.5rem, 0.1893rem + 5.3452vw, 5rem);
+    --space-6: clamp(4.2rem, 0.2272rem + 6.4143vw, 6rem);
+    --space-7: clamp(4.8rem, -0.0557rem + 7.8396vw, 7rem);
+    --space-7-5: clamp(5.2rem, 0.1236rem + 8.196vw, 7.5rem);
+    --space-8: clamp(5.5rem, -0.0178rem + 8.9087vw, 8rem);
+    --space-9: clamp(6.2rem, 0.02rem + 9.9777vw, 9rem);
+    --space-10: clamp(6.9rem, 0.0579rem + 11.0468vw, 10rem);
+
+    --container-max-width: clamp(61.938rem, 0.0016rem + 99.9982vw, 90rem);
+  }
+}
+
+/*
+ * BEM-style palette utilities — only set `background-color` or `color`.
+ * Token names match :root (e.g. .u-bg-primary-50 → --primary-50; .u-bg-primary → semantic --primary).
+ */
+.u-bg-secondary-100 {
+  background-color: var(--secondary-100);
+}
+.u-bg-secondary-500 {
+  background-color: var(--secondary-500);
+}
+.u-bg-primary-50 {
+  background-color: var(--primary-50);
+}
+.u-bg-primary-100 {
+  background-color: var(--primary-100);
+}
+.u-bg-primary-200 {
+  background-color: var(--primary-200);
+}
+.u-bg-primary-400 {
+  background-color: var(--primary-400);
+}
+.u-bg-primary-600 {
+  background-color: var(--primary-600);
+}
+.u-bg-primary-800 {
+  background-color: var(--primary-800);
+}
+.u-bg-primary-1000 {
+  background-color: var(--primary-1000);
+}
+.u-bg-accent-700 {
+  background-color: var(--accent-700);
+}
+.u-bg-accent-800 {
+  background-color: var(--accent-800);
+}
+.u-bg-danger-25 {
+  background-color: var(--danger-25);
+}
+.u-bg-danger-700 {
+  background-color: var(--danger-700);
+}
+.u-bg-gray-30 {
+  background-color: var(--gray-30);
+}
+.u-bg-gray-50 {
+  background-color: var(--gray-50);
+}
+.u-bg-gray-100 {
+  background-color: var(--gray-100);
+}
+.u-bg-gray-500 {
+  background-color: var(--gray-500);
+}
+.u-bg-gray-900 {
+  background-color: var(--gray-900);
+}
+
+.u-bg-background {
+  background-color: var(--background);
+}
+.u-bg-foreground {
+  background-color: var(--foreground);
+}
+.u-bg-card {
+  background-color: var(--card);
+}
+.u-bg-card-foreground {
+  background-color: var(--card-foreground);
+}
+.u-bg-popover {
+  background-color: var(--popover);
+}
+.u-bg-popover-foreground {
+  background-color: var(--popover-foreground);
+}
+.u-bg-primary {
+  background-color: var(--primary);
+}
+.u-bg-primary-foreground {
+  background-color: var(--primary-foreground);
+}
+.u-bg-secondary {
+  background-color: var(--secondary);
+}
+.u-bg-secondary-foreground {
+  background-color: var(--secondary-foreground);
+}
+.u-bg-muted {
+  background-color: var(--muted);
+}
+.u-bg-muted-foreground {
+  background-color: var(--muted-foreground);
+}
+.u-bg-accent {
+  background-color: var(--accent);
+}
+.u-bg-accent-foreground {
+  background-color: var(--accent-foreground);
+}
+.u-bg-destructive {
+  background-color: var(--destructive);
+}
+.u-bg-destructive-foreground {
+  background-color: var(--destructive-foreground);
+}
+.u-bg-border {
+  background-color: var(--border);
+}
+.u-bg-input {
+  background-color: var(--input);
+}
+.u-bg-ring {
+  background-color: var(--ring);
+}
+.u-bg-chart-1 {
+  background-color: var(--chart-1);
+}
+.u-bg-chart-2 {
+  background-color: var(--chart-2);
+}
+.u-bg-chart-3 {
+  background-color: var(--chart-3);
+}
+.u-bg-chart-4 {
+  background-color: var(--chart-4);
+}
+.u-bg-chart-5 {
+  background-color: var(--chart-5);
+}
+.u-bg-sidebar {
+  background-color: var(--sidebar);
+}
+.u-bg-sidebar-foreground {
+  background-color: var(--sidebar-foreground);
+}
+.u-bg-sidebar-primary {
+  background-color: var(--sidebar-primary);
+}
+.u-bg-sidebar-primary-foreground {
+  background-color: var(--sidebar-primary-foreground);
+}
+.u-bg-sidebar-accent {
+  background-color: var(--sidebar-accent);
+}
+.u-bg-sidebar-accent-foreground {
+  background-color: var(--sidebar-accent-foreground);
+}
+.u-bg-sidebar-border {
+  background-color: var(--sidebar-border);
+}
+.u-bg-sidebar-ring {
+  background-color: var(--sidebar-ring);
+}
+.u-bg-success {
+  background-color: var(--success);
+}
+.u-bg-warning {
+  background-color: var(--warning);
+}
+.u-bg-error {
+  background-color: var(--error);
+}
+
+.u-color-secondary-100 {
+  color: var(--secondary-100);
+}
+.u-color-secondary-500 {
+  color: var(--secondary-500);
+}
+.u-color-primary-50 {
+  color: var(--primary-50);
+}
+.u-color-primary-100 {
+  color: var(--primary-100);
+}
+.u-color-primary-200 {
+  color: var(--primary-200);
+}
+.u-color-primary-400 {
+  color: var(--primary-400);
+}
+.u-color-primary-600 {
+  color: var(--primary-600);
+}
+.u-color-primary-800 {
+  color: var(--primary-800);
+}
+.u-color-primary-1000 {
+  color: var(--primary-1000);
+}
+.u-color-accent-700 {
+  color: var(--accent-700);
+}
+.u-color-accent-800 {
+  color: var(--accent-800);
+}
+.u-color-danger-25 {
+  color: var(--danger-25);
+}
+.u-color-danger-700 {
+  color: var(--danger-700);
+}
+.u-color-gray-30 {
+  color: var(--gray-30);
+}
+.u-color-gray-50 {
+  color: var(--gray-50);
+}
+.u-color-gray-100 {
+  color: var(--gray-100);
+}
+.u-color-gray-500 {
+  color: var(--gray-500);
+}
+.u-color-gray-900 {
+  color: var(--gray-900);
+}
+
+.u-color-background {
+  color: var(--background);
+}
+.u-color-foreground {
+  color: var(--foreground);
+}
+.u-color-card {
+  color: var(--card);
+}
+.u-color-card-foreground {
+  color: var(--card-foreground);
+}
+.u-color-popover {
+  color: var(--popover);
+}
+.u-color-popover-foreground {
+  color: var(--popover-foreground);
+}
+.u-color-primary {
+  color: var(--primary);
+}
+.u-color-primary-foreground {
+  color: var(--primary-foreground);
+}
+.u-color-secondary {
+  color: var(--secondary);
+}
+.u-color-secondary-foreground {
+  color: var(--secondary-foreground);
+}
+.u-color-muted {
+  color: var(--muted);
+}
+.u-color-muted-foreground {
+  color: var(--muted-foreground);
+}
+.u-color-accent {
+  color: var(--accent);
+}
+.u-color-accent-foreground {
+  color: var(--accent-foreground);
+}
+.u-color-destructive {
+  color: var(--destructive);
+}
+.u-color-destructive-foreground {
+  color: var(--destructive-foreground);
+}
+.u-color-border {
+  color: var(--border);
+}
+.u-color-input {
+  color: var(--input);
+}
+.u-color-ring {
+  color: var(--ring);
+}
+.u-color-chart-1 {
+  color: var(--chart-1);
+}
+.u-color-chart-2 {
+  color: var(--chart-2);
+}
+.u-color-chart-3 {
+  color: var(--chart-3);
+}
+.u-color-chart-4 {
+  color: var(--chart-4);
+}
+.u-color-chart-5 {
+  color: var(--chart-5);
+}
+.u-color-sidebar {
+  color: var(--sidebar);
+}
+.u-color-sidebar-foreground {
+  color: var(--sidebar-foreground);
+}
+.u-color-sidebar-primary {
+  color: var(--sidebar-primary);
+}
+.u-color-sidebar-primary-foreground {
+  color: var(--sidebar-primary-foreground);
+}
+.u-color-sidebar-accent {
+  color: var(--sidebar-accent);
+}
+.u-color-sidebar-accent-foreground {
+  color: var(--sidebar-accent-foreground);
+}
+.u-color-sidebar-border {
+  color: var(--sidebar-border);
+}
+.u-color-sidebar-ring {
+  color: var(--sidebar-ring);
+}
+.u-color-success {
+  color: var(--success);
+}
+.u-color-warning {
+  color: var(--warning);
+}
+.u-color-error {
+  color: var(--error);
+}
+.u-opacity-40 {
+  opacity: 0.4;
+}
+.u-opacity-60 {
+  opacity: 0.6;
+}
+.u-opacity-80 {
+  opacity: 0.8;
+}
+.u-opacity-100 {
+  opacity: 1;
+}
+.u-opacity-0 {
+  opacity: 0;
 }
 
 /* 
@@ -185,6 +562,8 @@
   --color-primary-100: var(--primary-100);
   --color-primary-200: var(--primary-200);
   --color-primary-600: var(--primary-600);
+  --color-primary-800: var(--primary-800);
+  --color-primary-1000: var(--primary-1000);
   --color-accent-700: var(--accent-700);
   --color-accent-800: var(--accent-800);
   --color-danger-25: var(--danger-25);
@@ -220,10 +599,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - var(--space-0-5));
+  --radius-md: calc(var(--radius) - var(--space-0-25));
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) * 2);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -241,6 +620,6 @@
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
-  --breakpoint-xl: 80rem;
-  --breakpoint-2xl: 86rem;
+  --breakpoint-xl: 82rem;
+  --breakpoint-2xl: 90rem;
 }
