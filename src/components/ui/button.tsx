@@ -35,7 +35,9 @@ const buttonVariants = ({ className, size, variant }: ButtonVariantsInput = {}) 
 }
 
 export interface ButtonProps
-  extends React.ComponentProps<'button'> {
+  extends Omit<React.ComponentProps<'button'>, 'href'> {
+  /** Renders a native `<a>` with button styles. Ignored when `asChild` is true (child owns the link). */
+  href?: string
   asChild?: boolean
   iconLeft?: React.ReactNode
   iconRight?: React.ReactNode
@@ -51,27 +53,51 @@ const Button: React.FC<ButtonProps> = ({
   iconLeft,
   iconRight,
   children,
+  href,
+  type,
   ...props
 }) => {
-  const Comp = asChild ? Slot : 'button'
   const hasLeftIcon = Boolean(iconLeft)
   const hasRightIcon = Boolean(iconRight)
   const resolvedVariant: ButtonVariant = variant ?? 'default'
   const resolvedSize: ButtonSize = size ?? 'big'
 
-  return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant: resolvedVariant, size: resolvedSize, className }))}
-      data-size={resolvedSize}
-      data-left-icon={hasLeftIcon}
-      data-right-icon={hasRightIcon}
-      {...props}
-    >
+  const sharedProps = {
+    'data-slot': 'button' as const,
+    className: cn(buttonVariants({ variant: resolvedVariant, size: resolvedSize, className })),
+    'data-size': resolvedSize,
+    'data-left-icon': hasLeftIcon,
+    'data-right-icon': hasRightIcon,
+  }
+
+  const inner = (
+    <>
       {iconLeft ? <span data-slot="button-icon">{iconLeft}</span> : null}
       <Slottable>{children}</Slottable>
       {iconRight ? <span data-slot="button-icon">{iconRight}</span> : null}
-    </Comp>
+    </>
+  )
+
+  if (asChild) {
+    return (
+      <Slot {...sharedProps} {...(type !== undefined ? { type } : {})} {...props}>
+        {inner}
+      </Slot>
+    )
+  }
+
+  if (href) {
+    return (
+      <a {...sharedProps} href={href} {...(props as React.ComponentPropsWithoutRef<'a'>)}>
+        {inner}
+      </a>
+    )
+  }
+
+  return (
+    <button {...sharedProps} type={type ?? 'button'} {...props}>
+      {inner}
+    </button>
   )
 }
 

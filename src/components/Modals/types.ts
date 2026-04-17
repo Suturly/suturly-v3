@@ -13,6 +13,8 @@ export type ModalActionConfig = {
   label: string
   variant?: ButtonProps['variant']
   size?: ButtonProps['size']
+  /** Merged onto the footer action button (e.g. marketing utility classes). */
+  className?: string
   /** Runs first; then optional navigation / close */
   onClick?: (api: ModalApi) => void
   /** Push after onClick */
@@ -30,11 +32,15 @@ export type ModalScreenConfig = {
   actions: ModalActionConfig[]
 }
 
+export type ModalShellVariant = 'default' | 'marketing'
+
 export type OpenModalConfig = {
   /** Stable id for a11y; auto-generated if omitted */
   id?: string
   initialScreenKey: string
   screens: Record<string, ModalScreenConfig>
+  /** Visual shell: marketing uses partner-card look, no header close, h3 title. */
+  variant?: ModalShellVariant
 }
 
 export type ModalState =
@@ -44,4 +50,5 @@ export type ModalState =
       id: string
       screens: Record<string, ModalScreenConfig>
       stack: string[]
+      variant: ModalShellVariant
     }

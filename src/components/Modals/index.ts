@@ -4,6 +4,7 @@ export type {
   ModalActionConfig,
   ModalApi,
   ModalScreenConfig,
+  ModalShellVariant,
   ModalState,
   OpenModalConfig,
 } from './types'

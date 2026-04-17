@@ -1,3 +1,17 @@
+## Database setup
+
+Suturly uses Neon Postgres across three environments:
+
+- **Production** — `neon-almond-door` / `main` branch. URL managed by Vercel (auto-rotates).
+- **Preview** — Ephemeral Neon branch per PR, auto-created by Vercel on deployment.
+- **Local dev** — `neon-almond-door` / `dev` branch. You set it up manually (below).
+
+### Onboarding a new local dev
+
+1. Join the Vercel project `suturly-v3` and the Neon org `Vercel: suturly` (ask the owner to add you).
+2. In Neon, open `neon-almond-door` → `dev` branch → **Connect** → copy the pooled connection string.
+3. Create `.env.local` in the repo root:
+
 # Payload Website Template
 
 This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
@@ -288,6 +302,17 @@ export default buildConfig({
 ```
 
 There is also a simplified [one click deploy](https://github.com/payloadcms/payload/tree/templates/with-vercel-postgres) to Vercel should you need it.
+
+### Vercel-Managed Neon: migrating an existing Postgres (Path B)
+
+If you use **Neon via Vercel Storage** (Vercel-Managed / “native” integration) and need to **copy an existing database** into the new Neon project with no data loss, follow the runbook and script:
+
+- [docs/vercelManagedNeonMigration.md](docs/vercelManagedNeonMigration.md)
+- `pnpm run db:migrate:neon-vercel` (custom format; artifacts in `.neon-migrate/`)
+- `pnpm run db:migrate:neon-vercel:sql` (plain SQL + `psql`; same folder)
+- Both require `NEON_MIGRATE_SOURCE_URL` and `NEON_MIGRATE_TARGET_URL` (run from repo root)
+
+`payload.config.ts` already uses `DATABASE_URL` with `postgresAdapter`; after cutover, the integration-supplied `DATABASE_URL` is sufficient.
 
 ### Media storage on Vercel (Cloudflare R2)
 

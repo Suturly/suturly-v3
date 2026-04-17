@@ -11,20 +11,14 @@ import { Resources } from './collections/Resources/index'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
+import { Marketing } from './Marketing/config'
 import { plugins, storageRuntimeInfo } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { RESOURCE_CATEGORY_SEED } from './constants/resourceCategories'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-const DEFAULT_RESOURCE_CATEGORIES = [
-  { title: 'EDUCATION', slug: 'educatin' },
-  { title: 'PRE-OP', slug: 'pre-op' },
-  { title: 'OPERATION DAY', slug: 'operation-day' },
-  { title: 'POST-OP', slug: 'post-op' },
-  { title: 'NEXT STEPS', slug: 'next-steps' },
-]
 
 export default buildConfig({
   admin: {
@@ -72,7 +66,7 @@ export default buildConfig({
   }),
   collections: [Pages, Resources, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
+  globals: [Header, Footer, Marketing],
   plugins,
   onInit: async (payload) => {
     payload.logger.info(
@@ -90,7 +84,7 @@ export default buildConfig({
       pagination: false,
       where: {
         slug: {
-          in: DEFAULT_RESOURCE_CATEGORIES.map((category) => category.slug),
+          in: RESOURCE_CATEGORY_SEED.map((category) => category.slug),
         },
       },
       overrideAccess: true,
@@ -105,7 +99,7 @@ export default buildConfig({
         .filter(Boolean) as Array<[string, (typeof existingCategories.docs)[number]]>,
     )
 
-    for (const category of DEFAULT_RESOURCE_CATEGORIES) {
+    for (const category of RESOURCE_CATEGORY_SEED) {
       const existingCategory = existingBySlug.get(category.slug)
 
       if (existingCategory) {

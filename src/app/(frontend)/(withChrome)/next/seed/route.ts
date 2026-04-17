@@ -5,7 +5,23 @@ import { headers } from 'next/headers'
 
 export const maxDuration = 60 // This function can run for a maximum of 60 seconds
 
+/**
+ * Seeding **deletes** most collections and re-inserts demo data. It must not run against
+ * production by accident. In `NODE_ENV=production`, POST is rejected unless
+ * `ALLOW_DATABASE_SEED=true` (only for a disposable DB you intend to wipe).
+ */
 export async function POST(): Promise<Response> {
+  const seedAllowedInProduction = process.env.ALLOW_DATABASE_SEED === 'true'
+  if (process.env.NODE_ENV === 'production' && !seedAllowedInProduction) {
+    return Response.json(
+      {
+        error:
+          'Database seeding is disabled in production. It deletes posts, pages, forms, media rows, and more. Deploys do not run this — only an explicit POST to /next/seed does. To allow seeding on a throwaway database, set ALLOW_DATABASE_SEED=true.',
+      },
+      { status: 403 },
+    )
+  }
+
   const payload = await getPayload({ config })
   const requestHeaders = await headers()
 

@@ -28,3 +28,32 @@ alwaysApply: true
 
 1. Add BEM classes and rules in `globals.css`.
 2. Reference those class names from React — keep TSX free of layout/color utility noise.
+
+## Layout primitives (stacks) in `globals.css`
+
+Under `@layer utilities`:
+
+- **Stacks:** `.stack-sm`, `.stack-md` — vertical flex + gap from `--space-*`
+- **Inline rows:** `.inline-sm` — horizontal flex + align center + gap
+
+Use these for simple spacing instead of Tailwind dumps in TSX. Add siblings (e.g. `.stack-lg`) next to these if needed.
+
+**Marketing / landing sections** use a **BEM block** prefix such as `marketing-site-header`, `marketing-home-hero`, `marketing-site-footer` — feature-specific layout (blobs, header chrome) lives in [`globals.css`](src/app/(frontend)/globals.css).
+
+**Website layout CSS** (grid, section padding, type classes `.h1`–`.h6`, `.paragraph`, `.eyebrow`, `.row` / `.col` / `.col-*`, `u-*`, `fg-primary` / `fg-body`, `cc-*`, `.u-icon`) lives in [`website.css`](src/app/(frontend)/website.css), **`@import`’d from `globals.css`**.
+
+**Marketing page skeleton:** wrap each horizontal band in **`section`** (add **`section--pad-lg`** when it needs vertical section padding), then **`container` → `row` → `col col-xs-12 col-lg-12`** (or other `col-*` when you need a multi-column row). Prefer `u-mt-*` between blocks instead of Tailwind layout utilities.
+
+**Note:** Use `.fg-primary` / `.fg-body` for marketing text colors — not `.text-primary`, which can clash with Tailwind.
+
+## CSS file split (product vs website)
+
+- **Keep one entry:** `layout.tsx` imports only `./globals.css`.
+- **Import order in `globals.css`:** `product.css` first, then `website.css`, so website `@layer` rules can override the product stack at equal specificity.
+- **Two source files:** `globals.css` (tokens, orchestration) + `product.css` (resources / app chrome) + `website.css` (marketing grid + utilities). Marketing-only token overrides and layout vars (e.g. `--layout-grid-gutter`, reassigned `--text-h1`, `--space-*`, `--primary-*`) live under **`.marketing-site`** in `website.css` so they apply to `/home` (etc.) without changing Payload/product routes. Global spacing steps stay in `tokens.css` / `:root`.
+
+## Allowed class names in TSX (summary)
+
+- **BEM blocks** defined in `globals.css` for that feature.
+- **Global primitives:** `.container`, `.stack-*`, `.inline-sm`, typography utilities (`.text-p-main`, …), **website/marketing classes from `website.css`**, **`.ui-button`** ([`Button`](src/components/ui/button.tsx)).
+- **Do not** paste long Tailwind utility chains; prefer named classes in `globals.css` or `website.css`.

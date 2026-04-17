@@ -72,6 +72,11 @@ export const SeedButton: React.FC = () => {
     [loading, seeded, error],
   )
 
+  /** Never show in production builds — seed wipes the database (see `/next/seed` route). */
+  if (process.env.NODE_ENV === 'production') {
+    return null
+  }
+
   let message = ''
   if (loading) message = ' (seeding...)'
   if (seeded) message = ' (done!)'
