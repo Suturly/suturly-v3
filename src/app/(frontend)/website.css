@@ -2025,9 +2025,10 @@
 
   .problem-cont-block {
     padding: var(--space-1-5);
-    padding-bottom: var(--space-10);
+    padding-bottom: calc(var(--space-10) * 1.3);
     background-position: bottom right;
-    background-size: auto 200px;
+    background-size: 100% auto;
+    background-color: #0A0F1A;
   }
 
   .problem-cont-block__stats-wrap {
