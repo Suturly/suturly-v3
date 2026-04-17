@@ -7,7 +7,7 @@ const defaultOpenGraph: Metadata['openGraph'] = {
     'Suturly delivers procedure-specific education to surgical patients via timed SMS nudges and web guides — from pre-op through recovery.',
   images: [
     {
-      url: `${getServerSideURL()}/OG/home.png`,
+      url: `${getServerSideURL()}/images/OG/home.png`,
       width: 1200,
       height: 630,
       alt: 'Suturly — patient guidance platform',

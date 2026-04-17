@@ -60,6 +60,9 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
+    // Auto-sync schema on boot so new collections/globals become usable without manual migrations.
+    // Safe for purely additive changes; switch to proper migrations if the app grows.
+    push: true,
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
