@@ -155,7 +155,8 @@ export const plugins: Plugin[] = [
     },
     formSubmissionOverrides: {
       access: {
-        create: adminOnlyAccess,
+        // Public sites POST here without a session (same as typical form-builder usage).
+        create: () => true,
         delete: adminOnlyAccess,
         read: adminOnlyAccess,
         update: adminOnlyAccess,

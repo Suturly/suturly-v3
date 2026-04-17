@@ -112,10 +112,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    marketing: Marketing;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    marketing: MarketingSelect<false> | MarketingSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1793,6 +1795,19 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing".
+ */
+export interface Marketing {
+  id: number;
+  /**
+   * Form used by the marketing “Get in touch” modal. Field names must be: name, email, message.
+   */
+  partnerContactForm: number | Form;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1833,6 +1848,16 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing_select".
+ */
+export interface MarketingSelect<T extends boolean = true> {
+  partnerContactForm?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

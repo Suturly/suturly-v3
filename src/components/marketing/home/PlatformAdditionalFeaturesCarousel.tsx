@@ -21,18 +21,18 @@ const FEATURES: AdditionalFeature[] = [
     body: 'Build procedure-specific care timelines with staged touchpoints — from pre-op through recovery. One protocol per procedure, fully customizable.',
   },
   {
-    id: 'protocol-driven-2',
+    id: 'automated-pro-capture',
     imageSrc: '/images/home/features-02.png',
     imageAlt: 'additional features',
-    title: 'Protocol-driven, not static',
-    body: 'Build procedure-specific care timelines with staged touchpoints — from pre-op through recovery. One protocol per procedure, fully customizable.',
+    title: 'Automated PRO capture',
+    body: 'Validated outcome measures captured via text. Real-time data flows to your dashboard—no manual entry, no patient portals.',
   },
   {
-    id: 'protocol-driven-3',
+    id: 'one-click-ehr-integration',
     imageSrc: '/images/home/features-03.png',
     imageAlt: 'additional features',
-    title: 'Protocol-driven, not static',
-    body: 'Build procedure-specific care timelines with staged touchpoints — from pre-op through recovery. One protocol per procedure, fully customizable.',
+    title: 'One-click EHR integration',
+    body: 'One-click enrollment from your scheduling system. Protocol auto-activates by procedure code and date. No duplicate entry.',
   },
 ]
 
@@ -60,7 +60,6 @@ export function PlatformAdditionalFeaturesCarousel() {
                 fill
                 sizes="(max-width: 47.99rem) 90vw, (max-width: 63.99rem) 45vw, 30vw"
                 className="platform-section-additional-features__img"
-                priority
               />
             </div>
             <div className="platform-section-additional-features__content">

@@ -5,13 +5,10 @@
   padding-bottom: var(--space-3);
 }
 
-.marketing-home-evidence__viewport {
-  --swiper-pagination-color: var(--primary-600);
-  --swiper-pagination-bullet-inactive-color: var(--primary-200);
-  --swiper-pagination-bullet-inactive-opacity: 1;
-}
-
+/* Brand palette for all marketing swiper bullets (active = primary-600, inactive = primary-200). */
+.marketing-home-evidence__viewport,
 .platform-tab__swiper,
+.platform-tab__mobile-pagination,
 .platform-additional-swiper,
 .marketing-home-specialty__swiper {
   --swiper-pagination-color: var(--primary-600);

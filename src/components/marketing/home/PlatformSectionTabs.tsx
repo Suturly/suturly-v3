@@ -76,40 +76,46 @@ const TABS: PlatformTab[] = [
     imageAlt: 'Suturly surgeon workflow preview',
     backgroundImageSrc: '/images/home/for-surgeons-bg.png',
   },
-  {
-    id: 'health-systems',
-    tabLabel: 'For health systems',
-    panelTitle: 'Standardize perioperative communication across service lines',
-    solutions: [
-      {
-        title: 'Scale Quality',
-        description:
-          'Roll out timed, step-based education across specialties with governance-friendly templates.',
-        iconSrc: '/images/home/icon-placeholder.svg',
-      },
-      {
-        title: 'Reach Patients Where They Are',
-        description:
-          'Use SMS-first delivery to improve activation without adding portal friction.',
-        iconSrc: '/images/home/icon-placeholder.svg',
-      },
-      {
-        title: 'Reduce Noise',
-        description:
-          'Replace generic packets with journeys mapped to each procedure and recovery milestone.',
-        iconSrc: '/images/home/icon-placeholder.svg',
-      },
-    ],
-    imageSrc: '/images/home/for-health-systems-main.png',
-    imageAlt: 'Suturly health system platform preview',
-    backgroundImageSrc: '/images/home/for-health-systems-bg.png',
-  },
+  // {
+  //   id: 'health-systems',
+  //   tabLabel: 'For health systems',
+  //   panelTitle: 'Standardize perioperative communication across service lines',
+  //   solutions: [
+  //     {
+  //       title: 'Scale Quality',
+  //       description:
+  //         'Roll out timed, step-based education across specialties with governance-friendly templates.',
+  //       iconSrc: '/images/home/icon-placeholder.svg',
+  //     },
+  //     {
+  //       title: 'Reach Patients Where They Are',
+  //       description:
+  //         'Use SMS-first delivery to improve activation without adding portal friction.',
+  //       iconSrc: '/images/home/icon-placeholder.svg',
+  //     },
+  //     {
+  //       title: 'Reduce Noise',
+  //       description:
+  //         'Replace generic packets with journeys mapped to each procedure and recovery milestone.',
+  //       iconSrc: '/images/home/icon-placeholder.svg',
+  //     },
+  //   ],
+  //   imageSrc: '/images/home/for-health-systems-main.png',
+  //   imageAlt: 'Suturly health system platform preview',
+  //   backgroundImageSrc: '/images/home/for-health-systems-bg.png',
+  // },
 ]
 
-function PlatformTabPanelBody({ tab }: { tab: PlatformTab }) {
+function PlatformTabPanelBody({
+  tab,
+  includeBackground = true,
+}: {
+  tab: PlatformTab
+  includeBackground?: boolean
+}) {
   return (
     <>
-      {tab.backgroundImageSrc ? (
+      {includeBackground && tab.backgroundImageSrc ? (
         <div
           className="platform-tab__panel-background"
           aria-hidden
@@ -224,42 +230,61 @@ export function PlatformSectionTabs() {
     </div>
   )
 
+  const activeTab = TABS[activeIndex] ?? TABS[0]
+
   const mobileSwiper = (
-    <Swiper
-      className="platform-tab__swiper marketing-swiper--pad-bottom"
-      modules={[Pagination]}
-      pagination={{ clickable: true }}
-      spaceBetween={24}
-      slidesPerView={1}
-      breakpoints={{
-        768: { slidesPerView: 2, spaceBetween: 24 },
-      }}
-      onSwiper={(instance) => {
-        swiperRef.current = instance
-      }}
-      onSlideChange={(instance) => {
-        setActiveIndex(instance.activeIndex)
-      }}
-    >
-      {TABS.map((tab) => (
-        <SwiperSlide key={tab.id} className="platform-tab__swiper-slide">
-          <div
-            className="platform-tab__panel platform-tab__panel--carousel"
-            id={`${baseId}-panel-${tab.id}`}
-            role="tabpanel"
-            aria-labelledby={`${baseId}-tab-${tab.id}`}
-          >
-            <PlatformTabPanelBody tab={tab} />
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+    <>
+      {activeTab?.backgroundImageSrc ? (
+        <div
+          className="platform-tab__panel-background platform-tab__panel-background--mobile"
+          aria-hidden
+          style={{
+            backgroundImage: `url(${JSON.stringify(activeTab.backgroundImageSrc)})`,
+          }}
+        />
+      ) : null}
+      <Swiper
+        className="platform-tab__swiper"
+        modules={[Pagination]}
+        pagination={{ clickable: true, el: '.platform-tab__mobile-pagination' }}
+        spaceBetween={24}
+        slidesPerView={1}
+        breakpoints={{
+          768: { slidesPerView: 2, spaceBetween: 24 },
+        }}
+        onSwiper={(instance) => {
+          swiperRef.current = instance
+        }}
+        onSlideChange={(instance) => {
+          setActiveIndex(instance.activeIndex)
+        }}
+      >
+        {TABS.map((tab) => (
+          <SwiperSlide key={tab.id} className="platform-tab__swiper-slide">
+            <div
+              className="platform-tab__panel platform-tab__panel--carousel"
+              id={`${baseId}-panel-${tab.id}`}
+              role="tabpanel"
+              aria-labelledby={`${baseId}-tab-${tab.id}`}
+            >
+              <PlatformTabPanelBody tab={tab} includeBackground={false} />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </>
   )
 
   return (
-    <div className="platform-tab">
-      {tabNav}
-      {isLg ? desktopPanels : mobileSwiper}
-    </div>
+    <>
+      <div className="platform-section">
+        <div className="platform-tab">
+          {tabNav}
+          {isLg ? desktopPanels : mobileSwiper}
+        </div>
+      </div>
+      {/* Sibling of .platform-section so pagination sits below its visual box on mobile */}
+      <div className="platform-tab__mobile-pagination" aria-hidden />
+    </>
   )
 }

@@ -1,7 +1,11 @@
 'use client'
 
+import gsap from 'gsap'
 import Image from 'next/image'
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+
+const RING_CIRCUMFERENCE = 62.83
+const AUTOROTATE_MS = 6000
 
 type Layer = {
   id: string
@@ -67,10 +71,55 @@ function LayerFigure({
 /** “Three layers. One system.” — accordion: three headers always visible; exactly one panel open (click to switch). */
 export function HomeThreeLayersSection() {
   const [openIndex, setOpenIndex] = useState(0)
+  const [userInteracted, setUserInteracted] = useState(false)
+  const ringRefs = useRef<Array<SVGCircleElement | null>>([])
   const headingId = useId()
   const idPrefix = useId().replace(/:/g, '')
 
   const displayLayer = LAYERS[openIndex]
+
+  // Drive ring fill: pre-interaction animates the active ring over AUTOROTATE_MS;
+  // post-interaction toggles instantly on tab switch.
+  useEffect(() => {
+    const rings = ringRefs.current
+    rings.forEach((ring) => ring && gsap.killTweensOf(ring))
+
+    if (userInteracted) {
+      rings.forEach((ring, i) => {
+        if (!ring) return
+        gsap.set(ring, { strokeDashoffset: i === openIndex ? 0 : RING_CIRCUMFERENCE })
+      })
+      return
+    }
+
+    rings.forEach((ring, i) => {
+      if (!ring) return
+      if (i === openIndex) {
+        gsap.set(ring, { strokeDashoffset: RING_CIRCUMFERENCE })
+        gsap.to(ring, {
+          strokeDashoffset: 0,
+          duration: AUTOROTATE_MS / 1000,
+          ease: 'none',
+        })
+      } else {
+        gsap.set(ring, { strokeDashoffset: RING_CIRCUMFERENCE })
+      }
+    })
+  }, [openIndex, userInteracted])
+
+  // Autorotate every AUTOROTATE_MS until the user clicks a tab.
+  useEffect(() => {
+    if (userInteracted) return
+    const id = window.setInterval(() => {
+      setOpenIndex((i) => (i + 1) % LAYERS.length)
+    }, AUTOROTATE_MS)
+    return () => window.clearInterval(id)
+  }, [userInteracted])
+
+  const handleTabClick = (i: number) => {
+    setUserInteracted(true)
+    setOpenIndex(i)
+  }
 
   return (
     <section
@@ -97,7 +146,7 @@ export function HomeThreeLayersSection() {
                       aria-expanded={isOpen}
                       aria-controls={panelId}
                       className="marketing-home-layers__tab-trigger"
-                      onClick={() => setOpenIndex(i)}
+                      onClick={() => handleTabClick(i)}
                     >
                       <span className="marketing-home-layers__tab-ring" aria-hidden>
                         <svg
@@ -125,6 +174,9 @@ export function HomeThreeLayersSection() {
                             strokeWidth="1"
                           />
                           <circle
+                            ref={(el) => {
+                              ringRefs.current[i] = el
+                            }}
                             className="steps-ring-fill"
                             cx="12"
                             cy="12"
@@ -133,7 +185,7 @@ export function HomeThreeLayersSection() {
                             strokeWidth="1"
                             strokeLinecap="round"
                             strokeDasharray="62.83 62.83"
-                            strokeDashoffset={isOpen ? 0 : 62.83}
+                            strokeDashoffset={RING_CIRCUMFERENCE}
                             transform="rotate(-90 12 12)"
                           />
                         </svg>
@@ -160,7 +212,6 @@ export function HomeThreeLayersSection() {
                               layer={l}
                               className="marketing-home-layers__figure marketing-home-layers__figure--inline"
                               sizes="100vw"
-                              priority={i === 0}
                             />
                           </div>
                         </div>

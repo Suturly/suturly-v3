@@ -8,7 +8,7 @@ import React, {
   useReducer,
 } from 'react'
 
-import type { ModalApi, ModalState, OpenModalConfig } from './types'
+import type { ModalApi, ModalShellVariant, ModalState, OpenModalConfig } from './types'
 
 type ModalAction =
   | { type: 'CLOSE' }
@@ -17,6 +17,7 @@ type ModalAction =
       id: string
       screens: OpenModalConfig['screens']
       initialScreenKey: string
+      variant: ModalShellVariant
     }
   | { type: 'PUSH'; key: string }
   | { type: 'REPLACE'; key: string }
@@ -33,6 +34,7 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
         id: action.id,
         screens: action.screens,
         stack: [action.initialScreenKey],
+        variant: action.variant,
       }
     case 'PUSH': {
       if (!state.open) return state
@@ -97,6 +99,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
       id: config.id ?? `modal-${Date.now()}`,
       screens: config.screens,
       initialScreenKey: config.initialScreenKey,
+      variant: config.variant ?? 'default',
     })
   }, [])
 

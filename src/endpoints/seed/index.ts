@@ -1,14 +1,14 @@
-import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import type { CollectionSlug, Payload, PayloadRequest, File } from 'payload'
+
+import { RESOURCE_CATEGORY_SEED } from '@/constants/resourceCategories'
 
 import { contactForm as contactFormData } from './contact-form'
+import { partnerContactForm as partnerContactFormData } from './partner-contact-form'
 import { contact as contactPageData } from './contact-page'
 import { home } from './home'
 import { image1 } from './image-1'
 import { image2 } from './image-2'
 import { imageHero1 } from './image-hero-1'
-import { post1 } from './post-1'
-import { post2 } from './post-2'
-import { post3 } from './post-3'
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -20,9 +20,43 @@ const collections: CollectionSlug[] = [
   'search',
 ]
 
-const globals: GlobalSlug[] = ['header', 'footer']
+/** Minimal Lexical document for `categorySections[].content` (Resources / posts). */
+function seedLexicalParagraph(text: string) {
+  return {
+    root: {
+      type: 'root',
+      children: [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'text',
+              detail: 0,
+              format: 0,
+              mode: 'normal',
+              style: '',
+              text,
+              version: 1,
+            },
+          ],
+          direction: 'ltr' as const,
+          format: '' as const,
+          indent: 0,
+          textFormat: 0,
+          version: 1,
+        },
+      ],
+      direction: 'ltr' as const,
+      format: '' as const,
+      indent: 0,
+      version: 1,
+    },
+  }
+}
 
-const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
+// WARNING: This script **deletes** data in listed collections (posts, pages, forms, etc.),
+// then inserts demo content. Only run via POST /next/seed in development (production blocks
+// unless ALLOW_DATABASE_SEED=true). It does **not** run on deploy.
 
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
@@ -45,9 +79,9 @@ export const seed = async ({
 
   // clear the database
   await Promise.all(
-    globals.map((global) =>
+    (['header', 'footer'] as const).map((slug) =>
       payload.updateGlobal({
-        slug: global,
+        slug,
         data: {
           navItems: [],
         },
@@ -127,46 +161,106 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-    categories.map((category) =>
+  ])
+
+  const categoryDocs = await Promise.all(
+    RESOURCE_CATEGORY_SEED.map((category) =>
       payload.create({
         collection: 'categories',
         data: {
-          title: category,
-          slug: category,
+          title: category.title,
+          slug: category.slug,
         },
+        overrideAccess: true,
       }),
     ),
-  ])
+  )
+
+  const categoryIdBySlug = Object.fromEntries(
+    categoryDocs.map((doc) => [doc.slug as string, doc.id]),
+  ) as Record<string, number>
 
   payload.logger.info(`— Seeding posts...`)
 
-  // Do not create posts with `Promise.all` because we want the posts to be created in order
-  // This way we can sort them by `createdAt` or `publishedAt` and they will be in the expected order
+  const postContext = { disableRevalidate: true }
+
   const _post1Doc = await payload.create({
     collection: 'posts',
     depth: 0,
-    context: {
-      disableRevalidate: true,
+    context: postContext,
+    data: {
+      title: 'Digital Horizons: A Glimpse into Tomorrow',
+      slug: 'digital-horizons',
+      _status: 'published',
+      coverImage: image1Doc.id,
+      authors: [demoAuthor.id],
+      categorySections: [
+        {
+          category: categoryIdBySlug.educatin,
+          content: seedLexicalParagraph(
+            'Dive into the marvels of modern innovation, where the only constant is change. Seeded demo content for your resource library.',
+          ),
+        },
+      ],
+      meta: {
+        title: 'Digital Horizons: A Glimpse into Tomorrow',
+        description:
+          'Dive into the marvels of modern innovation, where the only constant is change.',
+        image: image1Doc.id,
+      },
     },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }) as any,
   })
 
   const _post2Doc = await payload.create({
     collection: 'posts',
     depth: 0,
-    context: {
-      disableRevalidate: true,
+    context: postContext,
+    data: {
+      title: 'Global Gaze: Beyond the Headlines',
+      slug: 'global-gaze',
+      _status: 'published',
+      coverImage: image2Doc.id,
+      authors: [demoAuthor.id],
+      categorySections: [
+        {
+          category: categoryIdBySlug['pre-op'],
+          content: seedLexicalParagraph(
+            'Explore perspectives that shape our world — seeded demo content for testing the resource layout.',
+          ),
+        },
+      ],
+      meta: {
+        title: 'Global Gaze: Beyond the Headlines',
+        description: 'Explore perspectives that shape our world.',
+        image: image2Doc.id,
+      },
     },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }) as any,
   })
 
   const _post3Doc = await payload.create({
     collection: 'posts',
     depth: 0,
-    context: {
-      disableRevalidate: true,
+    context: postContext,
+    data: {
+      title: 'Dollar and Sense: The Financial Forecast',
+      slug: 'dollar-and-sense-the-financial-forecast',
+      _status: 'published',
+      coverImage: image3Doc.id,
+      authors: [demoAuthor.id],
+      categorySections: [
+        {
+          category: categoryIdBySlug['operation-day'],
+          content: seedLexicalParagraph(
+            'Navigate the currents of global finance — seeded demo content for your CMS.',
+          ),
+        },
+      ],
+      meta: {
+        title: 'Dollar and Sense: The Financial Forecast',
+        description: 'Navigate the currents of global finance.',
+        image: image3Doc.id,
+      },
     },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }) as any,
   })
 
   payload.logger.info(`— Seeding contact form...`)
@@ -176,6 +270,16 @@ export const seed = async ({
     depth: 0,
     data: contactFormData,
   })
+
+  const partnerContactForm = await payload.create({
+    collection: 'forms',
+    depth: 0,
+    data: partnerContactFormData,
+  })
+
+  payload.logger.info(
+    `Partner contact form id: ${partnerContactForm.id} (also set on Globals → Marketing → Partner contact form)`,
+  )
 
   payload.logger.info(`— Seeding pages...`)
 
@@ -195,6 +299,12 @@ export const seed = async ({
   payload.logger.info(`— Seeding globals...`)
 
   await Promise.all([
+    payload.updateGlobal({
+      slug: 'marketing',
+      data: {
+        partnerContactForm: partnerContactForm.id,
+      },
+    }),
     payload.updateGlobal({
       slug: 'header',
       data: {

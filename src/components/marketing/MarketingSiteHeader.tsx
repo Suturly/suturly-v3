@@ -10,10 +10,10 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 const NAV_LINKS = [
-  { href: '/home#platform', label: 'Platform' },
-  { href: '/home#how-it-works', label: 'How It Works' },
-  { href: '/home#security', label: 'Security' },
-  { href: '/home#evidence', label: 'Evidence based' },
+  { href: '/#platform', label: 'Platform' },
+  { href: '/#how-it-works', label: 'How It Works' },
+  { href: '/#security', label: 'Security' },
+  { href: '/#evidence', label: 'Evidence based' },
 ] as const
 
 const PANEL_ID = 'marketing-site-nav-panel'
@@ -24,10 +24,49 @@ export function MarketingSiteHeader() {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
+  const [activeHash, setActiveHash] = useState<string | null>(null)
 
   useEffect(() => {
     setIsMenuOpen(false)
     setScrollY(typeof window !== 'undefined' ? window.scrollY : 0)
+  }, [pathname])
+
+  // Scroll-spy: track which anchor section is currently in view on the home page.
+  useEffect(() => {
+    if (pathname !== '/') {
+      setActiveHash(null)
+      return
+    }
+
+    const ids = NAV_LINKS.map((l) => l.href.replace(/^\/#/, ''))
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null)
+
+    if (sections.length === 0) return
+
+    const ratios = new Map<string, number>()
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0)
+        }
+        let bestId: string | null = null
+        let bestRatio = 0
+        for (const [id, ratio] of ratios) {
+          if (ratio > bestRatio) {
+            bestId = id
+            bestRatio = ratio
+          }
+        }
+        setActiveHash(bestId)
+      },
+      { rootMargin: '-30% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
+    )
+
+    sections.forEach((s) => observer.observe(s))
+    return () => observer.disconnect()
   }, [pathname])
 
   useEffect(() => {
@@ -82,7 +121,7 @@ export function MarketingSiteHeader() {
             <div className="col col-xs-12 col-lg-12">
               <div className="marketing-site-header__shell">
                 <div className="marketing-site-header__inner">
-                  <Link href="/home" className="marketing-site-header__logo">
+                  <Link href="/" className="marketing-site-header__logo">
                     <Logo loading="eager" priority="high" />
                   </Link>
 
@@ -90,22 +129,31 @@ export function MarketingSiteHeader() {
                     className="marketing-site-header__nav u-lg-only u-d-flex"
                     aria-label="Primary"
                   >
-                    {NAV_LINKS.map((item) => (
-                      <Link key={item.href} className="marketing-site-header__link" href={item.href}>
-                        {item.label}
-                      </Link>
-                    ))}
+                    {NAV_LINKS.map((item) => {
+                      const id = item.href.replace(/^\/#/, '')
+                      const isCurrent = activeHash === id
+                      return (
+                        <Link
+                          key={item.href}
+                          className="marketing-site-header__link"
+                          href={item.href}
+                          aria-current={isCurrent ? 'true' : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    })}
                   </nav>
 
                   <div className="marketing-site-header__actions u-lg-only u-d-inline-flex">
-                    <Button
+                    {/* <Button
                       type="button"
                       variant="secondary"
                       size="default"
                       className="marketing-site-header__btn-researchers"
                     >
                       For researchers
-                    </Button>
+                    </Button> */}
                     <PartnerContactOpenButton size="default">Get in touch</PartnerContactOpenButton>
                   </div>
 
@@ -139,16 +187,21 @@ export function MarketingSiteHeader() {
                 >
                   <div className="marketing-site-header__drawer-inner">
                     <nav className="marketing-site-header__nav-drawer" aria-label="Primary">
-                      {NAV_LINKS.map((item) => (
-                        <Link
-                          key={item.href}
-                          className="marketing-site-header__link marketing-site-header__link--stacked"
-                          href={item.href}
-                          onClick={closeMenu}
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
+                      {NAV_LINKS.map((item) => {
+                        const id = item.href.replace(/^\/#/, '')
+                        const isCurrent = activeHash === id
+                        return (
+                          <Link
+                            key={item.href}
+                            className="marketing-site-header__link marketing-site-header__link--stacked"
+                            href={item.href}
+                            aria-current={isCurrent ? 'true' : undefined}
+                            onClick={closeMenu}
+                          >
+                            {item.label}
+                          </Link>
+                        )
+                      })}
                     </nav>
                     <div className="marketing-site-header__drawer-actions">
                       <Button

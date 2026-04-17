@@ -1,7 +1,8 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import type { ModalState } from './types'
+import { cn } from '@/utilities/ui'
+import type { ModalShellVariant, ModalState } from './types'
 import { ArrowLeft, X } from 'lucide-react'
 import {
   useCallback,
@@ -111,6 +112,8 @@ export function ModalRoot() {
   const contentNode =
     typeof screen.content === 'function' ? screen.content(api) : screen.content
 
+  const shellVariant: ModalShellVariant = view.variant
+
   const runAction = (action: (typeof screen.actions)[number]) => () => {
     action.onClick?.(api)
     if (action.replaceScreenKey) api.replaceScreen(action.replaceScreenKey)
@@ -122,7 +125,11 @@ export function ModalRoot() {
     <div
       aria-labelledby={titleId}
       aria-modal="true"
-      className={`global-modal${visible ? ' global-modal--visible' : ''}`}
+      className={cn(
+        'global-modal',
+        visible && 'global-modal--visible',
+        shellVariant === 'marketing' && 'global-modal--marketing',
+      )}
       role="dialog"
     >
       <button
@@ -133,7 +140,10 @@ export function ModalRoot() {
         type="button"
       />
       <div
-        className="global-modal__dialog"
+        className={cn(
+          'global-modal__dialog',
+          shellVariant === 'marketing' && 'global-modal__dialog--marketing',
+        )}
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="global-modal__header">
@@ -150,20 +160,28 @@ export function ModalRoot() {
                 <ArrowLeft aria-hidden className="global-modal__icon" />
               </Button>
             ) : null}
-            <h2 className="global-modal__title" id={titleId}>
-              {screen.title}
-            </h2>
+            {shellVariant === 'marketing' ? (
+              <h3 className="global-modal__title global-modal__title--marketing" id={titleId}>
+                {screen.title}
+              </h3>
+            ) : (
+              <h2 className="global-modal__title" id={titleId}>
+                {screen.title}
+              </h2>
+            )}
           </div>
-          <Button
-            aria-label="Close"
-            className="global-modal__close"
-            onClick={closeModal}
-            size="icon"
-            type="button"
-            variant="ghost"
-          >
-            <X aria-hidden className="global-modal__icon" />
-          </Button>
+          {shellVariant === 'marketing' ? null : (
+            <Button
+              aria-label="Close"
+              className="global-modal__close"
+              onClick={closeModal}
+              size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <X aria-hidden className="global-modal__icon" />
+            </Button>
+          )}
         </div>
 
         <div className="global-modal__body">{contentNode}</div>
@@ -172,6 +190,7 @@ export function ModalRoot() {
           {screen.actions.map((action, index) => (
             <Button
               key={`${currentKey}-action-${index}`}
+              className={action.className}
               onClick={runAction(action)}
               size={action.size ?? 'big'}
               type="button"

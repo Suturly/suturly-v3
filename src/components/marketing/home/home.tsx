@@ -24,7 +24,7 @@ export function HomeHeroSection() {
                   src="/images/home/hero-phone.png"
                   alt="hand with a phone"
                   fill
-                  sizes="537px, 766px"
+                  sizes="(max-width: 64rem) 100vw, 45vw"
                   className="marketing-home-hero__img"
                   priority
                 />
@@ -34,7 +34,7 @@ export function HomeHeroSection() {
                   src="/images/home/hero-papers.png"
                   alt="old papers"
                   fill
-                  sizes="314px, 460px"
+                  sizes="(max-width: 64rem) 66vw, 25vw"
                   className="marketing-home-hero__img"
                   priority
                 />
@@ -65,7 +65,7 @@ export function HomeProblemSection() {
                 <span className="u-opacity-40">Surgical patients are</span> under-prepared <span className="u-opacity-40">and</span> under-guided
               </h2>
               <p className="problem-cont-block__text">
-                Patients get minutes to understand complex procedures, then leave with paper handouts they can barely retain. Recovery guidance is generic, fragmented, and disconnected from their actual surgery. And when they search for answers on their own, <a href="https://suturly-v3.vercel.app/" target="_blank" rel="noopener noreferrer">misinformation fills the gap</a>.
+                Patients get minutes to understand complex procedures, then leave with paper handouts they can barely retain. Recovery guidance is generic, fragmented, and disconnected from their actual surgery. And when they search for answers on their own, <a href="https://www.isjtrend.com/article_225742.html" target="_blank" rel="noopener noreferrer">misinformation fills the gap</a>.
               </p>
             </div>
           </div>
@@ -73,26 +73,26 @@ export function HomeProblemSection() {
             <div className="problem-cont-block__stats-wrap">
               <div className="problem-cont-block__stats-item">
                 <p className="h3 u-color-primary-1000">
-                  98%
+                1 in 4
                 </p>
                 <p className="u-color-gray-500">
-                  SMS open rate vs. 20% for email
+                surgical readmissions due to poor discharge education
                 </p>
               </div>
               <div className="problem-cont-block__stats-item">
                 <p className="h3 u-color-primary-1000">
-                  97%
+                ~50%
                 </p>
                 <p className="u-color-gray-500">
-                  of US adults can receive text messages
+                of patients forget their discharge instructions
                 </p>
               </div>
               <div className="problem-cont-block__stats-item">
                 <p className="h3 u-color-primary-1000">
-                  97%
+                  $B+
                 </p>
                 <p className="u-color-gray-500">
-                  of US adults can receive text messages
+                annual cost of preventable surgical readmissions
                 </p>
               </div>
             </div>
@@ -116,9 +116,7 @@ export function HomePlatformSection() {
         </div>
         <div className="row">
           <div className="col col-lg-12">
-            <div className="platform-section">
-              <PlatformSectionTabs />
-            </div>
+            <PlatformSectionTabs />
           </div>
         </div>
         <div className="row">
@@ -187,11 +185,13 @@ export function HomeContentTrustSection() {
         </div>
 
         <div className="marketing-home-trust__visual-wrap">
-          <img
+          <Image
             className="marketing-home-trust__visual"
             src="/images/home/pages-visual.png"
-            alt="trust visual"
-            aria-label="Product illustration placeholder"
+            alt="Example patient-facing content pages inside the Suturly platform"
+            width={3152}
+            height={984}
+            sizes="(max-width: 64rem) 200vw, 120vw"
           />
         </div>
       </div>
@@ -338,7 +338,6 @@ export function HomePrivacySection() {
               className="marketing-home-privacy__visual"
               width={400}
               height={400}
-              priority
             />
                 </div>
         </div>

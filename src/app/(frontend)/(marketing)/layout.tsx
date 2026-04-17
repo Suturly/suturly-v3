@@ -2,7 +2,7 @@ import { MarketingSiteFooter } from '@/components/marketing/MarketingSiteFooter'
 import { MarketingSiteHeader } from '@/components/marketing/MarketingSiteHeader'
 import React from 'react'
 
-export default function HomeMarketingLayout({ children }: { children: React.ReactNode }) {
+export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="marketing-site">
       <MarketingSiteHeader />

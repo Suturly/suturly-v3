@@ -1,3 +1,17 @@
+## Database setup
+
+Suturly uses Neon Postgres across three environments:
+
+- **Production** — `neon-almond-door` / `main` branch. URL managed by Vercel (auto-rotates).
+- **Preview** — Ephemeral Neon branch per PR, auto-created by Vercel on deployment.
+- **Local dev** — `neon-almond-door` / `dev` branch. You set it up manually (below).
+
+### Onboarding a new local dev
+
+1. Join the Vercel project `suturly-v3` and the Neon org `Vercel: suturly` (ask the owner to add you).
+2. In Neon, open `neon-almond-door` → `dev` branch → **Connect** → copy the pooled connection string.
+3. Create `.env.local` in the repo root:
+
 # Payload Website Template
 
 This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.

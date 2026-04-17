@@ -2,8 +2,11 @@
 
 import { PartnerContactOpenButton } from '@/components/marketing/partnerContactModal'
 import Image from 'next/image'
+import { useEffect, useRef } from 'react'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 type SpecialtyCard = {
   id: string
@@ -55,8 +58,62 @@ function SpecialtyCardArticle({ card }: { card: SpecialtyCard }) {
 }
 
 export function HomeSpecialtySection() {
+  const sectionRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    gsap.registerPlugin(ScrollTrigger)
+
+    const ctx = gsap.context(() => {
+      const visualBls = gsap.utils.toArray<HTMLElement>('.marketing-home-specialty__visual-bl')
+      const visuals = gsap.utils.toArray<HTMLElement>('.marketing-home-specialty__visual')
+
+      if (visualBls.length === 0 && visuals.length === 0) return
+
+      gsap.fromTo(
+        visualBls,
+        { width: '250%' },
+        {
+          width: '100%',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 50%',
+            end: '75% 50%',
+            scrub: true,
+            markers: false,
+            id: 'specialty-visual-bl',
+          },
+        },
+      )
+
+      gsap.fromTo(
+        visuals,
+        { scale: 1.7 },
+        {
+          scale: 1,
+          ease: 'none',
+          transformOrigin: 'center center',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 50%',
+            end: '75% 50%',
+            scrub: true,
+            markers: false,
+            id: 'specialty-visual',
+          },
+        },
+      )
+    }, section)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
     <section
+      ref={sectionRef}
       className="section marketing-home-specialty"
       aria-labelledby="marketing-home-specialty-heading"
     >
@@ -97,7 +154,6 @@ export function HomeSpecialtySection() {
                     height={390}
                     className="marketing-home-specialty__visual"
                     draggable={false}
-                    priority
                   />
                 </div>
               </div>
@@ -136,7 +192,6 @@ export function HomeSpecialtySection() {
                     height={390}
                     className="marketing-home-specialty__visual"
                     draggable={false}
-                    priority
                   />
                 </div>
               </div>
