@@ -204,14 +204,14 @@ export function MarketingSiteHeader() {
                       })}
                     </nav>
                     <div className="marketing-site-header__drawer-actions">
-                      <Button
+                      {/* <Button
                         type="button"
                         variant="secondary"
                         size="default"
                         className="marketing-site-header__btn-researchers"
                       >
                         For researchers
-                      </Button>
+                      </Button> */}
                       <PartnerContactOpenButton size="default">Get in touch</PartnerContactOpenButton>
                     </div>
                   </div>
