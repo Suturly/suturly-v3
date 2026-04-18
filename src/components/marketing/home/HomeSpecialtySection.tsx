@@ -150,8 +150,8 @@ export function HomeSpecialtySection() {
                   <Image
                     src="/images/home/doctor-image.png"
                     alt="Clinician with laptop"
-                    width={360}
-                    height={390}
+                    width={600}
+                    height={546}
                     className="marketing-home-specialty__visual"
                     draggable={false}
                   />
@@ -188,8 +188,8 @@ export function HomeSpecialtySection() {
                   <Image
                     src="/images/home/doctor-image.png"
                     alt="Clinician with laptop"
-                    width={360}
-                    height={390}
+                    width={600}
+                    height={546}
                     className="marketing-home-specialty__visual"
                     draggable={false}
                   />

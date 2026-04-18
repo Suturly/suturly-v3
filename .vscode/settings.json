@@ -38,5 +38,11 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
-  }
+  },
+  "tailwindCSS.includeLanguages": {
+  "css": "css"
+},
+"files.associations": {
+  "*.css": "css"
+}
 }

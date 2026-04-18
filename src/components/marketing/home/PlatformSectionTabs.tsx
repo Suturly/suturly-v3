@@ -34,17 +34,17 @@ const TABS: PlatformTab[] = [
         title: 'Never Miss a Step',
         description:
           'Stay on track from prep through recovery with timely guidance via text.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/never-miss-a-step.svg',
       },
       {
         title: 'Understand Your Care',
         description: 'Get clear answers to your questions in plain language you can understand.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/understand-your-care.svg',
       },
       {
         title: 'Recover with Confidence',
         description: 'Spot warning signs early and get peace of mind during your recovery.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/recover-with-confidence.svg',
       },
     ],
     imageSrc: '/images/home/for-patients-main.png',
@@ -59,17 +59,17 @@ const TABS: PlatformTab[] = [
       {
         title: 'Protocol Builder',
         description: 'Replace scattered handouts with one structured care pathway.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/protocol-builder.svg',
       },
       {
         title: 'Outcomes Dashboard',
         description: 'Spot recovery issues before they become readmissions.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/outcomes-dashboard.svg',
       },
       {
         title: 'Quality Reporting',
         description: 'Meet compliance requirements without the manual work.',
-        iconSrc: '/images/home/icon-placeholder.svg',
+        iconSrc: '/images/home/quality-reporting.svg',
       },
     ],
     imageSrc: '/images/home/for-surgeons-main.png',
@@ -132,6 +132,7 @@ function PlatformTabPanelBody({
           const iconDecorative = !item.iconAlt
           return (
             <li className="platform-tab__solution" key={item.title}>
+              <div className="platform-tab__solution-title-wrap">
               <div
                 className="platform-tab__solution-icon"
                 {...(iconDecorative ? { 'aria-hidden': true } : {})}
@@ -149,6 +150,7 @@ function PlatformTabPanelBody({
                 )}
               </div>
               <h4 className="p-sm u-color-primary-1000 u-weight-semibold platform-tab__solution-title">{item.title}</h4>
+              </div>
               <p className="p-sm u-color-secondary-500 platform-tab__solution-text">{item.description}</p>
             </li>
           )
