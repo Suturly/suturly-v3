@@ -1,8 +1,9 @@
 'use client'
 
 import { useIsDesktopLg } from '@/hooks/useIsDesktopLg'
+import gsap from 'gsap'
 import Image from 'next/image'
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { Swiper as SwiperType } from 'swiper'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -166,6 +167,7 @@ function PlatformTabPanelBody({
           height={550}
           sizes="(max-width: 48rem) 100vw, (max-width: 80rem) 90vw, min(1200px, 100vw)"
           style={{ width: '100%', height: 'auto' }}
+          loading="eager"
         />
       </div>
     </>
@@ -177,6 +179,90 @@ export function PlatformSectionTabs() {
   const [activeIndex, setActiveIndex] = useState(0)
   const isLg = useIsDesktopLg()
   const swiperRef = useRef<SwiperType | null>(null)
+  const panelsRef = useRef<HTMLDivElement | null>(null)
+  const isAnimatingRef = useRef(false)
+  // Set true after a desktop out-animation completes so the matching useEffect
+  // runs the in-animation against the freshly rendered active panel.
+  const shouldAnimateInRef = useRef(false)
+
+  const handleDesktopSelect = (newIndex: number) => {
+    if (newIndex === activeIndex || isAnimatingRef.current) return
+
+    const root = panelsRef.current
+    const currentPanel = root?.querySelectorAll<HTMLElement>('.platform-tab__panel')[activeIndex]
+    if (!root || !currentPanel) {
+      setActiveIndex(newIndex)
+      return
+    }
+
+    isAnimatingRef.current = true
+
+    const title = currentPanel.querySelector<HTMLElement>('.platform-tab__title')
+    const solutions = currentPanel.querySelector<HTMLElement>('.platform-tab__solutions')
+    const media = currentPanel.querySelector<HTMLElement>('.platform-tab__media')
+    const background = currentPanel.querySelector<HTMLElement>('.platform-tab__panel-background')
+
+    const textTargets = [title, solutions].filter(Boolean) as HTMLElement[]
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        shouldAnimateInRef.current = true
+        setActiveIndex(newIndex)
+      },
+    })
+    if (textTargets.length) {
+      tl.to(textTargets, { y: -16, opacity: 0, duration: 0.3, ease: 'power2.in' }, 0)
+    }
+    if (media) {
+      tl.to(media, { y: 16, opacity: 0, duration: 0.3, ease: 'power2.in' }, 0)
+    }
+    if (background) {
+      tl.to(background, { opacity: 0, duration: 0.3, ease: 'power2.in' }, 0)
+    }
+  }
+
+  useEffect(() => {
+    if (!shouldAnimateInRef.current) return
+    shouldAnimateInRef.current = false
+
+    const root = panelsRef.current
+    const newPanel = root?.querySelectorAll<HTMLElement>('.platform-tab__panel')[activeIndex]
+    if (!newPanel) {
+      isAnimatingRef.current = false
+      return
+    }
+
+    const title = newPanel.querySelector<HTMLElement>('.platform-tab__title')
+    const solutions = newPanel.querySelector<HTMLElement>('.platform-tab__solutions')
+    const media = newPanel.querySelector<HTMLElement>('.platform-tab__media')
+    const background = newPanel.querySelector<HTMLElement>('.platform-tab__panel-background')
+    const textTargets = [title, solutions].filter(Boolean) as HTMLElement[]
+
+    if (textTargets.length) {
+      gsap.set(textTargets, { y: -16, opacity: 0 })
+    }
+    if (media) {
+      gsap.set(media, { y: 16, opacity: 0 })
+    }
+    if (background) {
+      gsap.set(background, { opacity: 0 })
+    }
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        isAnimatingRef.current = false
+      },
+    })
+    if (textTargets.length) {
+      tl.to(textTargets, { y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }, 0)
+    }
+    if (media) {
+      tl.to(media, { y: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }, 0)
+    }
+    if (background) {
+      tl.to(background, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0)
+    }
+  }, [activeIndex])
 
   const tabNav = (
     <div className="platform-tab__nav" role="tablist" aria-label="Platform audiences">
@@ -197,8 +283,12 @@ export function PlatformSectionTabs() {
             aria-controls={panelId}
             tabIndex={selected ? 0 : -1}
             onClick={() => {
-              setActiveIndex(index)
-              swiperRef.current?.slideTo(index)
+              if (isLg) {
+                handleDesktopSelect(index)
+              } else {
+                setActiveIndex(index)
+                swiperRef.current?.slideTo(index)
+              }
             }}
           >
             {tab.tabLabel}
@@ -209,7 +299,7 @@ export function PlatformSectionTabs() {
   )
 
   const desktopPanels = (
-    <div className="platform-tab__panels">
+    <div className="platform-tab__panels" ref={panelsRef}>
       {TABS.map((tab, index) => {
         const selected = index === activeIndex
         const tabId = `${baseId}-tab-${tab.id}`

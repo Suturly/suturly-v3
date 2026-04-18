@@ -192,6 +192,7 @@ export function HomeContentTrustSection() {
             width={3152}
             height={984}
             sizes="(max-width: 64rem) 200vw, 120vw"
+            loading="eager"
           />
         </div>
       </div>
@@ -338,6 +339,7 @@ export function HomePrivacySection() {
               className="marketing-home-privacy__visual"
               width={400}
               height={400}
+              loading="eager"
             />
                 </div>
         </div>

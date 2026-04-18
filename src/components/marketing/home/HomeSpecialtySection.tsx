@@ -154,6 +154,7 @@ export function HomeSpecialtySection() {
                     height={546}
                     className="marketing-home-specialty__visual"
                     draggable={false}
+                    loading="eager"
                   />
                 </div>
               </div>
@@ -192,6 +193,7 @@ export function HomeSpecialtySection() {
                     height={546}
                     className="marketing-home-specialty__visual"
                     draggable={false}
+                    loading="eager"
                   />
                 </div>
               </div>

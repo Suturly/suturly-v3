@@ -103,6 +103,7 @@ function EvidenceCardSlide({ card }: { card: EvidenceCard }) {
             fill
             sizes="(max-width: 47.99rem) 85vw, (max-width: 63.99rem) 45vw, 22vw"
             className="marketing-home-evidence__card-image-placeholder"
+            loading="eager"
           />
           <div className="marketing-home-evidence__card-overlay">
             <div className="marketing-home-evidence__card-source">

@@ -60,6 +60,7 @@ export function PlatformAdditionalFeaturesCarousel() {
                 fill
                 sizes="(max-width: 47.99rem) 90vw, (max-width: 63.99rem) 45vw, 30vw"
                 className="platform-section-additional-features__img"
+                loading="eager"
               />
             </div>
             <div className="platform-section-additional-features__content">

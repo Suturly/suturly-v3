@@ -63,6 +63,7 @@ function LayerFigure({
         sizes={sizes}
         className="marketing-home-layers__img"
         priority={priority}
+        loading={priority ? undefined : 'eager'}
       />
     </figure>
   )
