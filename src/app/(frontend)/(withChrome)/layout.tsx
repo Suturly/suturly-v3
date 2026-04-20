@@ -3,6 +3,8 @@ import React from 'react'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 
+import '../product.css'
+
 export default function WithChromeLayout({ children }: { children: React.ReactNode }) {
   return (
     <>

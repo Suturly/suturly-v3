@@ -1,3 +1,8 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import './tailwind-shared.css';
+
 /* Product / Payload CMS frontend — utilities, components, responsive overrides, base body, html */
 
 @layer utilities {
@@ -270,6 +275,81 @@
 
   .resources-page__header {
     margin-bottom: var(--space-2-5);
+  }
+
+  /* Full-bleed filter bar: edge-to-edge viewport with 1rem inset (see ResourcesListingWithFilters). */
+  .resources-page__filters-outer {
+    box-sizing: border-box;
+    width: 100vw;
+    max-width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    margin-bottom: var(--space-2);
+    padding-inline: 1rem;
+  }
+
+  .resources-page__filters-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-top: var(--space-0-125);
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    mask-image: var(--resources-filters-mask, linear-gradient(to right, #000 0%, #000 100%));
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: var(--resources-filters-mask, linear-gradient(to right, #000 0%, #000 100%));
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    scrollbar-color: var(--primary-100) transparent;
+    scrollbar-width: thin;
+  }
+
+  .resources-page__filters-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .resources-page__filters-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .resources-page__filters-scroll::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: var(--primary-100);
+  }
+
+  .resources-page__filters-track {
+    display: flex;
+    width: max-content;
+    flex-wrap: nowrap;
+    gap: var(--space-0-5);
+  }
+
+  @variant md {
+    /* Align filter row with container grid; full-bleed only on small screens. */
+    .resources-page__filters-outer {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+
+    .resources-page__filters-scroll {
+      overflow-x: visible;
+      overflow-y: visible;
+      padding-bottom: 0;
+      mask-image: none;
+      -webkit-mask-image: none;
+      scrollbar-width: none;
+    }
+
+    .resources-page__filters-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .resources-page__filters-track {
+      width: 100%;
+      max-width: none;
+      flex-wrap: wrap;
+    }
   }
 
   .resources-grid {
@@ -3071,7 +3151,7 @@ table.lexical-table{
     font-weight: var(--text-p-main--font-weight);
   }
 
-  h1 {
+  .h1, h1 {
     font-size: var(--text-h1);
     line-height: var(--text-h1--line-height);
     font-weight: var(--text-h1--font-weight);

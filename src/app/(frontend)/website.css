@@ -1,3 +1,8 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import './tailwind-shared.css';
+
 .marketing-site {
   --layout-grid-gutter: var(--space-1);
   --layout-text-18: 1.125rem;

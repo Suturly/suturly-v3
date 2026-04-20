@@ -48,6 +48,15 @@ import { slugField } from 'payload'
 
 const FIXED_CATEGORY_SLUGS = ['educatin', 'pre-op', 'operation-day', 'post-op', 'next-steps']
 
+const RESOURCE_SPECIALTY_OPTIONS = [
+  { label: 'Plastic & Reconstructive Surgery', value: 'plastic_reconstructive' },
+  { label: 'Orthopedic Surgery', value: 'orthopedic' },
+  { label: 'Gastroenterology (GI)', value: 'gastroenterology' },
+  { label: 'Bariatric Surgery', value: 'bariatric' },
+  { label: 'Dermatology', value: 'dermatology' },
+  { label: 'Otolaryngology (ENT)', value: 'otolaryngology' },
+] as const
+
 const normalizeRelationshipValue = (value: unknown): null | number | string => {
   if (value === null || value === undefined) return null
   if (typeof value === 'number' || typeof value === 'string') return value
@@ -85,7 +94,7 @@ export const Resources: CollectionConfig<'posts'> = {
   },
   admin: {
     group: 'Collections',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'note', 'slug', 'specialties', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({
@@ -103,6 +112,30 @@ export const Resources: CollectionConfig<'posts'> = {
     useAsTitle: 'title',
   },
   fields: [
+    {
+      name: 'note',
+      type: 'textarea',
+      label: 'Note',
+      admin: {
+        description:
+          'Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.',
+        rows: 4,
+      },
+      access: {
+        read: ({ req: { user } }) => Boolean(user),
+      },
+    },
+    {
+      name: 'specialties',
+      type: 'select',
+      label: 'Specialties',
+      hasMany: true,
+      options: [...RESOURCE_SPECIALTY_OPTIONS],
+      admin: {
+        description: 'Select one or more specialties that apply to this resource.',
+        isClearable: true,
+      },
+    },
     {
       name: 'title',
       type: 'text',

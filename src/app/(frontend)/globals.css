@@ -1,25 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@config '../../../tailwind.config.mjs';
-
-@import './tokens.css';
-
-@custom-variant dark (&:is([data-theme='dark'] *));
-/* Breakpoint widths: single source of truth in tokens.css @theme --breakpoint-* */
-@custom-variant sm (@media (width >=theme(--breakpoint-sm)));
-@custom-variant md (@media (width >=theme(--breakpoint-md)));
-@custom-variant lg (@media (width >=theme(--breakpoint-lg)));
-@custom-variant xl (@media (width >=theme(--breakpoint-xl)));
-@custom-variant 2xl (@media (width >=theme(--breakpoint-2xl)));
-/* Ranges between breakpoints (for *-only utilities, etc.) */
-@custom-variant sm-only (@media (width >=theme(--breakpoint-sm)) and (width < theme(--breakpoint-md)));
-@custom-variant md-only (@media (width >=theme(--breakpoint-md)) and (width < theme(--breakpoint-lg)));
-/* Below md / lg (mobile-first “max” queries) */
-@custom-variant max-md (@media (width < theme(--breakpoint-md)));
-@custom-variant max-lg (@media (width < theme(--breakpoint-lg)));
-/* lg ≤ width < xl (tablet-wide band) */
-@custom-variant lg-xl-only (@media (width >=theme(--breakpoint-lg)) and (width < theme(--breakpoint-xl)));
+@import './tailwind-shared.css';
 
 @layer base {
   h1,
@@ -33,21 +15,6 @@
   }
 }
 
-@plugin "@tailwindcss/typography";
-
-@source inline("lg:col-span-4");
-@source inline("lg:col-span-6");
-@source inline("lg:col-span-8");
-@source inline("lg:col-span-12");
-@source inline("border-border");
-@source inline("bg-card");
-@source inline("border-error");
-@source inline("bg-error/30");
-@source inline("border-success");
-@source inline("bg-success/30");
-@source inline("border-warning");
-@source inline("bg-warning/30");
-
-@import './product.css';
-@import './website.css';
-@import '../../components/marketing/marketing-swiper.css';
+/* Product vs marketing styles are loaded per route layout so each surface wins locally:
+   - `(withChrome)` → product.css only
+   - Marketing shell → product.css (modal base) then website.css + marketing-swiper.css */

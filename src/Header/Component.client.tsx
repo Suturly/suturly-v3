@@ -37,7 +37,15 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data: _data }) => {
   const pathname = usePathname()
   const isResourceArticlePage = useMemo(() => isResourceArticlePath(pathname), [pathname])
   const [readingProgress, setReadingProgress] = useState(0)
-  const isResourcesActive = pathname === '/resources' || pathname.startsWith('/posts')
+  const isResourcesActive =
+    pathname === '/resources' ||
+    pathname.startsWith('/resources/') ||
+    pathname.startsWith('/posts')
+  const logoHref = useMemo(() => {
+    const p = pathname ?? ''
+    if (p === '/resources' || p.startsWith('/resources/')) return '/resources'
+    return '/'
+  }, [pathname])
 
   useEffect(() => {
     setHeaderTheme(null)
@@ -89,13 +97,9 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data: _data }) => {
       <div className="container site-header__container">
         <div className="site-header__inner">
           <div className="site-header__left">
-            <Link href="/">
+            <Link href={logoHref}>
               <Logo loading="eager" priority="high" />
             </Link>
-
-            <span className="site-header__tagline">
-              Evidence based medical resources
-            </span>
 
             <Button
               asChild

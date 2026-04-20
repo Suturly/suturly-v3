@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 import { MarketingSiteHeader } from '@/components/marketing/MarketingSiteHeader'
 import { Button } from '@/components/ui/button'
 
+import './product.css'
+import './website.css'
+
 export const metadata: Metadata = {
   title: 'Page not found — Suturly',
   description: "The page you're looking for has moved or no longer exists.",

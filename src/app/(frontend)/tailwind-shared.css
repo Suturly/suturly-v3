@@ -1,0 +1,33 @@
+/* Shared Tailwind setup for globals.css, product.css, and website.css (each entry imports tailwind + tw-animate, then this file). */
+
+@config '../../../tailwind.config.mjs';
+
+@import './tokens.css';
+
+@custom-variant dark (&:is([data-theme='dark'] *));
+/* Breakpoint widths: single source of truth in tokens.css @theme --breakpoint-* */
+@custom-variant sm (@media (width >=theme(--breakpoint-sm)));
+@custom-variant md (@media (width >=theme(--breakpoint-md)));
+@custom-variant lg (@media (width >=theme(--breakpoint-lg)));
+@custom-variant xl (@media (width >=theme(--breakpoint-xl)));
+@custom-variant 2xl (@media (width >=theme(--breakpoint-2xl)));
+@custom-variant sm-only (@media (width >=theme(--breakpoint-sm)) and (width < theme(--breakpoint-md)));
+@custom-variant md-only (@media (width >=theme(--breakpoint-md)) and (width < theme(--breakpoint-lg)));
+@custom-variant max-md (@media (width < theme(--breakpoint-md)));
+@custom-variant max-lg (@media (width < theme(--breakpoint-lg)));
+@custom-variant lg-xl-only (@media (width >=theme(--breakpoint-lg)) and (width < theme(--breakpoint-xl)));
+
+@plugin "@tailwindcss/typography";
+
+@source inline("lg:col-span-4");
+@source inline("lg:col-span-6");
+@source inline("lg:col-span-8");
+@source inline("lg:col-span-12");
+@source inline("border-border");
+@source inline("bg-card");
+@source inline("border-error");
+@source inline("bg-error/30");
+@source inline("border-success");
+@source inline("bg-success/30");
+@source inline("border-warning");
+@source inline("bg-warning/30");

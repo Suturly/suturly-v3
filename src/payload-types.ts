@@ -257,6 +257,16 @@ export interface Page {
  */
 export interface Post {
   id: number;
+  /**
+   * Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.
+   */
+  note?: string | null;
+  /**
+   * Select one or more specialties that apply to this resource.
+   */
+  specialties?:
+    | ('plastic_reconstructive' | 'orthopedic' | 'gastroenterology' | 'bariatric' | 'dermatology' | 'otolaryngology')[]
+    | null;
   title: string;
   coverImage: number | Media;
   benefits?:
@@ -1272,6 +1282,8 @@ export interface FormBlockSelect<T extends boolean = true> {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  note?: T;
+  specialties?: T;
   title?: T;
   coverImage?: T;
   benefits?:
