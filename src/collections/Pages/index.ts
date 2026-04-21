@@ -37,6 +37,8 @@ export const Pages: CollectionConfig<'pages'> = {
     slug: true,
   },
   admin: {
+    // Same perf rationale as Resources: list view should not hydrate full layout/blocks per row.
+    enableListViewSelectAPI: true,
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) =>

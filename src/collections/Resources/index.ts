@@ -94,6 +94,9 @@ export const Resources: CollectionConfig<'posts'> = {
   },
   admin: {
     group: 'Collections',
+    // Without this, the admin list loads full documents (all blocks/arrays). That can generate huge SQL
+    // and hang or time out on production Postgres (Neon + Vercel) while local still feels fine.
+    enableListViewSelectAPI: true,
     defaultColumns: ['title', 'note', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) =>
