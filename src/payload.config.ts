@@ -15,12 +15,18 @@ import { Marketing } from './Marketing/config'
 import { plugins, storageRuntimeInfo } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { getPayloadTrustedOrigins } from './utilities/getPayloadTrustedOrigins'
 import { RESOURCE_CATEGORY_SEED } from './constants/resourceCategories'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const trustedOrigins = getPayloadTrustedOrigins()
+
 export default buildConfig({
+  serverURL: getServerSideURL(),
+  cors: trustedOrigins,
+  csrf: trustedOrigins,
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -68,7 +74,6 @@ export default buildConfig({
     },
   }),
   collections: [Pages, Resources, Media, Categories, Users],
-  cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, Marketing],
   plugins,
   onInit: async (payload) => {
