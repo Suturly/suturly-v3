@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import type { Header } from '@/payload-types'
 
-import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/Logo/Logo'
 
 interface HeaderClientProps {
@@ -37,10 +36,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data: _data }) => {
   const pathname = usePathname()
   const isResourceArticlePage = useMemo(() => isResourceArticlePath(pathname), [pathname])
   const [readingProgress, setReadingProgress] = useState(0)
-  const isResourcesActive =
-    pathname === '/resources' ||
-    pathname.startsWith('/resources/') ||
-    pathname.startsWith('/posts')
   const logoHref = useMemo(() => {
     const p = pathname ?? ''
     if (p === '/resources' || p.startsWith('/resources/')) return '/resources'
@@ -100,17 +95,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data: _data }) => {
             <Link href={logoHref}>
               <Logo loading="eager" priority="high" />
             </Link>
-
-            <Button
-              asChild
-              size="small"
-              variant="ghost"
-              className={isResourcesActive ? 'is-active' : undefined}
-            >
-              <Link aria-current={isResourcesActive ? 'page' : undefined} href="/resources">
-                Resources
-              </Link>
-            </Button>
           </div>
 
           {/* <Button asChild size="small" variant="ghost">
