@@ -1,11 +1,14 @@
 import type { CollectionAfterReadHook } from 'payload'
-import { User } from 'src/payload-types'
+
+import type { User } from '@/payload-types'
 
 // The `user` collection has access control locked so that users are not publicly accessible
 // This means that we need to populate the authors manually here to protect user privacy
 // GraphQL will not return mutated user data that differs from the underlying schema
 // So we use an alternative `populatedAuthors` field to populate the user data, hidden from the admin UI
-export const populateAuthors: CollectionAfterReadHook = async ({ doc, req: { payload } }) => {
+export const populateAuthors: CollectionAfterReadHook = async ({ doc, findMany, req: { payload } }) => {
+  // List view does not use `populatedAuthors`; skipping avoids N+1 user lookups per row (timeouts / blank admin in prod).
+  if (findMany) return doc
   if (doc?.authors && doc?.authors?.length > 0) {
     const authorDocs: User[] = []
 
