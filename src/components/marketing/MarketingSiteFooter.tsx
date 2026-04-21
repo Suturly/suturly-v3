@@ -35,7 +35,7 @@ export function MarketingSiteFooter() {
                   <p className="u-color-primary-600 marketing-site-footer__partner-lead">
                     We&apos;re actively seeking clinical and research collaborators to pilot, refine, and expand
                     evidence-based perioperative education. If you&apos;re exploring better ways to prepare
-                    patients — let&apos;s work on it together.
+                    patients, let&apos;s work on it together.
                   </p>
                 </div>
                 <div className="marketing-site-footer__partner-actions">

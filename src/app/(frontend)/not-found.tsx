@@ -7,7 +7,7 @@ import './product.css'
 import './website.css'
 
 export const metadata: Metadata = {
-  title: 'Page not found — Suturly',
+  title: 'Page not found: Suturly',
   description: "The page you're looking for has moved or no longer exists.",
   robots: { index: false, follow: false },
 }
@@ -22,7 +22,7 @@ export default function NotFound() {
             404
           </p>
           <h1 id="not-found-heading" className="h3 marketing-not-found__title">
-            We couldn’t find the page you were looking for — let’s get you back on track.
+            We couldn’t find the page you were looking for. Let’s get you back on track.
           </h1>
           <Button href="/" variant="default" className="marketing-not-found__cta">
             Home page

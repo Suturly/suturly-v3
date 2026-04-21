@@ -28,7 +28,7 @@ const LAYERS: Layer[] = [
     id: 'web',
     label: 'Web layer',
     description:
-      'Browser-based guides, checklists, and education patients open from text links — no app install required.',
+      'Browser-based guides, checklists, and education patients open from text links: no app install required.',
     imageSrc: '/images/home/three-layers-2.png',
     imageAlt: 'Web-based patient education guides',
   },
@@ -73,19 +73,35 @@ function LayerFigure({
 export function HomeThreeLayersSection() {
   const [openIndex, setOpenIndex] = useState(0)
   const [userInteracted, setUserInteracted] = useState(false)
+  const [sectionInView, setSectionInView] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
   const ringRefs = useRef<Array<SVGCircleElement | null>>([])
   const headingId = useId()
   const idPrefix = useId().replace(/:/g, '')
 
   const displayLayer = LAYERS[openIndex]
+  const autorotateActive = sectionInView && !userInteracted
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        setSectionInView(entry.isIntersecting)
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
   // Drive ring fill: pre-interaction animates the active ring over AUTOROTATE_MS;
-  // post-interaction toggles instantly on tab switch.
+  // post-interaction toggles instantly on tab switch. Only while section is in view.
   useEffect(() => {
     const rings = ringRefs.current
     rings.forEach((ring) => ring && gsap.killTweensOf(ring))
 
-    if (userInteracted) {
+    if (userInteracted || !sectionInView) {
       rings.forEach((ring, i) => {
         if (!ring) return
         gsap.set(ring, { strokeDashoffset: i === openIndex ? 0 : RING_CIRCUMFERENCE })
@@ -106,16 +122,16 @@ export function HomeThreeLayersSection() {
         gsap.set(ring, { strokeDashoffset: RING_CIRCUMFERENCE })
       }
     })
-  }, [openIndex, userInteracted])
+  }, [openIndex, userInteracted, sectionInView])
 
-  // Autorotate every AUTOROTATE_MS until the user clicks a tab.
+  // Autorotate tabs only while the section is in view and the user has not taken over.
   useEffect(() => {
-    if (userInteracted) return
+    if (!autorotateActive) return
     const id = window.setInterval(() => {
       setOpenIndex((i) => (i + 1) % LAYERS.length)
     }, AUTOROTATE_MS)
     return () => window.clearInterval(id)
-  }, [userInteracted])
+  }, [autorotateActive])
 
   const handleTabClick = (i: number) => {
     setUserInteracted(true)
@@ -124,6 +140,7 @@ export function HomeThreeLayersSection() {
 
   return (
     <section
+      ref={sectionRef}
       className="section section--pad-lg marketing-home-layers"
       aria-labelledby={headingId}
     >

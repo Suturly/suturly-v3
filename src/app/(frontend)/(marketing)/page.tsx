@@ -13,9 +13,9 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
 
-const title = 'Suturly — Procedure-specific patient guidance, delivered step-by-step'
+const title = 'Suturly: Procedure-specific patient guidance, delivered step-by-step'
 const description =
-  'Suturly delivers procedure-specific education to surgical patients via timed SMS nudges and web guides — from pre-op through recovery. No app, no login, no generic handouts.'
+  'Suturly delivers procedure-specific education to surgical patients via timed SMS nudges and web guides: from pre-op through recovery. No app, no login, no generic handouts.'
 
 export const metadata: Metadata = {
   title,

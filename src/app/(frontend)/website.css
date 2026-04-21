@@ -1344,6 +1344,12 @@
     width: 100%;
   }
 
+  /* Mobile specialty carousel: no backdrop-filter on any descendant (performance / clarity). */
+  .marketing-home-specialty__mobile-carousel * {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   .marketing-home-specialty__swiper {
     width: 100%;
   }

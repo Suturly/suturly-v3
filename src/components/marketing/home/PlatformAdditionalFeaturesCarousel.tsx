@@ -18,14 +18,14 @@ const FEATURES: AdditionalFeature[] = [
     imageSrc: '/images/home/features-01.png',
     imageAlt: 'additional features',
     title: 'Protocol-driven, not static',
-    body: 'Build procedure-specific care timelines with staged touchpoints — from pre-op through recovery. One protocol per procedure, fully customizable.',
+    body: 'Build procedure-specific care timelines with staged touchpoints: from pre-op through recovery. One protocol per procedure, fully customizable.',
   },
   {
     id: 'automated-pro-capture',
     imageSrc: '/images/home/features-02.png',
     imageAlt: 'additional features',
     title: 'Automated PRO capture',
-    body: 'Validated outcome measures captured via text. Real-time data flows to your dashboard—no manual entry, no patient portals.',
+    body: 'Validated outcome measures captured via text. Real-time data flows to your dashboard: no manual entry, no patient portals.',
   },
   {
     id: 'one-click-ehr-integration',

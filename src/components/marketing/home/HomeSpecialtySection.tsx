@@ -33,7 +33,7 @@ const SPECIALTY_CARDS: SpecialtyCard[] = [
   {
     id: 'bariatric',
     title: 'Bariatric Surgery',
-    body: 'Walk patients through diet protocols, supplement schedules, and lifestyle changes — step by step, not all at once.',
+    body: 'Walk patients through diet protocols, supplement schedules, and lifestyle changes: step by step, not all at once.',
   },
   {
     id: 'gi',
@@ -128,7 +128,7 @@ export function HomeSpecialtySection() {
                 Built for your <span className="u-color-primary-600">specialty</span>
               </h2>
               <p className="marketing-home-specialty__lead u-opacity-60">
-                Each protocol is tailored to the procedures your patients actually undergo — so the education matches the
+                Each protocol is tailored to the procedures your patients actually undergo, so the education matches the
                 care. Get in touch to receive a demo.
               </p>
               <PartnerContactOpenButton className="marketing-home-specialty__cta">Request a demo</PartnerContactOpenButton>

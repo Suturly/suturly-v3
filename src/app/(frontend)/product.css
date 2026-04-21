@@ -2275,6 +2275,10 @@ button.resource-chapter-pager__link svg {
       grid-template-columns: minmax(0, 1fr) minmax(0, 14rem);
       align-items: start;
     }
+
+    .resource-block-procedure-type__top.resource-block-procedure-type__top--no-media {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .resource-block-procedure-type__title {
@@ -2460,16 +2464,16 @@ button.resource-chapter-pager__link svg {
   .resource-block-procedure-type__bottom {
     border-bottom-left-radius: var(--space-1);
     border-bottom-right-radius: var(--space-1);
-    padding: var(--space-1-5);
+    padding: var(--space-1-25) var(--space-1-5);
     background: var(--primary-50);
   }
 
   .resource-block-procedure-type__more-heading {
     margin: 0;
     color: var(--primary-600);
-    font-size: var(--text-h5);
-    line-height: var(--text-h5--line-height);
-    font-weight: var(--text-h5--font-weight);
+    font-size: var(--text-p-main);
+    line-height: var(--text-p-main--line-height);
+    font-weight: var(--text-p-main--font-weight);
   }
 
   .resource-block-procedure-type__more-toggle {
@@ -2496,6 +2500,7 @@ button.resource-chapter-pager__link svg {
     flex: 1;
     min-width: 0;
     text-align: left;
+    font-weight: var(--font-weight-semibold);
   }
 
   .resource-block-procedure-type__more-toggle.is-open {
@@ -2917,7 +2922,7 @@ width: 100%;
     padding: var(--space-1-25);
   }
   .resource-block-procedure-type__bottom{
-    padding: var(--space-1-25);
+    padding: var(--space-1-25) var(--space-1-5);
   }
 
   .payload-richtext--prose.resource-category-richtext :where(h2):not(:where(.not-prose, .not-prose *)), .resource-chapter-references__title{

@@ -3,7 +3,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
 
-const title = 'About — Suturly'
+const title = 'About: Suturly'
 const description = 'Meet the team behind evidence-based medical resources.'
 
 export const metadata: Metadata = {

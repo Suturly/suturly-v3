@@ -16,8 +16,8 @@ export function HomeHeroSection() {
                 <span className="u-color-primary-600">guided</span> through every step
               </h1>
               <p className="hero-p u-color-primary-600">
-                Procedure-specific education delivered in timed steps from pre-op through recovery —
-                not all at once in a single clinic visit.
+                Procedure-specific education delivered in timed steps from pre-op through recovery, not
+                all at once in a single clinic visit.
               </p>
               <div className="marketing-home-hero-key__img-wrap">
                 <Image
@@ -287,7 +287,7 @@ export function HomePrivacySection() {
                   <h3 className="h6 u-color-primary-50 marketing-home-privacy__item-title">PHI-Free SMS</h3>
                   </div>
                   <p className="u-opacity-60 marketing-home-privacy__item-text">
-                    Text messages contain no PHI. Only prompts, reminders, and secure links—never
+                    Text messages contain no PHI. Only prompts, reminders, and secure links: never
                     patient names.
                   </p>
                 </article>

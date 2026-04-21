@@ -13,7 +13,7 @@ export function AboutTeamSection() {
             Our team
           </h2>
           <p className="paragraph fg-body u-mt-1 measure-readable marketing-about-team__lede">
-            The people building Suturly — replace placeholders with real names, photos, and bios.
+            The people building Suturly: replace placeholders with real names, photos, and bios.
           </p>
 
           <div className="row u-mt-2">

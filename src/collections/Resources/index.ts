@@ -94,7 +94,7 @@ export const Resources: CollectionConfig<'posts'> = {
   },
   admin: {
     group: 'Collections',
-    defaultColumns: ['title', 'note', 'slug', 'specialties', 'updatedAt'],
+    defaultColumns: ['title', 'note', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({

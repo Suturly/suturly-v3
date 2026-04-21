@@ -1,5 +1,6 @@
 'use client'
 
+import { hasText } from '@payloadcms/richtext-lexical/shared'
 import React from 'react'
 
 import RichText from '@/components/RichText'
@@ -25,7 +26,8 @@ export const Dropdown: React.FC<Props> = ({
 }) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
-  if (!title && !description) return null
+  const hasBody = Boolean(description && hasText(description))
+  if (!hasBody) return null
 
   return (
     <div className={cn('not-prose resource-block-dropdown', isOpen && 'is-open', className)}>

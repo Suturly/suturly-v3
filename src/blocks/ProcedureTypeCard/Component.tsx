@@ -62,7 +62,12 @@ export const ProcedureTypeCard: React.FC<Props> = ({
 
   return (
     <section className={cn('not-prose resource-block-procedure-type', className)}>
-      <div className="resource-block-procedure-type__top">
+      <div
+        className={cn(
+          'resource-block-procedure-type__top',
+          !image && 'resource-block-procedure-type__top--no-media',
+        )}
+      >
         <div className="resource-block-procedure-type__main">
           {title ? <h3 className="resource-block-procedure-type__title">{title}</h3> : null}
           {chipList.length > 0 ? (

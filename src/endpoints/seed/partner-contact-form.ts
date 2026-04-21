@@ -15,7 +15,7 @@ export const partnerContactForm: RequiredDataFromCollectionSlug<'forms'> = {
               format: 0,
               mode: 'normal',
               style: '',
-              text: 'Thanks — we received your message.',
+              text: 'Thanks, we received your message.',
               version: 1,
             },
           ],
@@ -68,7 +68,7 @@ export const partnerContactForm: RequiredDataFromCollectionSlug<'forms'> = {
           version: 1,
         },
       },
-      subject: 'Partner contact — new message',
+      subject: 'Partner contact: new message',
     },
   ],
   fields: [
