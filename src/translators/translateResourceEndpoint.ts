@@ -1,5 +1,6 @@
 import type { Endpoint, PayloadHandler } from 'payload'
-import { translateOperation } from '@jhb.software/payload-content-translator-plugin'
+
+import { translateOperation } from '@/translators/contentTranslator/translateOperation'
 
 /**
  * POST /api/posts/:id/translate-to-es

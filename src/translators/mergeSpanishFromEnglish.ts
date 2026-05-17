@@ -1,5 +1,6 @@
 import type { PayloadRequest } from 'payload'
-import { translateOperation } from '@jhb.software/payload-content-translator-plugin'
+
+import { translateOperation } from '@/translators/contentTranslator/translateOperation'
 
 import { identityTranslateResolver } from './identityTranslateResolver'
 

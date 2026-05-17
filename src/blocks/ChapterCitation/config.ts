@@ -18,6 +18,7 @@ export const ChapterCitationBlock: Block = {
       type: 'text',
       required: true,
       label: 'Citation',
+      custom: { translatorSkip: true },
       admin: {
         description:
           'Pick an existing source from this resource’s Citations tab, or create one here. Reuse the same entry when citing one source multiple times.',

@@ -1,7 +1,7 @@
 /**
  * One-time / occasional: copy English into empty Spanish fields only.
  *
- * Uses the same field walk as "Translate all" (@jhb.software/payload-content-translator-plugin)
+ * Uses the same field walk as "Translate all" (`translateOperation` in `src/translators/contentTranslator`).
  * with `emptyOnly: true`, but swaps the resolver for an identity pass (EN strings unchanged).
  * Does **not** stamp `translatedAt` — editors can still run Translate all (DeepL) or Reset.
  *
@@ -14,7 +14,8 @@
  */
 
 import type { TranslateResolver } from '@jhb.software/payload-content-translator-plugin'
-import { translateOperation } from '@jhb.software/payload-content-translator-plugin'
+
+import { translateOperation } from '@/translators/contentTranslator/translateOperation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 

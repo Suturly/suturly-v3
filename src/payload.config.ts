@@ -17,6 +17,7 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { getPayloadTrustedOrigins } from './utilities/getPayloadTrustedOrigins'
 import { RESOURCE_CATEGORY_SEED } from './constants/resourceCategories'
+import { lexicalBlocksForConfig } from '@/blocks/lexicalBlocksForConfig'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,6 +25,7 @@ const dirname = path.dirname(filename)
 const trustedOrigins = getPayloadTrustedOrigins()
 
 export default buildConfig({
+  blocks: lexicalBlocksForConfig,
   serverURL: getServerSideURL(),
   cors: trustedOrigins,
   csrf: trustedOrigins,

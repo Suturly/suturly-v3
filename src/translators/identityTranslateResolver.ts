@@ -1,7 +1,7 @@
 import type { TranslateResolver } from '@jhb.software/payload-content-translator-plugin'
 
 /**
- * Copies EN strings into ES via payload-content-translator-plugin traverseFields
+ * Copies EN strings into ES via `translateOperation` + shared {@link traverseFields} walker.
  * without calling DeepL (identity pass).
  */
 export const identityTranslateResolver: TranslateResolver = {

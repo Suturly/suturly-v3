@@ -5,7 +5,7 @@ import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { payloadContentTranslatorPlugin } from '@jhb.software/payload-content-translator-plugin'
-import type { Field, Plugin } from 'payload'
+import type { Field, PayloadRequest, Plugin } from 'payload'
 import { adminOnlyAccess } from '@/access/roles'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
@@ -15,6 +15,7 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { translatorTranslateEndpointReplacementPlugin } from '@/plugins/translatorTranslateEndpointReplacement'
 import { deeplResolver } from '@/translators/deeplResolver'
 
 const normalizeEnvFlag = (value?: string): string =>
@@ -55,6 +56,8 @@ export const storageRuntimeInfo = {
 
 const deeplApiKey = process.env.DEEPL_API_KEY?.trim()
 const isTranslatorEnabled = Boolean(deeplApiKey)
+
+const translatorEndpointAccess = ({ req }: { req: PayloadRequest }) => Boolean(req.user)
 
 export const translatorRuntimeInfo = {
   enabled: isTranslatorEnabled,
@@ -240,25 +243,18 @@ export const plugins: Plugin[] = [
       },
     },
   }),
-  // Translator plugin: registers a DeepL resolver on
-  // `config.custom.translator.resolver` so our `translateResourceEndpoint`
-  // can call `translateOperation()` to walk the post's fields. We pass an
-  // empty `collections` list because we don't want the plugin's own modal +
-  // SaveButton override — our toolbar button (TranslateAllButton)
-  // calls our endpoint atomically and stamps `translatedAt` in the same
-  // payload.update(). See src/translators/translateResourceEndpoint.ts.
+  // Translator plugin: registers resolver on `config.custom.translator.resolver`. Its bundled POST
+  // `/translator/translate` still imports the package's traverseFields — we append
+  // `translatorTranslateEndpointReplacementPlugin` so that route runs our translateOperation instead.
   ...(isTranslatorEnabled
     ? [
         payloadContentTranslatorPlugin({
           collections: [],
           globals: [],
           resolver: deeplResolver({ apiKey: deeplApiKey as string }),
-          // Only logged-in users can hit /api/translator/translate. The
-          // endpoint is unused by our UI (we have our own at
-          // /api/posts/:id/translate-to-es) but the plugin always registers
-          // it, so we still gate it behind auth.
-          access: ({ req }) => Boolean(req.user),
+          access: translatorEndpointAccess,
         }),
+        translatorTranslateEndpointReplacementPlugin(translatorEndpointAccess),
       ]
     : []),
 ]
