@@ -24,22 +24,31 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const slugSet = new Set<string>()
 
-  for (const locale of ['en', 'es'] satisfies AppLocale[]) {
-    const posts = await payload.find({
-      collection: 'posts',
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      locale,
-      select: {
-        slug: true,
-      },
-    })
-    for (const doc of posts.docs) {
-      const s = doc.slug
-      if (typeof s === 'string' && s.trim()) slugSet.add(s)
+  try {
+    for (const locale of ['en', 'es'] satisfies AppLocale[]) {
+      const posts = await payload.find({
+        collection: 'posts',
+        draft: false,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        locale,
+        select: {
+          slug: true,
+        },
+      })
+      for (const doc of posts.docs) {
+        const s = doc.slug
+        if (typeof s === 'string' && s.trim()) slugSet.add(s)
+      }
     }
+  } catch (err) {
+    // e.g. `relation "posts_locales" does not exist` before prod migrations — build must not fail.
+    console.warn(
+      '[posts/[slug]] generateStaticParams: could not list posts (schema or DB). Using on-demand paths. Apply Payload migrations to pre-render all slugs.',
+      err instanceof Error ? err.message : err,
+    )
+    return []
   }
 
   return [...slugSet].map((slug) => ({ slug }))

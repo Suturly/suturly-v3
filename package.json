@@ -12,6 +12,7 @@
     "env:use:production": "npx vercel env pull .env.local --environment=production",
     "env:use:development": "npx vercel env pull .env.local --environment=development",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "generate:importmap:with-r2": "cross-env NODE_OPTIONS=--no-deprecation R2_ENABLED=true R2_BUCKET=importmap-sync R2_ACCESS_KEY_ID=importmap-sync R2_SECRET_ACCESS_KEY=importmap-sync R2_ACCOUNT_ID=importmap-sync payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
