@@ -126,8 +126,9 @@ export const Resources: CollectionConfig<'posts'> = {
     components: {
       edit: {
         /** Mount hook — UI portaled before Live Preview / Preview; see TranslateAllButton.client.tsx */
-        beforeDocumentControls:
+        beforeDocumentControls: [
           '@/collections/Resources/components/TranslateAllButton.client#TranslateAllButton',
+        ],
       },
     },
   },
@@ -292,8 +293,9 @@ export const Resources: CollectionConfig<'posts'> = {
                   required: true,
                   admin: {
                     components: {
-                      beforeInput:
+                      beforeInput: [
                         '@/collections/Resources/components/StaleLocalizedRichTextResetBeforeInput.client#StaleLocalizedRichTextResetBeforeInput',
+                      ],
                     },
                   },
                   editor: lexicalEditor({

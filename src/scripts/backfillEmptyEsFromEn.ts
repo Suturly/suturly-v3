@@ -89,14 +89,16 @@ async function main() {
   const dryRun = hasFlag('--dry-run')
   const limitRaw = parseArg('--limit')
   const idRaw = parseArg('--id')
-  const limit =
-    limitRaw === undefined || limitRaw === ''
-      ? undefined
-      : Number.parseInt(limitRaw, 10)
-
-  if (limitRaw !== undefined && limitRaw !== '' && (Number.isNaN(limit) || limit < 1)) {
-    console.error('[backfill-es] Invalid --limit')
-    process.exit(1)
+  let limit: number | undefined
+  if (limitRaw === undefined || limitRaw === '') {
+    limit = undefined
+  } else {
+    const parsed = Number.parseInt(limitRaw, 10)
+    if (Number.isNaN(parsed) || parsed < 1) {
+      console.error('[backfill-es] Invalid --limit')
+      process.exit(1)
+    }
+    limit = parsed
   }
 
   const payload = await getPayload({ config })
@@ -134,7 +136,6 @@ async function main() {
       pagination: false,
       depth: 0,
       overrideAccess: true,
-      select: { id: true },
     })
 
     let updated = 0
