@@ -121,7 +121,6 @@ const TranslateAllChrome = () => {
   const { id } = useDocumentInfo()
   const { config } = useConfig()
   const apiRoute = config?.routes?.api ?? '/api'
-  const serverURL = config?.serverURL ?? ''
   const router = useRouter()
   const [pending, setPending] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -142,7 +141,9 @@ const TranslateAllChrome = () => {
   const runTranslate = async () => {
     setPending(true)
     try {
-      const url = `${serverURL}${apiRoute}/posts/${encodeURIComponent(String(id))}/translate-to-es`
+      // Same-origin URL only — admin may live on www while SERVER_URL/env still points at *.vercel.app,
+      // which would omit auth cookies and yield 401 ("You must be logged in to translate.").
+      const url = `${apiRoute}/posts/${encodeURIComponent(String(id))}/translate-to-es`
       const res = await fetch(url, {
         method: 'POST',
         credentials: 'include',

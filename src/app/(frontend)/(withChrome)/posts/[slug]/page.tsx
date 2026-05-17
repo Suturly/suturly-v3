@@ -10,6 +10,7 @@ import React, { cache } from 'react'
 import type { Post } from '@/payload-types'
 
 import { generateMeta } from '@/utilities/generateMeta'
+import { hydratePostRelations } from '@/utilities/hydratePostRelations'
 import { mergeEsResourceContentFromEn } from '@/utilities/mergeEsResourceContentFromEn'
 import {
   buildResourceDetailPath,
@@ -195,17 +196,21 @@ const loadPostForResourcePage = cache(
 
     const { isEnabled: draft } = await draftMode()
     const payload = await getPayload({ config: configPromise })
-    const enDoc = await payload.findByID({
+    const relDepth = draft ? 0 : 1
+    const enRaw = await payload.findByID({
       collection: 'posts',
       id: doc.id,
       draft,
+      depth: relDepth,
       locale: 'en',
       overrideAccess: draft,
     })
 
-    if (!enDoc) return doc as Post
+    if (!enRaw) return doc as Post
 
-    return mergeEsResourceContentFromEn(doc as Post, enDoc as Post)
+    const enDoc = draft ? await hydratePostRelations(payload, enRaw as Post) : (enRaw as Post)
+
+    return mergeEsResourceContentFromEn(doc as Post, enDoc)
   },
 )
 
@@ -213,10 +218,13 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: A
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
+  /** Draft preview + Drizzle can mishandle populated uploads (media rows as IDs); hydrate explicitly below. */
+  const relDepth = draft ? 0 : 1
 
   const result = await payload.find({
     collection: 'posts',
     draft,
+    depth: relDepth,
     limit: 1,
     locale,
     overrideAccess: draft,
@@ -235,6 +243,7 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: A
     const enHit = await payload.find({
       collection: 'posts',
       draft,
+      depth: relDepth,
       limit: 1,
       locale: 'en',
       overrideAccess: draft,
@@ -252,10 +261,15 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: A
           collection: 'posts',
           id: enDoc.id,
           draft,
+          depth: relDepth,
           locale: 'es',
           overrideAccess: draft,
         })) ?? null
     }
+  }
+
+  if (doc && draft) {
+    return hydratePostRelations(payload, doc as Post)
   }
 
   return doc
