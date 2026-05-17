@@ -17,7 +17,6 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { getPayloadTrustedOrigins } from './utilities/getPayloadTrustedOrigins'
 import { RESOURCE_CATEGORY_SEED } from './constants/resourceCategories'
-import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -81,8 +80,13 @@ export default buildConfig({
     // We graduated from push: true after the 3.84.x bump introduced destructive plugin
     // schema changes that needed data-preservation SQL.
     push: false,
-    /** Registered migrations run on prod DB connect (`NODE_ENV === 'production'`); CLI still reads `src/migrations/*.ts`. */
-    prodMigrations: migrations,
+    /**
+     * Do **not** set `prodMigrations` here: the Postgres adapter runs migrations on **every**
+     * production DB connect, including `next build` (“Collecting page data”). That can invoke
+     * Payload’s interactive “dev push” confirmation when `payload_migrations` contains
+     * `batch: -1`, which **hangs Vercel CI** (no stdin). Run migrations explicitly instead:
+     * `npm run payload migrate` with `DATABASE_URL` (local/CI deploy hook), after backup.
+     */
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
