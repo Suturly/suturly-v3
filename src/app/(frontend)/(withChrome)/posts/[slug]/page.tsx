@@ -10,6 +10,7 @@ import React, { cache } from 'react'
 import type { Post } from '@/payload-types'
 
 import { generateMeta } from '@/utilities/generateMeta'
+import { hydratePostLexicalUploads } from '@/utilities/hydrateLexicalUploads'
 import { hydratePostRelations } from '@/utilities/hydratePostRelations'
 import { mergeEsResourceContentFromEn } from '@/utilities/mergeEsResourceContentFromEn'
 import {
@@ -211,7 +212,9 @@ const loadPostForResourcePage = cache(
 
     const enDoc = draft ? await hydratePostRelations(payload, enRaw as Post) : (enRaw as Post)
 
-    return mergeEsResourceContentFromEn(doc as Post, enDoc)
+    const merged = mergeEsResourceContentFromEn(doc as Post, enDoc)
+    await hydratePostLexicalUploads(payload, merged)
+    return merged
   },
 )
 
@@ -268,6 +271,10 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: A
           overrideAccess: draft,
         })) ?? null
     }
+  }
+
+  if (doc) {
+    await hydratePostLexicalUploads(payload, doc as Post)
   }
 
   if (doc && draft) {

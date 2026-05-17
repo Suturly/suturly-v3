@@ -2,7 +2,7 @@ import type { Payload } from 'payload'
 
 import type { Post } from '@/payload-types'
 
-async function ensureMedia(payload: Payload, value: unknown): Promise<unknown> {
+export async function ensureMedia(payload: Payload, value: unknown): Promise<unknown> {
   if (value == null || value === '') return value
   if (typeof value === 'object' && value !== null && 'url' in value) return value
 
