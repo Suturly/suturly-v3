@@ -2817,9 +2817,10 @@ button.resource-chapter-pager__link svg {
     align-items: flex-start;
     gap: var(--space-0-5);
   }
-  .big-image-wrapper > div, .big-image-wrapper img{
+  .big-image-wrapper > :is(div, button),
+  .big-image-wrapper img {
     width: 100%;
-    }
+  }
 .big-image-wrapper picture{
 margin-bottom: 0;
 margin-top:0;
@@ -2850,7 +2851,7 @@ width: 100%;
     color: var(--gray-100);
     font-style: italic;
   }
-  .resource-block-two-column-images__figure > div:first-child{
+  .resource-block-two-column-images__figure > :first-child {
     height: 100%;
   }
   .resource-block-two-column-images__figure picture {

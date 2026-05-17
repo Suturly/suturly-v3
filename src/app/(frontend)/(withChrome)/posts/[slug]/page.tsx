@@ -196,7 +196,8 @@ const loadPostForResourcePage = cache(
 
     const { isEnabled: draft } = await draftMode()
     const payload = await getPayload({ config: configPromise })
-    const relDepth = draft ? 0 : 1
+    /** Same as {@link queryPostBySlug}: need depth 2 for uploads inside Lexical blocks. */
+    const relDepth = draft ? 0 : 2
     const enRaw = await payload.findByID({
       collection: 'posts',
       id: doc.id,
@@ -218,8 +219,9 @@ const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: A
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
-  /** Draft preview + Drizzle can mishandle populated uploads (media rows as IDs); hydrate explicitly below. */
-  const relDepth = draft ? 0 : 1
+  /** Draft preview + Drizzle can mishandle populated uploads (media rows as IDs); hydrate explicitly below.
+   *  Published requests use depth 2 so uploads inside Lexical blocks (e.g. procedure type card image) populate. */
+  const relDepth = draft ? 0 : 2
 
   const result = await payload.find({
     collection: 'posts',
