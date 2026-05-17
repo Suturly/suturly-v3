@@ -18,8 +18,9 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../../access/authenticated'
+import { authenticatedCreateResourceEnglishLocaleOnly } from '../../access/authenticatedCreateResourceEnglishLocale'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { adminOnlyDeleteAccess } from '../../access/roles'
+import { adminOnlyDeleteAccess, isAdminRole } from '../../access/roles'
 import { Banner } from '../../blocks/Banner/config'
 import { ChapterCitationBlock } from '../../blocks/ChapterCitation/config'
 import { DoDontCardBlock } from '../../blocks/DoDontCard/config'
@@ -34,8 +35,15 @@ import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 import { migrateLegacyCitationsAfterRead } from './hooks/migrateLegacyCitationsAfterRead'
+import { mergeEnglishIntoSpanishAdminRead } from './hooks/mergeEnglishIntoSpanishAdminRead'
+import { mergeEnglishListColumnsAfterFind } from './hooks/mergeEnglishListColumnsAfterFind'
 import { validateResourceCitations } from './hooks/validateCitations'
 import { deduplicateArrayRowIds } from './hooks/deduplicateArrayRowIds'
+import { stampSpanishMirroringStop } from './hooks/stampSpanishMirroringStop'
+import { syncEnglishToSpanish } from './hooks/syncEnglishToSpanish'
+import { trackEnUpdatedAt } from './hooks/trackEnUpdatedAt'
+import { markLocalized } from '../../utilities/markLocalized'
+import { translateResourceEndpoint } from '../../translators/translateResourceEndpoint'
 
 import {
   MetaDescriptionField,
@@ -45,6 +53,8 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+
+import type { User } from '@/payload-types'
 
 const FIXED_CATEGORY_SLUGS = ['educatin', 'pre-op', 'operation-day', 'post-op', 'next-steps']
 
@@ -74,7 +84,7 @@ export const Resources: CollectionConfig<'posts'> = {
     plural: 'Resources',
   },
   access: {
-    create: authenticated,
+    create: authenticatedCreateResourceEnglishLocaleOnly,
     delete: adminOnlyDeleteAccess,
     read: authenticatedOrPublished,
     update: authenticated,
@@ -113,42 +123,37 @@ export const Resources: CollectionConfig<'posts'> = {
         req,
       }),
     useAsTitle: 'title',
+    components: {
+      edit: {
+        /** Mount hook — UI portaled before Live Preview / Preview; see TranslateAllButton.client.tsx */
+        beforeDocumentControls:
+          '@/collections/Resources/components/TranslateAllButton.client#TranslateAllButton',
+      },
+    },
   },
-  fields: [
-    {
-      name: 'note',
-      type: 'textarea',
-      label: 'Note',
-      admin: {
-        description:
-          'Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.',
-        rows: 4,
-      },
-      access: {
-        read: ({ req: { user } }) => Boolean(user),
-      },
-    },
-    {
-      name: 'specialties',
-      type: 'select',
-      label: 'Specialties',
-      hasMany: true,
-      options: [...RESOURCE_SPECIALTY_OPTIONS],
-      admin: {
-        description: 'Select one or more specialties that apply to this resource.',
-        isClearable: true,
-      },
-    },
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
+  fields: markLocalized([
     {
       type: 'tabs',
       tabs: [
         {
+          label: 'Content',
           fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'specialties',
+              type: 'select',
+              label: 'Specialties',
+              hasMany: true,
+              options: [...RESOURCE_SPECIALTY_OPTIONS],
+              admin: {
+                description: 'Select one or more specialties that apply to this resource.',
+                isClearable: true,
+              },
+            },
             {
               name: 'coverImage',
               type: 'upload',
@@ -285,6 +290,12 @@ export const Resources: CollectionConfig<'posts'> = {
                   name: 'content',
                   type: 'richText',
                   required: true,
+                  admin: {
+                    components: {
+                      beforeInput:
+                        '@/collections/Resources/components/StaleLocalizedRichTextResetBeforeInput.client#StaleLocalizedRichTextResetBeforeInput',
+                    },
+                  },
                   editor: lexicalEditor({
                     features: ({ rootFeatures }) => {
                       return [
@@ -341,7 +352,6 @@ export const Resources: CollectionConfig<'posts'> = {
               }),
             },
           ],
-          label: 'Content',
         },
         {
           label: 'Citations',
@@ -363,6 +373,9 @@ export const Resources: CollectionConfig<'posts'> = {
                   type: 'text',
                   required: true,
                   label: 'Key',
+                  // UUID, identical across locales. Localizing it would silently
+                  // break inline citation references in ES that point to EN keys.
+                  localized: false,
                   admin: {
                     hidden: true,
                   },
@@ -425,6 +438,22 @@ export const Resources: CollectionConfig<'posts'> = {
       ],
     },
     {
+      name: 'note',
+      type: 'textarea',
+      label: 'Note',
+      localized: false,
+      admin: {
+        position: 'sidebar',
+        className: 'resource-editor-note',
+        rows: 2,
+        description:
+          'Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.',
+      },
+      access: {
+        read: ({ req: { user } }) => Boolean(user),
+      },
+    },
+    {
       name: 'lastUpdatedOn',
       type: 'date',
       label: 'Last updated date',
@@ -483,29 +512,82 @@ export const Resources: CollectionConfig<'posts'> = {
         readOnly: true,
       },
       fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-        {
-          name: 'name',
-          type: 'text',
-        },
+        // Derived from the authors relationship; identical across locales.
+        { name: 'id', type: 'text', localized: false },
+        { name: 'name', type: 'text', localized: false },
       ],
     },
-    slugField(),
-  ],
+    // Slugs are localized so /resources/<en-slug> and /es/resources/<es-slug>
+    // can resolve to the same document with different per-locale URLs.
+    slugField({ localized: true }),
+    {
+      name: 'spanishMirrorsEnglish',
+      type: 'checkbox',
+      label: 'Spanish mirrors English (internal)',
+      defaultValue: true,
+      localized: false,
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'translatedAt',
+      type: 'date',
+      label: 'Last translated at',
+      // Stamped by the Phase 3 "Translate all" action whenever DeepL fills in
+      // the ES locale. Compared against `enUpdatedAt` to detect stale ES fields.
+      localized: false,
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        condition: (_data, _sibling, { user }) => isAdminRole(user as User | undefined),
+        description:
+          'Set automatically when an editor runs Translate all to ES. Used to flag Spanish fields as stale when the English source has been edited since.',
+      },
+    },
+    {
+      name: 'enUpdatedAt',
+      type: 'date',
+      label: 'EN last updated at',
+      // Stamped by the trackEnUpdatedAt afterChange hook on every EN save.
+      localized: false,
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        condition: (_data, _sibling, { user }) => isAdminRole(user as User | undefined),
+        description:
+          'Set automatically on every English save. Used together with Last translated at to flag Spanish fields as stale.',
+      },
+    },
+  ]),
   hooks: {
     beforeChange: [deduplicateArrayRowIds],
     beforeValidate: [validateResourceCitations],
-    afterChange: [revalidatePost],
-    afterRead: [migrateLegacyCitationsAfterRead, populateAuthors],
+    // syncEnglishToSpanish mirrors EN → ES before stamping EN timestamps.
+    // stampSpanishMirroringStop detects manual ES edits and disables mirroring.
+    // trackEnUpdatedAt stamps EN last; revalidatePost clears ISR after everything commits.
+    afterChange: [
+      syncEnglishToSpanish,
+      stampSpanishMirroringStop,
+      trackEnUpdatedAt,
+      revalidatePost,
+    ],
+    afterRead: [
+      mergeEnglishIntoSpanishAdminRead,
+      migrateLegacyCitationsAfterRead,
+      populateAuthors,
+    ],
     afterDelete: [revalidateDelete],
+    afterOperation: [mergeEnglishListColumnsAfterFind],
   },
+  endpoints: [translateResourceEndpoint],
   versions: {
     drafts: {
       autosave: {
-        interval: 100, // We set this interval for optimal live preview
+        // Payload default is 2000 ms; ~100 ms stacks overlapping saves with heavy afterChange hooks.
+        interval: 2000,
       },
       schedulePublish: true,
     },

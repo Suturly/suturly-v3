@@ -4,33 +4,45 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
 
 import type { Post } from '@/payload-types'
 
 import { generateMeta } from '@/utilities/generateMeta'
+import { mergeEsResourceContentFromEn } from '@/utilities/mergeEsResourceContentFromEn'
+import {
+  buildResourceDetailPath,
+  getRequestLocale,
+  type AppLocale,
+} from '@/utilities/requestLocale'
 import { buildHeadingAnchors, extractH2Headings } from '@/utilities/richTextHeadings'
 import PageClient, { ResourceTabsMain } from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
+  const slugSet = new Set<string>()
 
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
+  for (const locale of ['en', 'es'] satisfies AppLocale[]) {
+    const posts = await payload.find({
+      collection: 'posts',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      locale,
+      select: {
+        slug: true,
+      },
+    })
+    for (const doc of posts.docs) {
+      const s = doc.slug
+      if (typeof s === 'string' && s.trim()) slugSet.add(s)
+    }
+  }
 
-  return params
+  return [...slugSet].map((slug) => ({ slug }))
 }
 
 type Args = {
@@ -60,15 +72,19 @@ const toSlugFallback = (value: string, fallback: string) => {
 }
 
 export default async function Post({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
+  const locale = await getRequestLocale()
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
   const searchParams = await searchParamsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/posts/' + decodedSlug
-  const post = await queryPostBySlug({ slug: decodedSlug })
+  const post = await loadPostForResourcePage({ slug: decodedSlug, locale })
 
-  if (!post) return <PayloadRedirects url={url} />
+  if (!post) {
+    if (locale === 'es') notFound()
+    return <PayloadRedirects url={url} />
+  }
 
   const sections =
     post.categorySections?.map((section, index) => {
@@ -118,7 +134,9 @@ export default async function Post({ params: paramsPromise, searchParams: search
   const activeTab = sections.find((section) => section.categorySlug === requestedTab)?.categorySlug
     ? requestedTab
     : sections[0]?.categorySlug
-  const resourcePath = `/resources/${encodeURIComponent(decodedSlug)}`
+  const canonicalSlug =
+    typeof post.slug === 'string' && post.slug.trim() ? post.slug.trim() : decodedSlug
+  const resourcePath = buildResourceDetailPath(locale, canonicalSlug)
 
   return (
     <article className="resource-page">
@@ -148,15 +166,41 @@ export default async function Post({ params: paramsPromise, searchParams: search
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  const locale = await getRequestLocale()
   const { slug = '' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
-  const post = await queryPostBySlug({ slug: decodedSlug })
+  const post = await loadPostForResourcePage({ slug: decodedSlug, locale })
 
   return generateMeta({ doc: post })
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const loadPostForResourcePage = cache(
+  async ({ slug, locale }: { slug: string; locale: AppLocale }): Promise<Post | null> => {
+    const doc = await queryPostBySlug({ slug, locale })
+    if (!doc) return null
+
+    if (locale !== 'es') return doc as Post
+
+    if ((doc as Post).spanishMirrorsEnglish === false) return doc as Post
+
+    const { isEnabled: draft } = await draftMode()
+    const payload = await getPayload({ config: configPromise })
+    const enDoc = await payload.findByID({
+      collection: 'posts',
+      id: doc.id,
+      draft,
+      locale: 'en',
+      overrideAccess: draft,
+    })
+
+    if (!enDoc) return doc as Post
+
+    return mergeEsResourceContentFromEn(doc as Post, enDoc as Post)
+  },
+)
+
+const queryPostBySlug = cache(async ({ slug, locale }: { slug: string; locale: AppLocale }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -165,6 +209,7 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     collection: 'posts',
     draft,
     limit: 1,
+    locale,
     overrideAccess: draft,
     pagination: false,
     where: {
@@ -174,5 +219,35 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     },
   })
 
-  return result.docs?.[0] || null
+  let doc = result.docs?.[0] ?? null
+
+  // ES slug column may be empty while EN slug matches the URL segment — resolve via EN post id.
+  if (!doc && locale === 'es') {
+    const enHit = await payload.find({
+      collection: 'posts',
+      draft,
+      limit: 1,
+      locale: 'en',
+      overrideAccess: draft,
+      pagination: false,
+      where: {
+        slug: {
+          equals: slug,
+        },
+      },
+    })
+    const enDoc = enHit.docs?.[0]
+    if (enDoc?.id) {
+      doc =
+        (await payload.findByID({
+          collection: 'posts',
+          id: enDoc.id,
+          draft,
+          locale: 'es',
+          overrideAccess: draft,
+        })) ?? null
+    }
+  }
+
+  return doc
 })

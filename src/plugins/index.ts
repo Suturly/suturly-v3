@@ -4,7 +4,8 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { Plugin } from 'payload'
+import { payloadContentTranslatorPlugin } from '@jhb.software/payload-content-translator-plugin'
+import type { Field, Plugin } from 'payload'
 import { adminOnlyAccess } from '@/access/roles'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
@@ -14,6 +15,7 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { deeplResolver } from '@/translators/deeplResolver'
 
 const normalizeEnvFlag = (value?: string): string =>
   (value || '')
@@ -50,6 +52,50 @@ export const storageRuntimeInfo = {
   useR2Storage,
   warnings: r2StorageWarnings,
 }
+
+const deeplApiKey = process.env.DEEPL_API_KEY?.trim()
+const isTranslatorEnabled = Boolean(deeplApiKey)
+
+export const translatorRuntimeInfo = {
+  enabled: isTranslatorEnabled,
+  reason: isTranslatorEnabled
+    ? 'DEEPL_API_KEY present; resolver registered.'
+    : 'DEEPL_API_KEY missing; translator disabled. Translate-all button will show a config hint.',
+}
+
+/**
+ * Recursively walks a field tree and forces `localized: false` on every named field.
+ * Used to opt out of plugin-baked-in localization for collections that are NOT in the
+ * EN/ES localization scope (Forms, in our case). Without this, enabling project-wide
+ * localization in payload.config.ts would force a destructive schema change for the
+ * @payloadcms/plugin-form-builder fields, which now ship with `localized: true` in 3.84.x.
+ */
+const stripLocalization = (fields: Field[]): Field[] =>
+  fields.map((field) => {
+    const next = { ...field } as Field
+
+    if ('localized' in next) {
+      ;(next as { localized?: boolean }).localized = false
+    }
+
+    if (next.type === 'array' || next.type === 'group' || next.type === 'collapsible') {
+      ;(next as { fields: Field[] }).fields = stripLocalization((next as { fields: Field[] }).fields)
+    }
+    if (next.type === 'row') {
+      next.fields = stripLocalization(next.fields)
+    }
+    if (next.type === 'tabs') {
+      next.tabs = next.tabs.map((tab) => ({ ...tab, fields: stripLocalization(tab.fields) }))
+    }
+    if (next.type === 'blocks') {
+      next.blocks = next.blocks.map((block) => ({
+        ...block,
+        fields: stripLocalization(block.fields),
+      }))
+    }
+
+    return next
+  })
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
@@ -134,7 +180,12 @@ export const plugins: Plugin[] = [
         group: 'Plugins',
       },
       fields: ({ defaultFields }) => {
-        return defaultFields.map((field) => {
+        // Forms are NOT part of EN/ES scope. Strip localized: true that the
+        // plugin defaults to in 3.84.x; without this the project-wide localization
+        // config would silently force a destructive schema change on forms tables.
+        const unlocalized = stripLocalization(defaultFields)
+
+        return unlocalized.map((field) => {
           if ('name' in field && field.name === 'confirmationMessage') {
             return {
               ...field,
@@ -169,6 +220,11 @@ export const plugins: Plugin[] = [
   searchPlugin({
     collections: ['posts'],
     beforeSync: beforeSyncWithSearch,
+    // EN-only search index for now. The search plugin auto-localizes when
+    // config.localization is set; we explicitly opt out so the search.title
+    // column stays a single shared value and gets indexed in EN.
+    // Revisit when ES search becomes a requirement.
+    localize: false,
     searchOverrides: {
       access: {
         create: adminOnlyAccess,
@@ -184,4 +240,25 @@ export const plugins: Plugin[] = [
       },
     },
   }),
+  // Translator plugin: registers a DeepL resolver on
+  // `config.custom.translator.resolver` so our `translateResourceEndpoint`
+  // can call `translateOperation()` to walk the post's fields. We pass an
+  // empty `collections` list because we don't want the plugin's own modal +
+  // SaveButton override — our toolbar button (TranslateAllButton)
+  // calls our endpoint atomically and stamps `translatedAt` in the same
+  // payload.update(). See src/translators/translateResourceEndpoint.ts.
+  ...(isTranslatorEnabled
+    ? [
+        payloadContentTranslatorPlugin({
+          collections: [],
+          globals: [],
+          resolver: deeplResolver({ apiKey: deeplApiKey as string }),
+          // Only logged-in users can hit /api/translator/translate. The
+          // endpoint is unused by our UI (we have our own at
+          // /api/posts/:id/translate-to-es) but the plugin always registers
+          // it, so we still gate it behind auth.
+          access: ({ req }) => Boolean(req.user),
+        }),
+      ]
+    : []),
 ]

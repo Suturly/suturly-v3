@@ -108,7 +108,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'es') | ('en' | 'es')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -119,7 +119,7 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     marketing: MarketingSelect<false> | MarketingSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -203,36 +203,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (
-    | CallToActionBlock
-    | ContentBlock
-    | {
-        media: number | Media;
-        /**
-         * Optional. When set, replaces the caption from the Media library. Leave empty to use the library caption, or hide if the library has no caption.
-         */
-        customCaption?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'mediaBlock';
-      }
-    | ArchiveBlock
-    | FormBlock
-  )[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -257,17 +228,13 @@ export interface Page {
  */
 export interface Post {
   id: number;
-  /**
-   * Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.
-   */
-  note?: string | null;
+  title: string;
   /**
    * Select one or more specialties that apply to this resource.
    */
   specialties?:
     | ('plastic_reconstructive' | 'orthopedic' | 'gastroenterology' | 'bariatric' | 'dermatology' | 'otolaryngology')[]
     | null;
-  title: string;
   coverImage: number | Media;
   benefits?:
     | {
@@ -336,6 +303,10 @@ export interface Post {
     description?: string | null;
   };
   /**
+   * Internal editor note. Shown in the admin list only — not included on the public resource page or for anonymous API readers.
+   */
+  note?: string | null;
+  /**
    * Optional. When set, this date is shown instead of the published date, with an icon and hover details.
    */
   lastUpdatedOn?: string | null;
@@ -355,6 +326,15 @@ export interface Post {
    */
   generateSlug?: boolean | null;
   slug: string;
+  spanishMirrorsEnglish?: boolean | null;
+  /**
+   * Set automatically when an editor runs Translate all to ES. Used to flag Spanish fields as stale when the English source has been edited since.
+   */
+  translatedAt?: string | null;
+  /**
+   * Set automatically on every English save. Used together with Last translated at to flag Spanish fields as stale.
+   */
+  enUpdatedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -498,7 +478,6 @@ export interface Category {
    */
   generateSlug?: boolean | null;
   slug: string;
-  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
         doc?: (number | null) | Category;
@@ -507,6 +486,7 @@ export interface Category {
         id?: string | null;
       }[]
     | null;
+  parent?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
 }
@@ -634,6 +614,34 @@ export interface ContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock".
+ */
+export interface MediaBlock {
+  media: number | Media;
+  /**
+   * Optional. When set, replaces the caption from the Media library. Leave empty to use the library caption, or hide if the library has no caption.
+   */
+  customCaption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1282,9 +1290,8 @@ export interface FormBlockSelect<T extends boolean = true> {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
-  note?: T;
-  specialties?: T;
   title?: T;
+  specialties?: T;
   coverImage?: T;
   benefits?:
     | T
@@ -1317,6 +1324,7 @@ export interface PostsSelect<T extends boolean = true> {
         image?: T;
         description?: T;
       };
+  note?: T;
   lastUpdatedOn?: T;
   publishedAt?: T;
   authors?: T;
@@ -1328,6 +1336,9 @@ export interface PostsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
+  spanishMirrorsEnglish?: T;
+  translatedAt?: T;
+  enUpdatedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1436,7 +1447,6 @@ export interface CategoriesSelect<T extends boolean = true> {
   nextStepBannerDescription?: T;
   generateSlug?: T;
   slug?: T;
-  parent?: T;
   breadcrumbs?:
     | T
     | {
@@ -1445,6 +1455,7 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  parent?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1918,34 +1929,6 @@ export interface ChapterCitationBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'chapterCitation';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock".
- */
-export interface MediaBlock {
-  media: number | Media;
-  /**
-   * Optional. When set, replaces the caption from the Media library. Leave empty to use the library caption, or hide if the library has no caption.
-   */
-  customCaption?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'mediaBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

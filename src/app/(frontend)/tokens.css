@@ -53,6 +53,7 @@
 }
 
 :root {
+  --font-noto-sans: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --site-header-height: 3.5rem;
 
   /* Spacing scale */

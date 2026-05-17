@@ -6,6 +6,7 @@ import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import PageClient from './page.client'
+import { getRequestLocale } from '@/utilities/requestLocale'
 import { notFound } from 'next/navigation'
 
 export const revalidate = 600
@@ -17,6 +18,9 @@ type Args = {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
+  const locale = await getRequestLocale()
+  const pathnamePrefix = locale === 'es' ? '/es' : ''
+  const localePrefix: '' | '/es' = locale === 'es' ? '/es' : ''
   const { pageNumber } = await paramsPromise
   const payload = await getPayload({ config: configPromise })
 
@@ -30,6 +34,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     limit: 12,
     page: sanitizedPageNumber,
     overrideAccess: false,
+    locale,
   })
 
   return (
@@ -50,11 +55,15 @@ export default async function Page({ params: paramsPromise }: Args) {
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} />
+      <CollectionArchive localePrefix={localePrefix} posts={posts.docs} />
 
       <div className="container">
         {posts?.page && posts?.totalPages > 1 && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+          <Pagination
+            page={posts.page}
+            pathnamePrefix={pathnamePrefix}
+            totalPages={posts.totalPages}
+          />
         )}
       </div>
     </div>

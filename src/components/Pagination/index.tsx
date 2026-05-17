@@ -16,10 +16,14 @@ export const Pagination: React.FC<{
   className?: string
   page: number
   totalPages: number
+  /** e.g. `/es` → navigate under `/es/posts/page/…` */
+  pathnamePrefix?: string
 }> = (props) => {
   const router = useRouter()
 
-  const { className, page, totalPages } = props
+  const { className, page, totalPages, pathnamePrefix = '' } = props
+  const prefix = pathnamePrefix.replace(/\/$/, '')
+  const base = `${prefix}/posts/page`
   const hasNextPage = page < totalPages
   const hasPrevPage = page > 1
 
@@ -34,7 +38,7 @@ export const Pagination: React.FC<{
             <PaginationPrevious
               disabled={!hasPrevPage}
               onClick={() => {
-                router.push(`/posts/page/${page - 1}`)
+                router.push(`${base}/${page - 1}`)
               }}
             />
           </PaginationItem>
@@ -49,7 +53,7 @@ export const Pagination: React.FC<{
             <PaginationItem>
               <PaginationLink
                 onClick={() => {
-                  router.push(`/posts/page/${page - 1}`)
+                  router.push(`${base}/${page - 1}`)
                 }}
               >
                 {page - 1}
@@ -61,7 +65,7 @@ export const Pagination: React.FC<{
             <PaginationLink
               isActive
               onClick={() => {
-                router.push(`/posts/page/${page}`)
+                router.push(`${base}/${page}`)
               }}
             >
               {page}
@@ -72,7 +76,7 @@ export const Pagination: React.FC<{
             <PaginationItem>
               <PaginationLink
                 onClick={() => {
-                  router.push(`/posts/page/${page + 1}`)
+                  router.push(`${base}/${page + 1}`)
                 }}
               >
                 {page + 1}
@@ -90,7 +94,7 @@ export const Pagination: React.FC<{
             <PaginationNext
               disabled={!hasNextPage}
               onClick={() => {
-                router.push(`/posts/page/${page + 1}`)
+                router.push(`${base}/${page + 1}`)
               }}
             />
           </PaginationItem>

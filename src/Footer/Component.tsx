@@ -6,6 +6,7 @@ import type { Footer } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
+import { ResourcesFooterLocaleSwitcher } from '@/components/resources/ResourcesFooterLocaleSwitcher.client'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
@@ -19,12 +20,13 @@ export async function Footer() {
           <Logo />
         </Link>
 
-        <div className="flex items-start md:flex-row gap-4 md:items-center">
+        <div className="flex flex-col items-start md:flex-row gap-4 md:items-center md:flex-wrap md:justify-end md:gap-6">
           <nav className="flex flex-col md:flex-row gap-4">
             {navItems.map(({ link }, i) => {
               return <CMSLink className="text-foreground hover:text-primary" key={i} {...link} />
             })}
           </nav>
+          <ResourcesFooterLocaleSwitcher />
         </div>
       </div>
     </footer>

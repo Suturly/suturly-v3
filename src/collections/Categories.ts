@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { adminOnlyAccess } from '../access/roles'
 import { slugField } from 'payload'
+import { createBreadcrumbsField } from '@payloadcms/plugin-nested-docs'
 
 const FIXED_CATEGORY_SLUGS = ['educatin', 'pre-op', 'operation-day', 'post-op', 'next-steps']
 
@@ -94,5 +95,10 @@ export const Categories: CollectionConfig = {
     slugField({
       position: undefined,
     }),
+    // Categories aren't part of the EN/ES localization scope, but
+    // @payloadcms/plugin-nested-docs auto-injects a `breadcrumbs` array marked
+    // `localized: true`. Pre-defining it here (un-localized) makes the plugin
+    // skip its own injection and keeps the schema as a single shared value.
+    createBreadcrumbsField('categories', { localized: false }),
   ],
 }

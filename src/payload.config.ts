@@ -17,6 +17,7 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { getPayloadTrustedOrigins } from './utilities/getPayloadTrustedOrigins'
 import { RESOURCE_CATEGORY_SEED } from './constants/resourceCategories'
+import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,6 +28,15 @@ export default buildConfig({
   serverURL: getServerSideURL(),
   cors: trustedOrigins,
   csrf: trustedOrigins,
+  localization: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', label: 'English' },
+      /** Empty ES text fields fall back to EN on read (admin list columns + API). Lexical/array gaps still use hooks / frontend merge. */
+      { code: 'es', label: 'Spanish', fallbackLocale: 'en' },
+    ],
+    fallback: true,
+  },
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -66,9 +76,13 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
-    // Auto-sync schema on boot so new collections/globals become usable without manual migrations.
-    // Safe for purely additive changes; switch to proper migrations if the app grows.
-    push: true,
+    // Schema changes go through `npm run payload migrate:create` -> hand-edit (when data
+    // preservation is needed) -> `npm run payload migrate`. Migrations live in src/migrations/.
+    // We graduated from push: true after the 3.84.x bump introduced destructive plugin
+    // schema changes that needed data-preservation SQL.
+    push: false,
+    /** Registered migrations run on prod DB connect (`NODE_ENV === 'production'`); CLI still reads `src/migrations/*.ts`. */
+    prodMigrations: migrations,
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },

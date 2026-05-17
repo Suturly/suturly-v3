@@ -18,12 +18,12 @@ const SPECIALTY_CARDS: SpecialtyCard[] = [
   {
     id: 'plastic',
     title: 'Plastic & Reconstructive Surgery',
-    body: 'Guide patients through reconstruction options, set recovery expectations, and capture BREAST-Q outcomes automatically.',
+    body: 'Educate patients on surgical and non-surgical options — covering candidacy, recovery timelines, risks, and what results to realistically expect.',
   },
   {
     id: 'ent',
     title: 'Otolaryngology (ENT)',
-    body: 'Simplify pre-op prep for airway and hearing procedures with timed instructions patients can follow at home.',
+    body: 'Help patients understand their condition and prepare for surgery with clear guidance on functional expectations, hearing outcomes, and recovery.',
   },
   {
     id: 'derm',
@@ -33,7 +33,7 @@ const SPECIALTY_CARDS: SpecialtyCard[] = [
   {
     id: 'bariatric',
     title: 'Bariatric Surgery',
-    body: 'Walk patients through diet protocols, supplement schedules, and lifestyle changes: step by step, not all at once.',
+    body: 'Walk patients through every stage — from BMI-specific procedure selection and pre-op diets to post-op supplements and lifestyle changes — all aligned with MBSAQIP guidelines',
   },
   {
     id: 'gi',
@@ -74,7 +74,7 @@ export function HomeSpecialtySection() {
 
       gsap.fromTo(
         visualBls,
-        { width: '250%' },
+        { width: '250%' }, 
         {
           width: '100%',
           ease: 'none',

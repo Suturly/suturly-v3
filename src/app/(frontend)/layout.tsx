@@ -1,14 +1,5 @@
 import type { Metadata } from 'next'
 
-import { cn } from '@/utilities/ui'
-import { Noto_Sans } from 'next/font/google'
-
-const notoSans = Noto_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'], // pick what you need
-  variable: '--font-noto-sans',
-  display: 'swap',
-})
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -22,9 +13,10 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const showAdminBar = process.env.NODE_ENV === 'production'
 
   return (
-    <html className={cn(notoSans.variable)} lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -33,11 +25,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <Providers>
           <div className="page-wrapper">
-            <AdminBar
-              adminBarProps={{
-                preview: isEnabled,
-              }}
-            />
+            {showAdminBar ? (
+              <AdminBar
+                adminBarProps={{
+                  preview: isEnabled,
+                }}
+              />
+            ) : null}
 
             {children}
           </div>

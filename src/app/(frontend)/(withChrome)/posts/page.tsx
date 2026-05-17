@@ -6,11 +6,14 @@ import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import PageClient from './page.client'
+import { getRequestLocale } from '@/utilities/requestLocale'
 
-export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
+  const locale = await getRequestLocale()
+  const pathnamePrefix = locale === 'es' ? '/es' : ''
+  const localePrefix: '' | '/es' = locale === 'es' ? '/es' : ''
   const payload = await getPayload({ config: configPromise })
 
   const posts = await payload.find({
@@ -18,6 +21,7 @@ export default async function Page() {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    locale,
     select: {
       title: true,
       slug: true,
@@ -43,11 +47,11 @@ export default async function Page() {
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} />
+      <CollectionArchive localePrefix={localePrefix} posts={posts.docs} />
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+          <Pagination page={posts.page} pathnamePrefix={pathnamePrefix} totalPages={posts.totalPages} />
         )}
       </div>
     </div>

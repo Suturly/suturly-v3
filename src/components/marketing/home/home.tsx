@@ -40,12 +40,12 @@ export function HomeHeroSection() {
                 />
               </div>
               <div className="hero-stat-box">
-                <p className="h5 hero-stat-box__title">98%</p>
-                <p className="hero-stat-box__text">SMS open rate vs. 20% for email</p>
+                <p className="h5 hero-stat-box__title">44%</p>
+                <p className="hero-stat-box__text">fewer post-op complications with structured education</p>
               </div>
               <div className="hero-stat-box">
-                <p className="h5 hero-stat-box__title">97%</p>
-                <p className="hero-stat-box__text">of US adults can receive text messages</p>
+                <p className="h5 hero-stat-box__title">-2 days</p>
+                <p className="hero-stat-box__text">typical reduction in hospital stay</p>
               </div>
             </div>
           </div>

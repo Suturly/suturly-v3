@@ -4,3 +4,174 @@
 .dashboard .collections__wrap > .collections__group:not(:first-child) {
   display: none !important;
 }
+
+/* Resources edit: translate control portaled before `#preview-button` — match Payload preview control sizing */
+.doc-controls__controls .resources-translate-all-slot {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.resources-translate-all-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--base) * 1.6);
+  margin: 0;
+  padding: 0 calc(var(--base) * 0.55);
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: var(--style-radius-s);
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--base-body-size);
+  line-height: var(--btn-line-height);
+  color: var(--theme-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition-property: border, color, background;
+  transition-duration: 100ms;
+  transition-timing-function: cubic-bezier(0, 0.2, 0.2, 1);
+
+  &:hover:not(:disabled) {
+    border-color: var(--theme-elevation-300);
+    background-color: var(--theme-elevation-100);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Resources edit view: compact sidebar note above dates */
+.resource-editor-note.field-type.textarea {
+  --rows: 2;
+  --base: 1.125rem;
+
+  textarea {
+    min-height: calc(var(--rows) * var(--base) + 2px);
+    resize: vertical;
+  }
+}
+
+/* Resources ES stale helper: reset control styled like array row actions (.array-field__header-action) */
+
+/* StaleLocalizedField wraps Inner in a div — Payload only adds margin on `.render-fields > .field-type`,
+   so direct children `.stale-localized-field` had no bottom gap and stacks felt merged. */
+.render-fields .stale-localized-field:not(:last-child) {
+  margin-bottom: calc(var(--spacing-field, var(--base)) + 0.25rem);
+}
+
+.stale-localized-reset {
+  white-space: nowrap;
+}
+
+button.stale-localized-reset:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.stale-localized-field--outline {
+  border: 1px solid #e68619;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+/*
+ * Full-width fields + reset on the label line: avoid grid/`display:contents` — when `contents`
+ * doesn’t flatten (nested/array contexts), the whole `.field-type` lands in column 1 only and inputs
+ * stop at the reset column. Pin reset absolutely instead.
+ */
+.stale-localized-field--label-row-grid {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.stale-localized-field--label-row-grid > .stale-localized-reset-row {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+}
+
+.stale-localized-field--label-row-grid > .field-type.text,
+.stale-localized-field--label-row-grid > .field-type.textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.stale-localized-field--label-row-grid > .field-type.text > .field-type__wrap,
+.stale-localized-field--label-row-grid > .field-type.textarea > .field-type__wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.stale-localized-field--label-row-grid:has(> .stale-localized-reset-row) > .field-type.text > .field-label,
+.stale-localized-field--label-row-grid:has(> .stale-localized-reset-row) > .field-type.textarea > .field-label {
+  padding-inline-end: clamp(8rem, 28vw, 11rem);
+}
+
+.stale-localized-field--stacked > .stale-localized-reset-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Array rows & collapsible bodies: flex descendants default to min-width:auto and clip editors —
+ * allow fields (including Lexical) to span the full row width.
+ */
+.array-field .render-fields.array-field__fields,
+.collapsible__content > .render-fields {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.array-field .render-fields.array-field__fields > .field-type,
+.collapsible__content > .render-fields > .field-type {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.array-field .field-type.rich-text-lexical,
+.collapsible__content .field-type.rich-text-lexical {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.array-field .rich-text-lexical__wrap,
+.collapsible__content .rich-text-lexical__wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Lexical: BeforeInput lives inside __wrap — anchor reset beside the label row */
+.field-type.rich-text-lexical .rich-text-lexical__wrap {
+  position: relative;
+  padding-top: 0.35rem;
+}
+
+.field-type.rich-text-lexical .rich-text-lexical__wrap .stale-localized-reset-row--rich-text {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translateY(calc(-100% - 6px));
+  z-index: 2;
+}
+
+.stale-localized-reset-row--outline {
+  border: 1px solid #e68619;
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+}

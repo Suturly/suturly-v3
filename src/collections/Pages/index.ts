@@ -92,14 +92,19 @@ export const Pages: CollectionConfig<'pages'> = {
               descriptionPath: 'meta.description',
               imagePath: 'meta.image',
             }),
+            // Pages aren't part of the EN/ES localization scope (Resources only).
+            // Override the plugin defaults (which now hardcode localized: true in 3.84.1)
+            // to keep Pages SEO meta as a single shared value.
             MetaTitleField({
               hasGenerateFn: true,
+              overrides: { localized: false },
             }),
             MetaImageField({
               relationTo: 'media',
+              overrides: { localized: false },
             }),
 
-            MetaDescriptionField({}),
+            MetaDescriptionField({ overrides: { localized: false } }),
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,

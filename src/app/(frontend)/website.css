@@ -1048,7 +1048,7 @@
     .hero-cont-grid .hero-h {
       grid-column: 1 / span 7;
       grid-row: 1;
-      max-width: 16ch;
+      max-width: 14ch;
     }
 
     .hero-cont-grid .marketing-home-hero-key__img-wrap {

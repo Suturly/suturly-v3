@@ -5,10 +5,12 @@ import { Card, CardPostData } from '@/components/Card'
 
 export type Props = {
   posts: CardPostData[]
+  /** e.g. `'/es'` so archive links resolve under `/es/posts/…` — default unprefixed */
+  localePrefix?: '' | '/es'
 }
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts } = props
+  const { posts, localePrefix } = props
 
   return (
     <div className={cn('container')}>
@@ -18,7 +20,13 @@ export const CollectionArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <Card className="h-full" doc={result} relationTo="posts" showCategories />
+                  <Card
+                    className="h-full"
+                    doc={result}
+                    relationTo="posts"
+                    showCategories
+                    localePrefix={localePrefix}
+                  />
                 </div>
               )
             }

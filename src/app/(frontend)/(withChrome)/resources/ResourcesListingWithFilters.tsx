@@ -4,6 +4,7 @@ import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
+import { buildResourceDetailPath, type AppLocale } from '@/utilities/localeShared'
 import Link from 'next/link'
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BenefitTagsInline } from './BenefitTagsInline'
@@ -19,6 +20,8 @@ export type ResourceCardForListing = Pick<
 
 type Props = {
   cards: ResourceCardForListing[]
+  /** `en` default; `es` when the request was rewritten from `/es/resources`. */
+  locale?: AppLocale
 }
 
 /** 10% fade on trailing edge — at scroll start, more content on the right. */
@@ -42,7 +45,7 @@ function computeFiltersMask(el: HTMLDivElement | null): string {
   return MASK_FADE_BOTH
 }
 
-export function ResourcesListingWithFilters({ cards }: Props) {
+export function ResourcesListingWithFilters({ cards, locale = 'en' }: Props) {
   const [active, setActive] = useState<ResourceListingFilterId>('all')
   const scrollRef = useRef<HTMLDivElement>(null)
   const [mask, setMask] = useState(MASK_FULL)
@@ -149,7 +152,7 @@ export function ResourcesListingWithFilters({ cards }: Props) {
           return (
             <Link
               className="resource-card"
-              href={`/resources/${card.slug}`}
+              href={buildResourceDetailPath(locale, card.slug)}
               key={`resource-card-${card.id}-${cardIndex}`}
             >
               <div className="resource-card__media-wrap">
