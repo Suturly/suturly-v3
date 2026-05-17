@@ -1347,7 +1347,11 @@
     margin-top: .8em;
     margin-bottom: 0.4em;
   }
-
+  .resource-block-banner__inner{
+    .payload-richtext.payload-richtext--no-gutter h5 {
+    margin-top: 0;
+  }
+  }
   .payload-richtext--prose.resource-category-richtext :where(p, ul, ol, li, a):not(:where(.not-prose, .not-prose *)), .resource-block-timeline__item p, .resource-block-banner__inner :is(ul li, ol li), .payload-richtext :is(ul li, ol li) {
     font-size: var(--text-p-main);
     line-height: var(--text-p-main--line-height);
@@ -1839,7 +1843,7 @@ button.resource-chapter-pager__link svg {
 
   .resource-block-banner__inner :is(ul, ol),
   .not-prose :is(ul, ol) {
-    padding-inline-start: 1.625em;
+    padding-inline-start: var(--space-0-75);
     margin-bottom: 0.4em;
   }
 
@@ -2717,6 +2721,20 @@ button.resource-chapter-pager__link svg {
     display: flex;
     align-items: flex-start;
     gap: var(--space-0-5);
+  }
+
+  .resource-block-todo__row {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: flex-start;
+    gap: var(--space-0-5);
+    cursor: pointer;
+  }
+
+  .resource-block-todo__row:has(input:focus-visible) .resource-block-todo__marker {
+    outline: 2px solid var(--primary-600);
+    outline-offset: 2px;
   }
 
   .resource-block-todo__marker {

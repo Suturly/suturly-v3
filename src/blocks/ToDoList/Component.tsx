@@ -25,17 +25,54 @@ export const ToDoList: React.FC<Props> = ({
   copyButtonLabel,
 }) => {
   const [isCopied, setIsCopied] = React.useState(false)
+  /** When null, use CMS `checked` from each row; when set, local toggles override. */
+  const [localChecked, setLocalChecked] = React.useState<boolean[] | null>(null)
 
   const rows = Array.isArray(items)
     ? items.filter((item): item is ToDoItem & { label: string } => Boolean(item?.label?.trim()))
     : []
+
+  const itemsContentKey = React.useMemo(() => {
+    if (!Array.isArray(items)) return ''
+    return JSON.stringify(
+      items.map((r) => ({
+        id: r?.id ?? null,
+        label: typeof r?.label === 'string' ? r.label : '',
+        checked: r?.checked ?? null,
+      })),
+    )
+  }, [items])
+
+  React.useEffect(() => {
+    setLocalChecked(null)
+  }, [itemsContentKey])
+
+  const resolvedChecked = React.useMemo(() => {
+    const fromCms = rows.map((item) => Boolean(item.checked))
+    if (localChecked !== null && localChecked.length === rows.length) {
+      return localChecked
+    }
+    return fromCms
+  }, [rows, localChecked])
+
+  const toggleRow = (index: number) => {
+    setLocalChecked((prev) => {
+      const fromCms = rows.map((item) => Boolean(item.checked))
+      const base =
+        prev !== null && prev.length === rows.length ? [...prev] : [...fromCms]
+      base[index] = !base[index]
+      return base
+    })
+  }
 
   if (rows.length === 0) return null
 
   const resolvedCopyLabel = copyButtonLabel?.trim() || 'Copy list'
 
   const handleCopy = async () => {
-    const plainList = rows.map((item) => `${item.checked ? '[x]' : '[ ]'} ${item.label}`).join('\n')
+    const plainList = rows
+      .map((item, i) => `${resolvedChecked[i] ? '[x]' : '[ ]'} ${item.label}`)
+      .join('\n')
 
     try {
       await navigator.clipboard.writeText(plainList)
@@ -51,17 +88,25 @@ export const ToDoList: React.FC<Props> = ({
       <ul className="resource-block-todo__list">
         {rows.map((item, index) => (
           <li
-            className={cn('resource-block-todo__item', item.checked && 'is-checked')}
+            className={cn('resource-block-todo__item', resolvedChecked[index] && 'is-checked')}
             key={
               item.id != null && item.id !== ''
                 ? `${item.id}-${index}`
                 : `todo-${index}-${item.label ?? ''}`
             }
           >
-            <span aria-hidden className="resource-block-todo__marker">
-              {item.checked ? <span className="resource-block-todo__marker-dot" /> : null}
-            </span>
-            <span className="resource-block-todo__text">{item.label}</span>
+            <label className="resource-block-todo__row">
+              <input
+                checked={resolvedChecked[index]}
+                className="sr-only"
+                type="checkbox"
+                onChange={() => toggleRow(index)}
+              />
+              <span aria-hidden className="resource-block-todo__marker">
+                {resolvedChecked[index] ? <span className="resource-block-todo__marker-dot" /> : null}
+              </span>
+              <span className="resource-block-todo__text">{item.label}</span>
+            </label>
           </li>
         ))}
       </ul>

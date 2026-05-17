@@ -1,8 +1,10 @@
 import React from 'react'
 
+import { LightboxImageTrigger } from '@/components/ImageLightbox/LightboxImageTrigger.client'
 import RichText from '@/components/RichText'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
+import { lightboxSlideFromPayloadMedia } from '@/utilities/lightboxSlides'
 import { resolveCaptionPriority } from '@/utilities/resolveBlockCaption'
 import type { Media as MediaType, TwoColumnImagesBlock } from '@/payload-types'
 
@@ -37,13 +39,27 @@ export const TwoColumnImages: React.FC<Props> = ({
   const leftCaption = resolveCaptionPriority(leftCustomCaption, captionFromUpload(leftImage))
   const rightCaption = resolveCaptionPriority(rightCustomCaption, captionFromUpload(rightImage))
 
+  const leftSlide = lightboxSlideFromPayloadMedia(leftImage)
+  const rightSlide = lightboxSlideFromPayloadMedia(rightImage)
+  const lightboxSlides = [leftSlide, rightSlide].filter((s): s is NonNullable<typeof s> => s != null)
+  const rightStartIndex = leftSlide && rightSlide ? 1 : 0
+
   return (
     <div className={cn('not-prose resource-block-two-column-images', className)}>
       <div className="resource-block-two-column-images__figure">
-        <Media
-          resource={leftImage as string | number | null}
-          imgClassName="resource-block-media-image"
-        />
+        {leftSlide ? (
+          <LightboxImageTrigger slides={lightboxSlides} startIndex={0}>
+            <Media
+              resource={leftImage as string | number | null}
+              imgClassName="resource-block-media-image"
+            />
+          </LightboxImageTrigger>
+        ) : (
+          <Media
+            resource={leftImage as string | number | null}
+            imgClassName="resource-block-media-image"
+          />
+        )}
         {leftCaption ? (
           <div className="resource-block-two-column-images__caption">
             <RichText
@@ -57,10 +73,19 @@ export const TwoColumnImages: React.FC<Props> = ({
         ) : null}
       </div>
       <div className="resource-block-two-column-images__figure">
-        <Media
-          resource={rightImage as string | number | null}
-          imgClassName="resource-block-media-image"
-        />
+        {rightSlide ? (
+          <LightboxImageTrigger slides={lightboxSlides} startIndex={rightStartIndex}>
+            <Media
+              resource={rightImage as string | number | null}
+              imgClassName="resource-block-media-image"
+            />
+          </LightboxImageTrigger>
+        ) : (
+          <Media
+            resource={rightImage as string | number | null}
+            imgClassName="resource-block-media-image"
+          />
+        )}
         {rightCaption ? (
           <div className="resource-block-two-column-images__caption">
             <RichText

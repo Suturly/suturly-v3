@@ -1,11 +1,15 @@
 import type { StaticImageData } from 'next/image'
 
-import { cn } from '@/utilities/ui'
-import React from 'react'
+import { LightboxImageTrigger } from '@/components/ImageLightbox/LightboxImageTrigger.client'
 import RichText from '@/components/RichText'
+import { cn } from '@/utilities/ui'
+import {
+  lightboxSlideFromPayloadMedia,
+  lightboxSlideFromStaticImage,
+} from '@/utilities/lightboxSlides'
+import { resolveCaptionPriority } from '@/utilities/resolveBlockCaption'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
-import { resolveCaptionPriority } from '@/utilities/resolveBlockCaption'
 
 import { Media } from '../../components/Media'
 
@@ -39,6 +43,13 @@ export const MediaBlock: React.FC<Props> = (props) => {
   const mediaCaption = media && typeof media === 'object' ? media.caption : undefined
   const caption = resolveCaptionPriority(customCaption, mediaCaption)
 
+  const lightboxSlides = staticImage
+    ? [lightboxSlideFromStaticImage(staticImage)]
+    : (() => {
+        const s = lightboxSlideFromPayloadMedia(media)
+        return s ? [s] : []
+      })()
+
   return (
     <div
       className={cn(
@@ -50,11 +61,13 @@ export const MediaBlock: React.FC<Props> = (props) => {
       )}
     >
       {(media || staticImage) && (
-        <Media
-          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
-          resource={media}
-          src={staticImage}
-        />
+        <LightboxImageTrigger slides={lightboxSlides} startIndex={0}>
+          <Media
+            imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+            resource={media}
+            src={staticImage}
+          />
+        </LightboxImageTrigger>
       )}
       {caption && (
         <div
