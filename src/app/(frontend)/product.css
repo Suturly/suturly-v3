@@ -3029,6 +3029,14 @@ table.lexical-table{
     padding-inline: var(--space-1);
     padding-bottom: calc(var(--space-0-75) + env(safe-area-inset-bottom));
     pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      visibility 0.2s ease;
+  }
+
+  .resource-mobile-sticky-nav.is-hidden-near-bottom {
+    visibility: hidden;
+    opacity: 0;
   }
 
   .resource-mobile-sticky-nav__row {

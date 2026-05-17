@@ -15,6 +15,16 @@ type ResourceMobileStickyNavProps = {
   onOpenDoctorQuestions?: () => void
 }
 
+/** Hide fixed bottom nav when the viewport is within this many px of the document bottom */
+const NEAR_DOCUMENT_BOTTOM_PX = 200
+
+function distanceFromDocumentBottomPx(): number {
+  const docEl = document.documentElement
+  const body = document.body
+  const scrollHeight = Math.max(docEl.scrollHeight, body.scrollHeight)
+  return scrollHeight - window.scrollY - window.innerHeight
+}
+
 export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = ({
   sections,
   activeTab,
@@ -22,6 +32,7 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
   onOpenDoctorQuestions,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false)
+  const [hiddenNearBottom, setHiddenNearBottom] = React.useState(false)
   const [activeHeadingId, setActiveHeadingId] = React.useState('')
 
   const activeSection = React.useMemo(() => {
@@ -63,7 +74,13 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
       setActiveHeadingId((prev) => (prev === currentId ? prev : currentId))
     }
 
+    const updateHiddenNearBottom = () => {
+      const hidden = distanceFromDocumentBottomPx() <= NEAR_DOCUMENT_BOTTOM_PX
+      setHiddenNearBottom((prev) => (prev === hidden ? prev : hidden))
+    }
+
     updateActiveHeading()
+    updateHiddenNearBottom()
 
     let ticking = false
     const onScrollOrResize = () => {
@@ -71,6 +88,7 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
       ticking = true
       window.requestAnimationFrame(() => {
         updateActiveHeading()
+        updateHiddenNearBottom()
         ticking = false
       })
     }
@@ -86,6 +104,10 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
     }
   }, [activeSection])
 
+  React.useEffect(() => {
+    if (hiddenNearBottom) setIsOpen(false)
+  }, [hiddenNearBottom])
+
   const handleAnchorNavigate = React.useCallback(
     (tabSlug: string, anchorId: string) => {
       onAnchorNavigate?.(tabSlug, anchorId)
@@ -95,7 +117,14 @@ export const ResourceMobileStickyNav: React.FC<ResourceMobileStickyNavProps> = (
   )
 
   return (
-    <div className={cn('resource-mobile-sticky-nav', isOpen && 'is-open')}>
+    <div
+      aria-hidden={hiddenNearBottom ? true : undefined}
+      className={cn(
+        'resource-mobile-sticky-nav',
+        isOpen && 'is-open',
+        hiddenNearBottom && 'is-hidden-near-bottom',
+      )}
+    >
       <div aria-hidden className="resource-mobile-sticky-nav__gradient" />
 
       <div className="resource-mobile-sticky-nav__row">
