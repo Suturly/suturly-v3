@@ -135,6 +135,7 @@ export default buildConfig({
           await payload.update({
             collection: 'categories',
             id: existingCategory.id,
+            locale: 'en',
             data: {
               title: category.title,
             },
@@ -144,14 +145,56 @@ export default buildConfig({
         continue
       }
 
-      await payload.create({
+      const created = await payload.create({
         collection: 'categories',
         data: {
           title: category.title,
           slug: category.slug,
         },
+        locale: 'en',
         overrideAccess: true,
       })
+
+      await payload.update({
+        collection: 'categories',
+        id: created.id,
+        locale: 'es',
+        data: {
+          title: category.titleEs,
+        },
+        overrideAccess: true,
+      })
+    }
+
+    /** Backfill empty ES titles for categories that existed before localized titles. */
+    try {
+      const esCategories = await payload.find({
+        collection: 'categories',
+        depth: 0,
+        limit: 20,
+        locale: 'es',
+        overrideAccess: true,
+        pagination: false,
+        where: {
+          slug: {
+            in: [...RESOURCE_CATEGORY_SEED.map((c) => c.slug)],
+          },
+        },
+      })
+      for (const doc of esCategories.docs) {
+        const seed = RESOURCE_CATEGORY_SEED.find((s) => s.slug === doc.slug)
+        if (!seed) continue
+        if ((doc.title ?? '').toString().trim()) continue
+        await payload.update({
+          collection: 'categories',
+          id: doc.id,
+          locale: 'es',
+          data: { title: seed.titleEs },
+          overrideAccess: true,
+        })
+      }
+    } catch {
+      // Dev DB may lag migrations; categories seed is non-fatal.
     }
   },
   secret: process.env.PAYLOAD_SECRET,

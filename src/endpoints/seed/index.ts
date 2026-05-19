@@ -164,16 +164,27 @@ export const seed = async ({
   ])
 
   const categoryDocs = await Promise.all(
-    RESOURCE_CATEGORY_SEED.map((category) =>
-      payload.create({
+    RESOURCE_CATEGORY_SEED.map(async (category) => {
+      const doc = await payload.create({
         collection: 'categories',
         data: {
           title: category.title,
           slug: category.slug,
         },
+        locale: 'en',
         overrideAccess: true,
-      }),
-    ),
+      })
+      await payload.update({
+        collection: 'categories',
+        id: doc.id,
+        locale: 'es',
+        data: {
+          title: category.titleEs,
+        },
+        overrideAccess: true,
+      })
+      return doc
+    }),
   )
 
   const categoryIdBySlug = Object.fromEntries(

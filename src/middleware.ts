@@ -5,9 +5,39 @@ import {
   verifyResourcesGateToken,
 } from '@/lib/resourcesGateToken'
 import { LOCALE_HEADER } from '@/utilities/localeShared'
+import {
+  LOCALE_PREFERENCE_COOKIE,
+  prefersSpanishFromAcceptLanguage,
+} from '@/utilities/resourcesLocalePreference'
 
 function isProtectedResourcesPath(pathname: string): boolean {
   return pathname === '/resources' || pathname.startsWith('/resources/')
+}
+
+/**
+ * `/resources` (English URL) → `/es/resources` when Accept-Language prefers Spanish,
+ * or when {@link LOCALE_PREFERENCE_COOKIE} is `es`. Skip when cookie is `en` (explicit English).
+ */
+function redirectUnprefixedResourcesToEsIfLanguage(
+  request: NextRequest,
+  pathname: string,
+): NextResponse | null {
+  const method = request.method
+  if (method !== 'GET' && method !== 'HEAD') return null
+
+  if (!(pathname === '/resources' || pathname.startsWith('/resources/'))) return null
+
+  const pref = request.cookies.get(LOCALE_PREFERENCE_COOKIE)?.value
+  if (pref === 'en') return null
+
+  const wantsEs = pref === 'es' || prefersSpanishFromAcceptLanguage(request.headers.get('accept-language'))
+  if (!wantsEs) return null
+
+  const url = request.nextUrl.clone()
+  url.pathname = `/es${pathname}`
+  const res = NextResponse.redirect(url, 302)
+  res.headers.set('Vary', 'Accept-Language')
+  return res
 }
 
 /** `/es/resources/:slug` → canonical Spanish path when slug was the English one. */
@@ -93,6 +123,9 @@ export async function middleware(request: NextRequest) {
 
   const enSlugRedirect = await redirectUnprefixedResourceSlug(request, pathname)
   if (enSlugRedirect) return enSlugRedirect
+
+  const resourcesLangRedirect = redirectUnprefixedResourcesToEsIfLanguage(request, pathname)
+  if (resourcesLangRedirect) return resourcesLangRedirect
 
   // --- Canonical EN: strip legacy /en prefix (301 → unprefixed URL) ---
   if (pathname === '/en') {

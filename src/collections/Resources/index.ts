@@ -56,16 +56,21 @@ import { slugField } from 'payload'
 
 import type { User } from '@/payload-types'
 
+import {
+  RESOURCE_SPECIALTY_LABELS,
+  type ResourceSpecialtyValue,
+  bilingualSpecialtyOptionLabel,
+} from '@/constants/resourceSpecialtyLabels'
+
 const FIXED_CATEGORY_SLUGS = ['educatin', 'pre-op', 'operation-day', 'post-op', 'next-steps']
 
-const RESOURCE_SPECIALTY_OPTIONS = [
-  { label: 'Plastic & Reconstructive Surgery', value: 'plastic_reconstructive' },
-  { label: 'Orthopedic Surgery', value: 'orthopedic' },
-  { label: 'Gastroenterology (GI)', value: 'gastroenterology' },
-  { label: 'Bariatric Surgery', value: 'bariatric' },
-  { label: 'Dermatology', value: 'dermatology' },
-  { label: 'Otolaryngology (ENT)', value: 'otolaryngology' },
-] as const
+/** Bilingual labels so Spanish editors see español in the same option row (values stay shared). */
+const RESOURCE_SPECIALTY_OPTIONS = (
+  Object.keys(RESOURCE_SPECIALTY_LABELS) as ResourceSpecialtyValue[]
+).map((value) => ({
+  label: bilingualSpecialtyOptionLabel(value),
+  value,
+}))
 
 const normalizeRelationshipValue = (value: unknown): null | number | string => {
   if (value === null || value === undefined) return null
@@ -149,9 +154,11 @@ export const Resources: CollectionConfig<'posts'> = {
               type: 'select',
               label: 'Specialties',
               hasMany: true,
+              localized: false,
               options: [...RESOURCE_SPECIALTY_OPTIONS],
               admin: {
-                description: 'Select one or more specialties that apply to this resource.',
+                description:
+                  'Same clinical codes for EN/ES. Option text shows English — Spanish for reference.',
                 isClearable: true,
               },
             },

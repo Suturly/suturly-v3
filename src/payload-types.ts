@@ -243,7 +243,7 @@ export interface Post {
   id: number;
   title: string;
   /**
-   * Select one or more specialties that apply to this resource.
+   * Same clinical codes for EN/ES. Option text shows English — Spanish for reference.
    */
   specialties?:
     | ('plastic_reconstructive' | 'orthopedic' | 'gastroenterology' | 'bariatric' | 'dermatology' | 'otolaryngology')[]

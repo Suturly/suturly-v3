@@ -9,9 +9,10 @@ import Link from 'next/link'
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BenefitTagsInline } from './BenefitTagsInline'
 import {
-  RESOURCE_LISTING_SPECIALTY_FILTERS,
+  getResourceListingSpecialtyFilters,
   type ResourceListingFilterId,
 } from './resourceSpecialtyFilters'
+import { resourcesListingCopy } from '@/constants/resourcesListingCopy'
 
 export type ResourceCardForListing = Pick<
   Post,
@@ -50,6 +51,13 @@ export function ResourcesListingWithFilters({ cards, locale = 'en' }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [mask, setMask] = useState(MASK_FULL)
 
+  const specialtyFilters = useMemo(
+    () => getResourceListingSpecialtyFilters(locale),
+    [locale],
+  )
+
+  const copy = resourcesListingCopy[locale]
+
   const updateMask = useCallback(() => {
     setMask(computeFiltersMask(scrollRef.current))
   }, [])
@@ -87,7 +95,7 @@ export function ResourcesListingWithFilters({ cards, locale = 'en' }: Props) {
           ref={scrollRef}
           className="resources-page__filters-scroll"
           role="toolbar"
-          aria-label="Filter resources by specialty"
+          aria-label={copy.filterToolbarAria}
           style={scrollStyle}
         >
           <div className="resources-page__filters-track">
@@ -96,7 +104,7 @@ export function ResourcesListingWithFilters({ cards, locale = 'en' }: Props) {
                 className={cn(buttonVariants({ variant: 'default', size: 'small' }), 'shrink-0')}
                 aria-current="true"
               >
-                Show all
+                {copy.showAll}
               </span>
             ) : (
               <Button
@@ -106,10 +114,10 @@ export function ResourcesListingWithFilters({ cards, locale = 'en' }: Props) {
                 type="button"
                 onClick={() => setActive('all')}
               >
-                Show all
+                {copy.showAll}
               </Button>
             )}
-            {RESOURCE_LISTING_SPECIALTY_FILTERS.map(({ id, label }) => {
+            {specialtyFilters.map(({ id, label }) => {
               const isSelected = active === id
               if (isSelected) {
                 return (

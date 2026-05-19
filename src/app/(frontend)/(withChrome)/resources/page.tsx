@@ -7,18 +7,24 @@ import {
   type ResourceCardForListing,
 } from './ResourcesListingWithFilters'
 import { getRequestLocale } from '@/utilities/requestLocale'
-
-export const metadata: Metadata = {
-  title: 'Resources',
-  description: 'Explore practical resources and chapter guides.',
-}
+import { resourcesListingCopy } from '@/constants/resourcesListingCopy'
 
 type ResourceCardItem = ResourceCardForListing
 
 export const revalidate = 600
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  const c = resourcesListingCopy[locale]
+  return {
+    title: c.metaTitle,
+    description: c.metaDescription,
+  }
+}
+
 export default async function ResourcesPage() {
   const locale = await getRequestLocale()
+  const copy = resourcesListingCopy[locale]
   const payload = await getPayload({ config: configPromise })
 
   const resources = await payload.find({
@@ -103,9 +109,7 @@ export default async function ResourcesPage() {
     <main className="resources-page py-20 md:py-28">
       <section className="container">
         <div className="resources-page__header max-w-3xl space-y-6">
-          <h1 className="resource-page__title text-h1 font-semibold">
-            Explore available resources
-          </h1>
+          <h1 className="resource-page__title text-h1 font-semibold">{copy.heading}</h1>
         </div>
 
         {cards.length > 0 && (

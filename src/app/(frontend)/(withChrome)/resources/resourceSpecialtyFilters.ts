@@ -1,23 +1,24 @@
-/** Values must match `specialties` options on the Resources (`posts`) collection. */
-export type ResourceSpecialtyValue =
-  | 'plastic_reconstructive'
-  | 'orthopedic'
-  | 'gastroenterology'
-  | 'bariatric'
-  | 'dermatology'
-  | 'otolaryngology'
+import {
+  type ResourceSpecialtyValue,
+  specialtyLabel,
+} from '@/constants/resourceSpecialtyLabels'
+import type { AppLocale } from '@/utilities/localeShared'
 
 export type ResourceListingFilterId = 'all' | ResourceSpecialtyValue
 
 /** Order matches the reference filter bar (after “Show all”). */
-export const RESOURCE_LISTING_SPECIALTY_FILTERS: ReadonlyArray<{
+const LISTING_ORDER: ResourceSpecialtyValue[] = [
+  'orthopedic',
+  'gastroenterology',
+  'bariatric',
+  'dermatology',
+  'otolaryngology',
+  'plastic_reconstructive',
+]
+
+export function getResourceListingSpecialtyFilters(locale: AppLocale): ReadonlyArray<{
   id: ResourceSpecialtyValue
   label: string
-}> = [
-  { id: 'orthopedic', label: 'Orthopedic Surgery' },
-  { id: 'gastroenterology', label: 'Gastroenterology (GI)' },
-  { id: 'bariatric', label: 'Bariatric Surgery' },
-  { id: 'dermatology', label: 'Dermatology' },
-  { id: 'otolaryngology', label: 'Otolaryngology (ENT)' },
-  { id: 'plastic_reconstructive', label: 'Plastic & Reconstructive Surgery' },
-]
+}> {
+  return LISTING_ORDER.map((id) => ({ id, label: specialtyLabel(locale, id) }))
+}
