@@ -79,18 +79,28 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
-  const { totalDocs } = await payload.count({
-    collection: 'posts',
-    overrideAccess: false,
-  })
 
-  const totalPages = Math.ceil(totalDocs / 10)
+  try {
+    const { totalDocs } = await payload.count({
+      collection: 'posts',
+      overrideAccess: false,
+    })
 
-  const pages: { pageNumber: string }[] = []
+    const totalPages = Math.ceil(totalDocs / 10)
 
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push({ pageNumber: String(i) })
+    const pages: { pageNumber: string }[] = []
+
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push({ pageNumber: String(i) })
+    }
+
+    return pages
+  } catch (err) {
+    // e.g. `posts_locales._status does not exist` before prod migrations — build must not fail.
+    console.warn(
+      '[posts/page/[pageNumber]] generateStaticParams: could not count posts (schema or DB). Using on-demand paths. Apply Payload migrations to pre-render pagination.',
+      err instanceof Error ? err.message : err,
+    )
+    return []
   }
-
-  return pages
 }
