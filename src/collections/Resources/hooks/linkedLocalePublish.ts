@@ -3,21 +3,22 @@ import { APIError } from 'payload'
 
 import type { Post } from '@/payload-types'
 import { mergeSpanishFromEnglishForPost } from '@/translators/mergeSpanishFromEnglish'
-import {
-  isPublishingActiveLocale,
-  publishAllLocalesStatus,
-} from '@/utilities/localePublishStatus'
+import { isPublishingActiveLocale } from '@/utilities/localePublishStatus'
 import { requestIsAutosave } from '@/utilities/requestIsAutosave'
+
+import { LINKED_LOCALE_PUBLISH_CONTEXT } from './finalizeLinkedLocalePublish'
 
 /**
  * When the document is fully linked (`spanishMirrorsEnglish !== false`) and the editor
- * publishes from English, mirror all localized fields into ES and publish both locales.
+ * publishes from English, mirror localized fields into ES before save and flag afterChange
+ * to run `publishAllLocales` (see {@link finalizeLinkedLocalePublish}).
  */
 export const linkedLocalePublish: CollectionBeforeChangeHook<Post> = async ({
   data,
   req,
   operation,
   originalDoc,
+  context,
 }) => {
   if (requestIsAutosave(req)) return data
 
@@ -30,8 +31,9 @@ export const linkedLocalePublish: CollectionBeforeChangeHook<Post> = async ({
 
   if (!isPublishingActiveLocale(data, locale)) return data
 
+  context[LINKED_LOCALE_PUBLISH_CONTEXT] = true
+
   if (operation === 'create') {
-    data._status = publishAllLocalesStatus(data._status) as unknown as Post['_status']
     return data
   }
 
@@ -45,8 +47,6 @@ export const linkedLocalePublish: CollectionBeforeChangeHook<Post> = async ({
   if (!ok) {
     throw new APIError('Failed to mirror English content to Spanish before publish.', 500)
   }
-
-  data._status = publishAllLocalesStatus(data._status) as unknown as Post['_status']
 
   return data
 }

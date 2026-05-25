@@ -41,6 +41,8 @@ import { validateResourceCitations } from './hooks/validateCitations'
 import { deduplicateArrayRowIds } from './hooks/deduplicateArrayRowIds'
 import { stampSpanishMirroringStop } from './hooks/stampSpanishMirroringStop'
 import { linkedLocalePublish } from './hooks/linkedLocalePublish'
+import { finalizeLinkedLocalePublish } from './hooks/finalizeLinkedLocalePublish'
+import { guardAutosavePublishedRegression } from './hooks/guardAutosavePublishedRegression'
 import { syncEnglishToSpanish } from './hooks/syncEnglishToSpanish'
 import { trackEnUpdatedAt } from './hooks/trackEnUpdatedAt'
 import { markLocalized } from '../../utilities/markLocalized'
@@ -591,6 +593,8 @@ export const Resources: CollectionConfig<'posts'> = {
     // trackEnUpdatedAt stamps EN last; revalidatePost clears ISR after everything commits.
     afterChange: [
       syncEnglishToSpanish,
+      finalizeLinkedLocalePublish,
+      guardAutosavePublishedRegression,
       stampSpanishMirroringStop,
       trackEnUpdatedAt,
       revalidatePost,
