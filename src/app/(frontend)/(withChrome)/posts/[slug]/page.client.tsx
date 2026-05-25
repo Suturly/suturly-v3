@@ -225,14 +225,17 @@ export const ResourceTabsMain: React.FC<ResourceTabsMainProps> = ({
   )
 
   useEffect(() => {
-    const onPopState = () => {
+    const syncTabFromUrl = () => {
       const params = new URLSearchParams(window.location.search)
-      const tab = params.get('tab') || sections[0]?.categorySlug
-      setActiveTab(tab || sections[0]?.categorySlug)
+      const tab = params.get('tab')
+      const matched =
+        tab && sections.some((section) => section.categorySlug === tab) ? tab : sections[0]?.categorySlug
+      setActiveTab(matched || sections[0]?.categorySlug)
     }
 
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
+    syncTabFromUrl()
+    window.addEventListener('popstate', syncTabFromUrl)
+    return () => window.removeEventListener('popstate', syncTabFromUrl)
   }, [sections])
 
   return (

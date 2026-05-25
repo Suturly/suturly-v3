@@ -22,46 +22,12 @@ import { buildHeadingAnchors, extractH2Headings } from '@/utilities/richTextHead
 import PageClient, { ResourceTabsMain } from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const slugSet = new Set<string>()
-
-  try {
-    for (const locale of ['en', 'es'] satisfies AppLocale[]) {
-      const posts = await payload.find({
-        collection: 'posts',
-        draft: false,
-        limit: 1000,
-        overrideAccess: false,
-        pagination: false,
-        locale,
-        select: {
-          slug: true,
-        },
-      })
-      for (const doc of posts.docs) {
-        const s = doc.slug
-        if (typeof s === 'string' && s.trim()) slugSet.add(s)
-      }
-    }
-  } catch (err) {
-    // e.g. `relation "posts_locales" does not exist` before prod migrations — build must not fail.
-    console.warn(
-      '[posts/[slug]] generateStaticParams: could not list posts (schema or DB). Using on-demand paths. Apply Payload migrations to pre-render all slugs.',
-      err instanceof Error ? err.message : err,
-    )
-    return []
-  }
-
-  return [...slugSet].map((slug) => ({ slug }))
-}
+/** Per-request locale (middleware header) + draft preview — cannot SSG; match /resources listing. */
+export const revalidate = 600
 
 type Args = {
   params: Promise<{
     slug?: string
-  }>
-  searchParams: Promise<{
-    tab?: string | string[]
   }>
 }
 
@@ -82,11 +48,10 @@ const toSlugFallback = (value: string, fallback: string) => {
   return normalized || fallback
 }
 
-export default async function Post({ params: paramsPromise, searchParams: searchParamsPromise }: Args) {
+export default async function Post({ params: paramsPromise }: Args) {
   const locale = await getRequestLocale()
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const searchParams = await searchParamsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/posts/' + decodedSlug
@@ -141,10 +106,6 @@ export default async function Post({ params: paramsPromise, searchParams: search
     ((post as unknown as { questionsToAskDoctor?: QuestionsToAskDoctorShape | null })
       .questionsToAskDoctor as QuestionsToAskDoctorShape | null | undefined) ?? undefined
 
-  const requestedTab = Array.isArray(searchParams?.tab) ? searchParams.tab[0] : searchParams?.tab
-  const activeTab = sections.find((section) => section.categorySlug === requestedTab)?.categorySlug
-    ? requestedTab
-    : sections[0]?.categorySlug
   const canonicalSlug =
     typeof post.slug === 'string' && post.slug.trim() ? post.slug.trim() : decodedSlug
   const resourcePath = buildResourceDetailPath(locale, canonicalSlug)
@@ -163,7 +124,7 @@ export default async function Post({ params: paramsPromise, searchParams: search
           benefits={post.benefits}
           citations={post.citations}
           coverImage={post.coverImage}
-          initialActiveTab={activeTab}
+          initialActiveTab={sections[0]?.categorySlug}
           lastUpdatedOn={post.lastUpdatedOn}
           postTitle={post.title}
           publishedAt={post.publishedAt}

@@ -1,8 +1,5 @@
-import PostPage, {
-  generateMetadata as generatePostMetadata,
-  generateStaticParams as generatePostStaticParams,
-} from '../../posts/[slug]/page'
+import PostPage, { generateMetadata as generatePostMetadata } from '../../posts/[slug]/page'
 
 export default PostPage
 export const generateMetadata = generatePostMetadata
-export const generateStaticParams = generatePostStaticParams
+export const revalidate = 600
