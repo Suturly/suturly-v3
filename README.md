@@ -1,3 +1,7 @@
+## Deployment sync (www.suturly.com vs Vercel preview)
+
+Production (`www.suturly.com`) and the default Vercel app URL (`suturly-v3.vercel.app`) come from the **same project**. Ship changes only via **git → `main` → Vercel production**; use PR preview URLs for review, not a separate “Vercel-only” edit path. See [docs/deployment-sync.md](./docs/deployment-sync.md).
+
 ## Database setup
 
 Suturly uses Neon Postgres across three environments:

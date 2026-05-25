@@ -66,49 +66,83 @@ export function HomeSpecialtySection() {
 
     gsap.registerPlugin(ScrollTrigger)
 
+    /** Matches `useIsDesktopLg` / `u-lg-only` (64rem). Scroll scrub runs only on desktop grid. */
+    const DESKTOP_MQ = '(min-width: 64rem)'
+
     const ctx = gsap.context(() => {
-      const visualBls = gsap.utils.toArray<HTMLElement>('.marketing-home-specialty__visual-bl')
-      const visuals = gsap.utils.toArray<HTMLElement>('.marketing-home-specialty__visual')
+      const mm = gsap.matchMedia()
 
-      if (visualBls.length === 0 && visuals.length === 0) return
+      mm.add(DESKTOP_MQ, () => {
+        const grid = section.querySelector('.marketing-home-specialty__grid-bl')
+        if (!grid) return
 
-      gsap.fromTo(
-        visualBls,
-        { width: '250%' }, 
-        {
-          width: '100%',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 50%',
-            end: '75% 50%',
-            scrub: true,
-            markers: false,
-            id: 'specialty-visual-bl',
+        const visualBls = gsap.utils.toArray<HTMLElement>(
+          '.marketing-home-specialty__visual-bl',
+          grid,
+        )
+        const visuals = gsap.utils.toArray<HTMLElement>('.marketing-home-specialty__visual', grid)
+        if (visualBls.length === 0 && visuals.length === 0) return
+
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (reducedMotion) {
+          gsap.set(visualBls, { width: '100%' })
+          gsap.set(visuals, { scale: 1 })
+          return
+        }
+
+        gsap.fromTo(
+          visualBls,
+          { width: '250%' },
+          {
+            width: '100%',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 50%',
+              end: '75% 50%',
+              scrub: true,
+              markers: false,
+              id: 'specialty-visual-bl',
+              invalidateOnRefresh: true,
+            },
           },
-        },
-      )
+        )
 
-      gsap.fromTo(
-        visuals,
-        { scale: 1.7 },
-        {
-          scale: 1,
-          ease: 'none',
-          transformOrigin: 'center center',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 50%',
-            end: '75% 50%',
-            scrub: true,
-            markers: false,
-            id: 'specialty-visual',
+        gsap.fromTo(
+          visuals,
+          { scale: 1.7 },
+          {
+            scale: 1,
+            ease: 'none',
+            transformOrigin: 'center center',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 50%',
+              end: '75% 50%',
+              scrub: true,
+              markers: false,
+              id: 'specialty-visual',
+              invalidateOnRefresh: true,
+            },
           },
-        },
-      )
+        )
+
+        const img = grid.querySelector('img')
+        if (img && !img.complete) {
+          img.addEventListener('load', () => ScrollTrigger.refresh(), { once: true })
+        }
+
+        ScrollTrigger.refresh()
+      })
     }, section)
 
-    return () => ctx.revert()
+    const refresh = () => ScrollTrigger.refresh()
+    window.addEventListener('load', refresh)
+
+    return () => {
+      window.removeEventListener('load', refresh)
+      ctx.revert()
+    }
   }, [])
 
   return (

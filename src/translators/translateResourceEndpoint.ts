@@ -1,6 +1,7 @@
 import type { Endpoint, PayloadHandler } from 'payload'
 
 import { translateOperation } from '@/translators/contentTranslator/translateOperation'
+import { isLocalePublished } from '@/utilities/localePublishStatus'
 
 /**
  * POST /api/posts/:id/translate-to-es
@@ -85,6 +86,18 @@ const handler: PayloadHandler = async (req) => {
   }
 
   try {
+    const existing = await req.payload.findByID({
+      collection: 'posts',
+      id,
+      depth: 0,
+      draft: true,
+      locale: 'en',
+      overrideAccess: true,
+      req,
+    })
+
+    const esDraft = !isLocalePublished(existing?._status, 'es')
+
     await req.payload.update({
       collection: 'posts',
       id,
@@ -92,16 +105,15 @@ const handler: PayloadHandler = async (req) => {
       data: {
         ...translateResult.translatedData,
         translatedAt: new Date().toISOString(),
+        spanishMirrorsEnglish: false,
+        enMirroredFieldPaths: [],
       },
       depth: 0,
+      draft: esDraft,
       overrideAccess: false,
       req,
       user: req.user,
-      // Recursion guard: trackEnUpdatedAt would otherwise stamp enUpdatedAt
-      // on this very write, instantly marking the doc stale again. The hook
-      // also short-circuits when req.locale === 'es', but the context flag is
-      // a belt-and-braces backstop for any downstream hooks Phase 5 may add.
-      context: { skipEnUpdatedAt: true, skipSpanishMirroringDetect: true },
+      context: { skipEnUpdatedAt: true, skipSpanishMirroringDetect: true, skipEsAutoSync: true },
     })
   } catch (err) {
     req.payload.logger.error({

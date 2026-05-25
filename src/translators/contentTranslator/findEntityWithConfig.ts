@@ -14,12 +14,13 @@ function findConfigBySlug<T extends { slug?: string }>(
 export async function findEntityWithConfig(args: {
   collectionSlug?: string
   globalSlug?: string
+  draft?: boolean
   id?: number | string
   locale?: string | null
   overrideAccess?: boolean
   req: PayloadRequest
 }): Promise<{ config: { fields: Field[] }; doc: Record<string, unknown> }> {
-  const { id, collectionSlug, globalSlug, locale, overrideAccess, req } = args
+  const { id, collectionSlug, globalSlug, locale, overrideAccess, req, draft = true } = args
 
   if (!collectionSlug && !globalSlug) {
     throw new APIError('Bad Request', 400)
@@ -45,7 +46,7 @@ export async function findEntityWithConfig(args: {
     ? payload.findGlobal({
         slug: globalSlug!,
         depth: 0,
-        draft: true,
+        draft,
         locale: locale ?? undefined,
         overrideAccess,
         req,
@@ -54,7 +55,7 @@ export async function findEntityWithConfig(args: {
         id: id!,
         collection: collectionSlug!,
         depth: 0,
-        draft: true,
+        draft,
         locale: locale ?? undefined,
         overrideAccess,
         req,

@@ -26,11 +26,16 @@ const trustedOrigins = getPayloadTrustedOrigins()
 
 export default buildConfig({
   blocks: lexicalBlocksForConfig,
+  experimental: {
+    localizeStatus: true,
+  },
   serverURL: getServerSideURL(),
   cors: trustedOrigins,
   csrf: trustedOrigins,
   localization: {
     defaultLocale: 'en',
+    /** Primary Publish publishes active locale only; linked EN publish hook forces both when mirroring. */
+    defaultLocalePublishOption: 'active',
     locales: [
       { code: 'en', label: 'English' },
       /** Empty ES text fields fall back to EN on read (admin list columns + API). Lexical/array gaps still use hooks / frontend merge. */

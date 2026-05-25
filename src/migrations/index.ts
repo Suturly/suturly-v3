@@ -5,6 +5,8 @@ import * as migration_20260510_125000_resources_localized_fields from './2026051
 import * as migration_20260511_140000_posts_spanish_mirrors_english from './20260511_140000_posts_spanish_mirrors_english';
 
 import * as migration_20260518_000000_categories_localized_strings from './20260518_000000_categories_localized_strings';
+import * as migration_20260524_000000_posts_localize_status from './20260524_000000_posts_localize_status';
+import * as migration_20260524_000001_posts_en_mirrored_field_paths from './20260524_000001_posts_en_mirrored_field_paths';
 
 export const migrations = [
   {
@@ -31,5 +33,15 @@ export const migrations = [
     up: migration_20260518_000000_categories_localized_strings.up,
     down: migration_20260518_000000_categories_localized_strings.down,
     name: '20260518_000000_categories_localized_strings',
+  },
+  {
+    up: migration_20260524_000000_posts_localize_status.up,
+    down: migration_20260524_000000_posts_localize_status.down,
+    name: '20260524_000000_posts_localize_status',
+  },
+  {
+    up: migration_20260524_000001_posts_en_mirrored_field_paths.up,
+    down: migration_20260524_000001_posts_en_mirrored_field_paths.down,
+    name: '20260524_000001_posts_en_mirrored_field_paths',
   },
 ];

@@ -4,6 +4,10 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 
 import type { Payload } from 'payload'
 import type { Post } from '../../../payload-types'
+import {
+  anyLocalePublished,
+  localeStatusChanged,
+} from '@/utilities/localePublishStatus'
 
 const listPaths = ['/resources', '/posts', '/es/resources', '/es/posts']
 
@@ -69,6 +73,14 @@ async function collectSlugsAroundChange(
   return [...out]
 }
 
+function shouldRevalidateForPublishChange(doc: Post, previousDoc?: Post): boolean {
+  if (anyLocalePublished(doc._status)) return true
+  if (previousDoc && anyLocalePublished(previousDoc._status)) return true
+  if (localeStatusChanged(previousDoc?._status, doc._status, 'en')) return true
+  if (localeStatusChanged(previousDoc?._status, doc._status, 'es')) return true
+  return false
+}
+
 export const revalidatePost: CollectionAfterChangeHook<Post> = async ({
   doc,
   previousDoc,
@@ -76,18 +88,10 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = async ({
 }) => {
   if (context.disableRevalidate) return doc
 
-  if (doc._status === 'published') {
+  if (shouldRevalidateForPublishChange(doc, previousDoc ?? undefined)) {
     payload.logger.info(`Revalidating post id=${doc.id} (published paths + lists)`)
 
     const slugs = await collectSlugsAroundChange(payload, doc.id, doc.slug, previousDoc?.slug)
-    revalidateSlugSurfaces(slugs)
-    listPaths.forEach((p) => revalidatePath(p))
-    revalidateTag('posts-sitemap')
-  }
-
-  if (previousDoc?._status === 'published' && doc._status !== 'published') {
-    payload.logger.info(`Revalidating unpublished post id=${doc.id}`)
-    const slugs = await collectSlugsAroundChange(payload, doc.id, previousDoc.slug, undefined)
     revalidateSlugSurfaces(slugs)
     listPaths.forEach((p) => revalidatePath(p))
     revalidateTag('posts-sitemap')

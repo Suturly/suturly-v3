@@ -16,6 +16,7 @@ import {
   localizedFieldMatchesEnglish,
   readValueAtPath,
 } from '@/collections/Resources/components/staleLocalizedShared'
+import { addEnMirroredFieldPath, normalizeEnMirroredFieldPaths } from '@/utilities/enMirroredFieldPaths'
 
 type EnglishBaselineState =
   | { status: 'idle' }
@@ -54,13 +55,13 @@ export const StaleLocalizedRichTextResetBeforeInput: React.FC<{
     if (!slug || id === undefined || id === null || id === '') return undefined
 
     const apiRoute = config?.routes?.api ?? '/api'
-    const serverURL = typeof config.serverURL === 'string' ? config.serverURL.replace(/\/$/, '') : ''
     const qs = new URLSearchParams({
       locale: 'en',
       depth: '10',
       draft: 'true',
     })
-    const url = `${serverURL}${apiRoute}/${encodeURIComponent(slug)}/${encodeURIComponent(String(id))}?${qs}`
+    // Same-origin only — config.serverURL may be www while admin runs on *.vercel.app (cookies + CSRF).
+    const url = `${apiRoute}/${encodeURIComponent(slug)}/${encodeURIComponent(String(id))}?${qs}`
     const res = await fetch(url, { credentials: 'include', method: 'GET' })
     if (!res.ok) {
       const text = await res.text().catch(() => '')
@@ -69,7 +70,7 @@ export const StaleLocalizedRichTextResetBeforeInput: React.FC<{
     const data = (await res.json()) as Record<string, unknown>
     const docOrSelf = typeof data.doc === 'object' && data.doc !== null ? (data.doc as Record<string, unknown>) : data
     return readValueAtPath(docOrSelf, path.split('.').filter(Boolean))
-  }, [collectionSlug, config?.routes?.api, config.serverURL, id, path])
+  }, [collectionSlug, config?.routes?.api, id, path])
 
   useEffect(() => {
     if (!showToolbar) {
@@ -112,14 +113,25 @@ export const StaleLocalizedRichTextResetBeforeInput: React.FC<{
         path,
         value: deepCloneForForm(enValue),
       })
+
+      const currentPaths = normalizeEnMirroredFieldPaths(docFields?.enMirroredFieldPaths?.value)
+      const nextPaths = addEnMirroredFieldPath(currentPaths, path)
+      dispatchFields({
+        type: 'UPDATE',
+        path: 'enMirroredFieldPaths',
+        value: nextPaths,
+      })
+
       setModified(true)
-      toast.success('Replaced this field with the English value.')
+      toast.success(
+        'Reset to English. This field will follow English until you edit Spanish or run Translate all.',
+      )
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Could not load English source.')
     } finally {
       setResetting(false)
     }
-  }, [dispatchFields, fetchEnglishValueAtPath, path, readOnly, resetting, setModified])
+  }, [dispatchFields, docFields?.enMirroredFieldPaths?.value, fetchEnglishValueAtPath, path, readOnly, resetting, setModified])
 
   if (!showToolbar) return null
 

@@ -40,10 +40,12 @@ import { mergeEnglishListColumnsAfterFind } from './hooks/mergeEnglishListColumn
 import { validateResourceCitations } from './hooks/validateCitations'
 import { deduplicateArrayRowIds } from './hooks/deduplicateArrayRowIds'
 import { stampSpanishMirroringStop } from './hooks/stampSpanishMirroringStop'
+import { linkedLocalePublish } from './hooks/linkedLocalePublish'
 import { syncEnglishToSpanish } from './hooks/syncEnglishToSpanish'
 import { trackEnUpdatedAt } from './hooks/trackEnUpdatedAt'
 import { markLocalized } from '../../utilities/markLocalized'
 import { translateResourceEndpoint } from '../../translators/translateResourceEndpoint'
+import { anyLocalePublished } from '../../utilities/localePublishStatus'
 
 import {
   MetaDescriptionField,
@@ -490,7 +492,7 @@ export const Resources: CollectionConfig<'posts'> = {
       hooks: {
         beforeChange: [
           ({ siblingData, value }) => {
-            if (siblingData._status === 'published' && !value) {
+            if (anyLocalePublished(siblingData._status) && !value) {
               return new Date()
             }
             return value
@@ -540,6 +542,16 @@ export const Resources: CollectionConfig<'posts'> = {
       },
     },
     {
+      name: 'enMirroredFieldPaths',
+      type: 'json',
+      label: 'EN-mirrored field paths (internal)',
+      localized: false,
+      defaultValue: [],
+      admin: {
+        hidden: true,
+      },
+    },
+    {
       name: 'translatedAt',
       type: 'date',
       label: 'Last translated at',
@@ -572,7 +584,7 @@ export const Resources: CollectionConfig<'posts'> = {
     },
   ]),
   hooks: {
-    beforeChange: [deduplicateArrayRowIds],
+    beforeChange: [deduplicateArrayRowIds, linkedLocalePublish],
     beforeValidate: [validateResourceCitations],
     // syncEnglishToSpanish mirrors EN → ES before stamping EN timestamps.
     // stampSpanishMirroringStop detects manual ES edits and disables mirroring.
@@ -599,6 +611,7 @@ export const Resources: CollectionConfig<'posts'> = {
         interval: 2000,
       },
       schedulePublish: true,
+      localizeStatus: true,
     },
     maxPerDoc: 50,
   },

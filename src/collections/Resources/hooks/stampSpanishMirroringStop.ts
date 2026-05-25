@@ -3,6 +3,12 @@ import { isDeepStrictEqual } from 'node:util'
 import type { CollectionAfterChangeHook } from 'payload'
 
 import type { Post } from '@/payload-types'
+import {
+  collectChangedLocalizedPaths,
+  normalizeEnMirroredFieldPaths,
+  removeEnMirroredFieldPaths,
+} from '@/utilities/enMirroredFieldPaths'
+import type { LocaleStatusMap } from '@/utilities/localePublishStatus'
 import { requestIsAutosave } from '@/utilities/requestIsAutosave'
 
 /** Localized subtree compared on ES saves to detect manual Spanish edits vs structural-only writes. */
@@ -20,12 +26,19 @@ function pickLocalizedMirrorSlice(post: Partial<Post> | undefined): unknown {
   }
 }
 
+function isPublishedDoc(doc: Post): boolean {
+  const status = doc._status as unknown
+  if (typeof status === 'object' && status !== null) {
+    const map = status as LocaleStatusMap
+    return map.es === 'published' || map.en === 'published'
+  }
+  return status === 'published'
+}
+
 /**
- * When editors save Spanish (`locale === 'es'`) and localized fields actually changed,
- * flip {@link Post.spanishMirrorsEnglish} off so EN edits no longer overwrite Spanish.
- *
- * Skipped when {@link PayloadRequest.context.skipSpanishMirroringDetect} is set
- * (Translate all, identity mirror merge, backfill script).
+ * When editors save Spanish (`locale === 'es'`) and localized fields actually changed:
+ * - Fully linked doc → flip {@link Post.spanishMirrorsEnglish} off and clear paths.
+ * - Detached doc → remove changed paths from {@link Post.enMirroredFieldPaths} only.
  */
 export const stampSpanishMirroringStop: CollectionAfterChangeHook<Post> = async ({
   doc,
@@ -38,20 +51,55 @@ export const stampSpanishMirroringStop: CollectionAfterChangeHook<Post> = async 
   if (requestIsAutosave(req)) return doc
   if (operation !== 'update') return doc
   if (req.locale !== 'es') return doc
-  if (doc.spanishMirrorsEnglish === false) return doc
 
   const prevPick = pickLocalizedMirrorSlice(previousDoc ?? undefined)
   const nextPick = pickLocalizedMirrorSlice(doc)
   if (isDeepStrictEqual(prevPick, nextPick)) return doc
 
+  const changedPaths = collectChangedLocalizedPaths(prevPick, nextPick)
+  const draft = !isPublishedDoc(doc)
+
+  if (doc.spanishMirrorsEnglish !== false) {
+    try {
+      await req.payload.update({
+        collection: 'posts',
+        id: doc.id,
+        data: {
+          spanishMirrorsEnglish: false,
+          enMirroredFieldPaths: [],
+        },
+        depth: 0,
+        draft,
+        overrideAccess: true,
+        req,
+        context: {
+          skipSpanishMirroringDetect: true,
+          skipEnUpdatedAt: true,
+          skipEsAutoSync: true,
+        },
+      })
+    } catch (err) {
+      req.payload.logger.error(
+        { err, postId: doc.id },
+        'stampSpanishMirroringStop: failed to persist spanishMirrorsEnglish=false',
+      )
+    }
+    return doc
+  }
+
+  const currentPaths = normalizeEnMirroredFieldPaths(doc.enMirroredFieldPaths)
+  if (currentPaths.length === 0) return doc
+
+  const nextPaths = removeEnMirroredFieldPaths(currentPaths, changedPaths)
+  if (nextPaths.length === currentPaths.length) return doc
+
   try {
     await req.payload.update({
       collection: 'posts',
       id: doc.id,
-      locale: 'es',
-      data: { spanishMirrorsEnglish: false },
+      data: { enMirroredFieldPaths: nextPaths },
       depth: 0,
-      draft: doc._status !== 'published',
+      draft,
       overrideAccess: true,
       req,
       context: {
@@ -63,7 +111,7 @@ export const stampSpanishMirroringStop: CollectionAfterChangeHook<Post> = async 
   } catch (err) {
     req.payload.logger.error(
       { err, postId: doc.id },
-      'stampSpanishMirroringStop: failed to persist spanishMirrorsEnglish=false',
+      'stampSpanishMirroringStop: failed to trim enMirroredFieldPaths',
     )
   }
 

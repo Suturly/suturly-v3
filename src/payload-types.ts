@@ -340,6 +340,15 @@ export interface Post {
   generateSlug?: boolean | null;
   slug: string;
   spanishMirrorsEnglish?: boolean | null;
+  enMirroredFieldPaths?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   /**
    * Set automatically when an editor runs Translate all to ES. Used to flag Spanish fields as stale when the English source has been edited since.
    */
@@ -1611,6 +1620,7 @@ export interface PostsSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   spanishMirrorsEnglish?: T;
+  enMirroredFieldPaths?: T;
   translatedAt?: T;
   enUpdatedAt?: T;
   updatedAt?: T;

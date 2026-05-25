@@ -1,5 +1,6 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
+import { isLocalePublished } from '@/utilities/localePublishStatus'
 import { requestIsAutosave } from '@/utilities/requestIsAutosave'
 
 /**
@@ -40,7 +41,7 @@ export const trackEnUpdatedAt: CollectionAfterChangeHook = async ({
       data: { enUpdatedAt: new Date().toISOString() },
       locale: 'en',
       depth: 0,
-      draft: doc._status !== 'published',
+      draft: !isLocalePublished(doc._status, 'en'),
       overrideAccess: true,
       req,
       context: { skipEnUpdatedAt: true, skipEsAutoSync: true },
